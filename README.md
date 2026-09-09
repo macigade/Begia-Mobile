@@ -85,6 +85,19 @@ trial and checks the trial file names the payload's build.
   per signal at a fixed height, filled where TRUE; the analog charts
   share the rest of the page), both in the desktop repo's `ui/` and
   verified on the S23 (build v0.9-14-g5a73a26 on the phone).
+- 2026-09-10: **design pass over the phone layout**, screen by screen, with
+  `tools/phone_shots.py` in the desktop repo (headless Chrome driven over
+  the DevTools protocol at exact phone sizes, with an audit of overflow and
+  hit targets on every shot). On the S23 it found the live value pushed off
+  the pane header, the analog chart starved to 43 px by two-row headers
+  and a page rule that charged the time axis twice, a trial's stats cut at
+  the edge, the Signals filter squeezed to 22 px, Setup's list holding a
+  320 px hole, and the ruler's date line cut in half; all fixed in `ui/`.
+  Then the same matrix at 320x520, 360x600, 375x627, 320x790 (fold cover),
+  360x760, 393x812, 412x875, 430x892 and three landscapes: no overflow
+  left; a page holds what fits at a readable plot, the brand mark yields at
+  320 px, a wide phone on its side (915 px) keeps the drawer, safe-area
+  insets are in place for the day the shell goes edge to edge.
   Next: Analyse at tablet width, the second-screen mode, payload signing.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).
