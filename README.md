@@ -98,7 +98,19 @@ trial and checks the trial file names the payload's build.
   left; a page holds what fits at a readable plot, the brand mark yields at
   320 px, a wide phone on its side (915 px) keeps the drawer, safe-area
   insets are in place for the day the shell goes edge to edge.
-  Next: Analyse at tablet width, the second-screen mode, payload signing.
+- 2026-09-10, later: **Analyse at tablet width.** The phone decision is
+  now the screen's smaller side (<= 600 px) rather than the current width,
+  so a phone sideways stays a phone and a tablet gets the laptop layout
+  with `data-device="tablet"`: thumb-sized targets, the drawer instead of
+  the docked sidebar up to 13", a compact top bar upright. Analyse under
+  a finger: A and B are buttons (press one, tap the chart), a finger on a
+  marker line drags it, the palette is a strip across the top upright and
+  beside the chart sideways, the A/B table keeps five columns. Checked at
+  1280x800, 800x1280, 1024x768, 768x1024, 962x601 and 601x962 with touch
+  emulation (`tools/phone_shots.py` in the desktop repo). Not yet tried
+  on a real tablet: the shell APK is the same; a tablet just needs it
+  installed.
+  Next: the second-screen mode, payload signing, a real tablet in hand.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).
   Handoff for the port: `..\Desktop\IBA-CODE\docs\ANDROID-PORT-HANDOFF.md`.
