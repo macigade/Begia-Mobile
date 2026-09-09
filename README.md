@@ -79,5 +79,13 @@ trial and checks the trial file names the payload's build.
   **The laptop update path** (`GET /api/payload` on the desktop, Check and
   Install in the phone's Setup) was exercised end to end on the phone
   against its own loopback, since this VM is not reachable from the phone.
-  Next: touch gestures on the charts, digital-signal lanes, payload signing.
+- 2026-09-09, night: **touch on the charts** (drag pans, pinch zooms,
+  tap reads out, hold follows, double-tap resets, hold-and-drag on an
+  axis gutter offsets it) and **digital-signal lanes** (one named strip
+  per signal at a fixed height, filled where TRUE; the analog charts
+  share the rest of the page), both in the desktop repo's `ui/` and
+  verified on the S23 (build v0.9-14-g5a73a26 on the phone).
+  Next: Analyse at tablet width, the second-screen mode, payload signing.
+  Known gap: sideways, the single pane is the first one; reaching another
+  pane takes the pane menu (Restore, then Maximize on the other).
   Handoff for the port: `..\Desktop\IBA-CODE\docs\ANDROID-PORT-HANDOFF.md`.
