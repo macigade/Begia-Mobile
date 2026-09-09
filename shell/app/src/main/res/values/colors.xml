@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the desktop's dark theme tokens, ui/style.css :root -->
+<resources>
+    <color name="bg">#0e141a</color>
+    <color name="panel">#151d25</color>
+    <color name="panel2">#1a242e</color>
+    <color name="line">#263340</color>
+    <color name="ink">#dbe4ec</color>
+    <color name="muted">#8fa1b0</color>
+    <color name="muted3">#6a7a89</color>
+    <color name="accent">#3fb6c0</color>
+    <color name="warn">#d9a03c</color>
+    <color name="rec">#e5534b</color>
+    <color name="beg">#169dd8</color>
+    <color name="ia">#eaf1f7</color>
+</resources>

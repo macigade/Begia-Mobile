@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <WebView
+        android:id="@+id/web"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg" />
+
+    <!-- The boot screen from the canvas: the mark, the wordmark, one line of
+         state, the build. Shown until /api/state answers, and again with the
+         rollback note or the failure when there is one. Native, because it
+         is exactly the moment the WebView has nothing to load. -->
+    <LinearLayout
+        android:id="@+id/boot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:layout_width="174dp"
+            android:layout_height="116dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_mark" />
+
+        <TextView
+            android:id="@+id/boot_word"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.04"
+            android:text="@string/app_name"
+            android:textColor="@color/ia"
+            android:textSize="38sp" />
+
+        <TextView
+            android:id="@+id/boot_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/boot_starting"
+            android:textColor="@color/ink"
+            android:textSize="15sp" />
+
+        <ProgressBar
+            android:id="@+id/boot_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="240dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="10dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/accent" />
+
+        <TextView
+            android:id="@+id/boot_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:maxWidth="340dp"
+            android:textColor="@color/muted3"
+            android:textSize="11.5sp" />
+
+        <TextView
+            android:id="@+id/boot_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:background="@color/panel"
+            android:gravity="center"
+            android:padding="14dp"
+            android:textColor="@color/warn"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/boot_action"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:backgroundTint="@color/accent"
+            android:textColor="@color/bg"
+            android:visibility="gone" />
+    </LinearLayout>
+</FrameLayout>

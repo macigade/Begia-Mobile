@@ -1,0 +1,102 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.chaquo.python"
+}
+
+// Per-machine settings live in local.properties (git-ignored; build_apk.bat
+// writes a first one). Nothing here names a path on one particular PC.
+def localProps = new Properties()
+def lpFile = rootProject.file("local.properties")
+if (lpFile.exists()) lpFile.withInputStream { localProps.load(it) }
+def setting = { String key, String env, String fallback ->
+    localProps.getProperty(key) ?: System.getenv(env) ?: fallback
+}
+// The payload the APK ships as its fallback slot: built by build_payload.bat
+// in the desktop repo. The phone can replace it without a new APK.
+def payloadFile = file(setting("begia.payload", "BEGIA_PAYLOAD",
+        "$rootDir/../../Desktop/IBA-CODE/dist/begia-payload.begia"))
+// The Python that runs pip at build time (any 3.8+; the phone gets 3.11 below)
+def buildPy = setting("begia.buildPython", "BEGIA_BUILD_PYTHON", "python")
+
+android {
+    namespace "com.sarralle.begia"
+    compileSdk 34
+    buildToolsVersion "34.0.0"
+
+    defaultConfig {
+        applicationId "com.sarralle.begia"
+        minSdk 26
+        targetSdk 34
+        // The SHELL version. A payload declares the min_shell it needs and the
+        // slot manager (runtime/begia_shell/payload.py, SHELL_VERSION) refuses
+        // a newer one: bump both together when a wheel, a permission or the
+        // Python version changes, and never for a payload change.
+        versionCode 1
+        versionName "shell 1"
+        ndk { abiFilters "arm64-v8a" }
+    }
+    buildTypes {
+        release { minifyEnabled false }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+    buildFeatures { buildConfig true }
+    sourceSets {
+        main {
+            // The shell's Python side is a sibling of this project, shared with
+            // the laptop boot test - referenced, never copied.
+            python.srcDirs = ["../../runtime"]
+            assets.srcDirs += ["$buildDir/payload-assets"]
+        }
+    }
+}
+
+chaquopy {
+    defaultConfig {
+        version "3.11"
+        buildPython buildPy
+        pip {
+            // The same seven pins as requirements-phone.txt, which says why.
+            // Chaquopy resolves the rest (cffi for cryptography, starlette
+            // for fastapi, ...) from its own index and PyPI, wheels only.
+            install "pydantic==1.10.26"
+            install "fastapi==0.125.0"
+            install "uvicorn==0.52.4"
+            install "websockets==17.1"
+            install "asyncua==2.0.1"
+            install "cryptography==42.0.8"
+            install "pyOpenSSL==24.3.0"
+        }
+    }
+}
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "androidx.core:core-ktx:1.13.1"
+    implementation "androidx.activity:activity-ktx:1.9.3"
+}
+
+// The embedded payload goes into the APK's assets from wherever the payload
+// was built, via the build directory, so the source tree never holds a copy.
+def copyPayload = tasks.register("copyPayload", Copy) {
+    doFirst {
+        if (!payloadFile.isFile()) {
+            throw new GradleException("No payload at $payloadFile - run build_payload.bat in the " +
+                    "desktop repo, or set begia.payload in local.properties")
+        }
+    }
+    from payloadFile
+    into "$buildDir/payload-assets/payload"
+    rename { "begia-payload.begia" }
+}
+preBuild.dependsOn copyPayload
+// Gradle 8 validation: every task that reads the assets dir must declare the producer
+tasks.configureEach { t ->
+    if (t.name != "copyPayload" && (t.name.contains("Assets") || t.name.contains("assets"))) {
+        t.dependsOn(copyPayload)
+    }
+}
