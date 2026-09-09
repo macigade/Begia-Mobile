@@ -38,6 +38,60 @@ object Installer {
         return f
     }
 
+    /**
+     * Fetch a payload from a laptop's BEGIA (GET /api/payload) into our cache.
+     *
+     * The laptop serves HTTPS under its own local CA, which this phone has
+     * no way to trust, so the certificate is not checked for THIS download:
+     * the payload's own manifest hashes catch corruption, and a payload
+     * carries no secret. That leaves a forged laptop on the plant WiFi as
+     * the one open door - the decision taken for now, with payload signing
+     * as the answer when a site's IT asks for it.
+     */
+    fun download(ctx: Context, url: String): File {
+        val f = File(ctx.cacheDir, "incoming.begia")
+        val c = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        if (c is javax.net.ssl.HttpsURLConnection) {
+            val trustAll = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+                override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+            })
+            val ssl = javax.net.ssl.SSLContext.getInstance("TLS")
+            ssl.init(null, trustAll, java.security.SecureRandom())
+            c.sslSocketFactory = ssl.socketFactory
+            c.hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+        }
+        c.connectTimeout = 5000
+        c.readTimeout = 30000
+        if (c.responseCode != 200) {
+            val why = try { c.errorStream?.bufferedReader()?.readText() } catch (e: Exception) { null }
+            throw Refused("the laptop answered ${c.responseCode}" + (why?.let { ": ${it.take(160)}" } ?: ""))
+        }
+        c.inputStream.use { i -> f.outputStream().use { o -> i.copyTo(o) } }
+        return f
+    }
+
+    /** GET a small JSON document the same way (the laptop's /api/payload/info). */
+    fun fetchText(url: String): String {
+        val c = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        if (c is javax.net.ssl.HttpsURLConnection) {
+            val trustAll = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+                override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+            })
+            val ssl = javax.net.ssl.SSLContext.getInstance("TLS")
+            ssl.init(null, trustAll, java.security.SecureRandom())
+            c.sslSocketFactory = ssl.socketFactory
+            c.hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+        }
+        c.connectTimeout = 5000
+        c.readTimeout = 10000
+        if (c.responseCode != 200) throw Refused("the laptop answered ${c.responseCode}")
+        return c.inputStream.bufferedReader().use { it.readText() }
+    }
+
     /** Verify and extract into a slot. Nothing is activated yet. */
     fun install(ctx: Context, zip: File): JSONObject = guarded {
         JSONObject(py(ctx).callAttr("install", zip.path, ctx.filesDir.path).toString())

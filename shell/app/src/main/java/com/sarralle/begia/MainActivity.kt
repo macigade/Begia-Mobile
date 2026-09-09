@@ -244,6 +244,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** The laptop path: download, verify and extract, then the same dialog. */
+    fun offerInstallFromUrl(url: String) {
+        io.execute {
+            try {
+                val staged = Installer.download(this, url)
+                val m = Installer.install(this, staged)
+                ui.post { askToActivate(m) }
+            } catch (e: Exception) {
+                Log.w(Recorder.TAG, "install from $url refused: ${e.message}")
+                ui.post { tell(getString(R.string.install_refused), e.message ?: "") }
+            }
+        }
+    }
+
+    /** Ask a laptop what it can offer and hand the answer to the page as an
+     *  event, so the Setup card can say "0.10, and you have 0.9". */
+    fun checkLaptop(url: String) {
+        io.execute {
+            val payload = try {
+                JSONObject().put("ok", true).put("url", url).put("info", JSONObject(Installer.fetchText(url)))
+            } catch (e: Exception) {
+                JSONObject().put("ok", false).put("url", url).put("error", e.message ?: "no answer")
+            }
+            ui.post {
+                web.evaluateJavascript(
+                    "window.dispatchEvent(new CustomEvent('begia-laptop', {detail: $payload}))", null)
+            }
+        }
+    }
+
     private fun askToActivate(m: JSONObject) {
         val version = m.optString("version")
         val build = m.optString("build")

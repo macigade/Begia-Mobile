@@ -34,4 +34,17 @@ class ShellBridge(private val activity: MainActivity) {
     fun restartRecorder() {
         activity.runOnUiThread { activity.restartRecorder() }
     }
+
+    /** Ask a laptop's BEGIA what payload it offers; the answer arrives as a
+     *  `begia-laptop` event on window with {ok, url, info | error}. */
+    @JavascriptInterface
+    fun checkLaptop(infoUrl: String) {
+        activity.checkLaptop(infoUrl)
+    }
+
+    /** Download a payload from a URL and offer to install it. */
+    @JavascriptInterface
+    fun installFromUrl(payloadUrl: String) {
+        activity.offerInstallFromUrl(payloadUrl)
+    }
 }
