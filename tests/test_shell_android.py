@@ -9,10 +9,12 @@ the screen reads, and the loopback dev server the push script talks to.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import urllib.error
 import urllib.request
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -40,6 +42,28 @@ def test_embedded_never_takes_over_a_hot_update(tmp_path):
     android.activate("v0.10", str(tmp_path))
     android.ensure_embedded(str(tmp_path), str(emb))          # e.g. the service restarted
     assert pl.Slots(tmp_path / "slots").active == "v0.10"
+
+
+def test_embedded_same_build_with_new_files_replaces_the_slot(tmp_path):
+    """A new APK built from the same dirty tree carries the same build stamp
+    with newer files; the slot must follow the APK, not keep the old files."""
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9-dirty")
+    android.ensure_embedded(str(tmp_path), str(emb))
+    slot = tmp_path / "slots" / "v0.9-dirty"
+    assert (slot / "app" / "main.py").read_bytes() == b"app = object()\n"
+    # the same stamp, one file edited, re-hashed the way make_payload does
+    with zipfile.ZipFile(emb) as z:
+        m = json.loads(z.read(pl.MANIFEST))
+        rest = {n: z.read(n) for n in z.namelist() if n not in (pl.MANIFEST, "app/main.py")}
+    new = b"app = object()  # rebuilt\n"
+    m["files"]["app/main.py"] = {"sha256": hashlib.sha256(new).hexdigest(), "size": len(new)}
+    with zipfile.ZipFile(emb, "w") as z:
+        z.writestr(pl.MANIFEST, json.dumps(m))
+        z.writestr("app/main.py", new)
+        for n, d in rest.items():
+            z.writestr(n, d)
+    android.ensure_embedded(str(tmp_path), str(emb))
+    assert (slot / "app" / "main.py").read_bytes() == new
 
 
 def test_install_is_not_activation(tmp_path):

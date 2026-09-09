@@ -216,6 +216,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun restartRecorder() {
+        if (recording) {
+            tell("A trial is recording", "Stop it first. Restarting the recorder would end it without its final flush.")
+            return
+        }
         pageLoaded = false
         showBoot(getString(R.string.boot_starting), activeBuildLine())
         io.execute { Recorder.restart(this) }
@@ -243,6 +247,12 @@ class MainActivity : AppCompatActivity() {
     private fun askToActivate(m: JSONObject) {
         val version = m.optString("version")
         val build = m.optString("build")
+        if (recording) {
+            // installing restarts the recorder process, which would end the
+            // trial without its final flush: the one thing a recorder must not do
+            tell("A trial is recording", "Stop it first. Installing BEGIA $version restarts the recorder.")
+            return
+        }
         if (m.optBoolean("already_active")) {
             tell("BEGIA $version", "Build $build is already the version running.")
             return

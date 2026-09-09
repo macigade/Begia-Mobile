@@ -99,6 +99,31 @@ def test_install_extracts_verifies_and_is_idempotent(tmp_path):
     assert slot2 == slot and (slot / "marker").read_text() == "kept"
 
 
+def test_same_build_with_different_files_replaces_the_slot(tmp_path):
+    """A "-dirty" build pushed twice with an edit in between has the same
+    stamp and different content: the second push must win, or the phone runs
+    the old files under the new payload's name."""
+    slots = tmp_path / "slots"
+    slot, _ = pl.install(make_payload(tmp_path / "a.begia"), slots)
+    assert (slot / "app" / "main.py").read_bytes() == b"app = object()\n"
+    # the same build stamp, one file changed (and re-hashed by make_payload)
+    p = make_payload(tmp_path / "b.begia", tamper=False)
+    with zipfile.ZipFile(p) as z:
+        m = json.loads(z.read(pl.MANIFEST))
+        others = {n: z.read(n) for n in z.namelist() if n not in (pl.MANIFEST, "app/main.py")}
+    new = b"app = object()  # edited\n"
+    m["files"]["app/main.py"] = {"sha256": hashlib.sha256(new).hexdigest(), "size": len(new)}
+    with zipfile.ZipFile(p, "w") as z:
+        z.writestr(pl.MANIFEST, json.dumps(m))
+        z.writestr("app/main.py", new)
+        for n, d in others.items():
+            z.writestr(n, d)
+    slot2, _ = pl.install(p, slots)
+    assert slot2 == slot
+    assert (slot / "app" / "main.py").read_bytes() == new
+    assert not (slots / (slot.name + ".installing")).exists()
+
+
 def test_slot_names_are_filesystem_safe(tmp_path):
     slot, _ = pl.install(make_payload(tmp_path / "a.begia", build="v0.9-8-gabc-dirty"), tmp_path / "s")
     assert slot.name == "v0.9-8-gabc-dirty"

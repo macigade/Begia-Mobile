@@ -42,9 +42,11 @@ def ensure_embedded(files_dir: str, embedded_zip: str) -> dict:
     takes over from a build the phone was updated to since."""
     slots, _ = _dirs(files_dir)
     s = pl.Slots(slots)
-    m = pl.read_manifest(Path(embedded_zip))
-    if not (s.slot_path(m["build"]) / "slot.json").is_file():
-        pl.install(Path(embedded_zip), slots)
+    # Always through install(): it is a manifest comparison when the same
+    # files are already there, and a replacement when the same build stamp
+    # arrives with different files - a "-dirty" tree rebuilt into a new APK.
+    # Deciding here by "is the slot there" skipped exactly that case.
+    _slot, m = pl.install(Path(embedded_zip), slots)
     if not s.active:
         s.activate(m["build"])
     return m

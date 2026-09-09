@@ -120,7 +120,16 @@ def install(zip_path: Path, slots_dir: Path, shell_version: int = SHELL_VERSION)
     slots_dir.mkdir(parents=True, exist_ok=True)
     slot = slots_dir / slot_name(m["build"])
     if (slot / "slot.json").is_file():
-        return slot, m
+        # The same build is already here. If its files are the same files,
+        # there is nothing to do; if they differ - a "-dirty" build pushed
+        # again after another edit - the slot is replaced, or the phone would
+        # keep running the old files under the new payload's name.
+        try:
+            have = json.loads((slot / MANIFEST).read_text(encoding="utf-8"))
+            if have.get("files") == m["files"]:
+                return slot, m
+        except (OSError, ValueError):
+            pass
     tmp = slots_dir / (slot.name + ".installing")
     shutil.rmtree(tmp, ignore_errors=True)
     with zipfile.ZipFile(zip_path) as z:
