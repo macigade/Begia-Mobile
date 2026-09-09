@@ -212,16 +212,34 @@ class Slots:
             self.state["booting"] = None
             self.save()
 
+    def bad_builds(self) -> set:
+        return {b["build"] for b in self.state.get("bad", [])}
+
     def mark_bad(self, build: str, why: str) -> Optional[str]:
-        """Record the failure and fall back. Returns the build now active."""
+        """Record the failure and fall back. Returns the build now active.
+
+        The fallback is `previous` when it is a good build, else the newest
+        other installed build that has not failed - so two bad updates in a
+        row still land on the last version that worked, as long as it is on
+        the phone. And `previous` is refilled the same way, so the one after
+        that has somewhere to go too."""
         self.state.setdefault("bad", []).append({"build": build, "why": why, "at": _now()})
         if self.state["active"] == build:
-            prev = self.state.get("previous")
-            self.state["active"] = prev if prev and prev != build else None
-            self.state["previous"] = None
+            self.state["active"] = self._fallback(exclude={build})
+            self.state["previous"] = self._fallback(exclude={build, self.state["active"]})
         self.state["booting"] = None
         self.save()
         return self.state["active"]
+
+    def _fallback(self, exclude: set) -> Optional[str]:
+        bad = self.bad_builds()
+        prev = self.state.get("previous")
+        if prev and prev not in exclude and prev not in bad:
+            return prev
+        good = [s for s in self.installed()
+                if s["build"] not in exclude and s["build"] not in bad]
+        good.sort(key=lambda s: s.get("installed_at", ""), reverse=True)
+        return good[0]["build"] if good else None
 
     def resolve_for_boot(self) -> Tuple[Path, Optional[str]]:
         """The slot to boot now, and a sentence for the screen if a rollback

@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8124", "--directory", "design/s23"],
       "port": 8124
+    },
+    {
+      "name": "begia-desktop",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d C:\\Users\\user\\Desktop\\IBA-CODE && set \"TRIALREC_DATA_DIR=C:\\Users\\user\\Desktop\\IBA-CODE\\sim_data\" && .venv\\Scripts\\python -m app.main"],
+      "port": 8080
     }
   ]
 }

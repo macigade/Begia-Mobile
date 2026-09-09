@@ -169,6 +169,30 @@ def test_a_boot_that_never_became_healthy_rolls_back(tmp_path):
     assert pl.Slots(slots_dir).resolve_for_boot() == (slot, None)
 
 
+def test_two_bad_updates_in_a_row_still_land_on_the_last_good_build(tmp_path):
+    """Seen on the phone: after one rollback `previous` was empty, so a second
+    bad push would have had nothing to fall back to although the build before
+    was still installed and had booted fine."""
+    slots_dir = tmp_path / "slots"
+    for i, b in enumerate(["v0.8", "v0.9", "v0.10", "v0.11"]):
+        pl.install(make_payload(tmp_path / f"{b}.begia", build=b), slots_dir)
+        s = pl.Slots(slots_dir)
+        s.activate(b)
+        s.mark_booting(b)
+        if i < 2:
+            s.mark_good(b)            # 0.8 and 0.9 booted; 0.10 and 0.11 never did
+        else:
+            slot, note = pl.Slots(slots_dir).resolve_for_boot()
+    # 0.11 was booting when the process died -> back to 0.10; 0.10 had never
+    # become healthy either (it was left booting too) -> it is bad as well
+    s = pl.Slots(slots_dir)
+    assert s.state["bad"] and {b["build"] for b in s.state["bad"]} == {"v0.10", "v0.11"}
+    assert s.active == "v0.9", s.state
+    assert s.state["previous"] == "v0.8"
+    slot, note = s.resolve_for_boot()
+    assert slot.name == "v0.9"
+
+
 def test_nothing_to_go_back_to_is_said_plainly(tmp_path):
     slots_dir = tmp_path / "slots"
     pl.install(make_payload(tmp_path / "only.begia", build="v0.10"), slots_dir)
