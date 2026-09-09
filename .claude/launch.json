@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "design-s23",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8124", "--directory", "design/s23"],
+      "port": 8124
+    }
+  ]
+}

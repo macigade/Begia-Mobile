@@ -1,0 +1,35 @@
+# ------------------------------------------------------------- environments --
+# The phone-runtime test env: Python 3.11 + pydantic v1 + the pins in
+# requirements-phone.txt, recreated by tools\phone_env.bat
+.venv-phone/
+.venv/
+__pycache__/
+*.py[cod]
+
+# ------------------------------------------------------------------ builds ----
+# The payload is built in the desktop repo (IBA-CODE\dist\*.begia) and only
+# copied here for the shell build; never a source
+*.begia
+*.begia.sha256
+shell/app/build/
+shell/.gradle/
+shell/build/
+shell/local.properties
+*.apk
+*.aab
+
+# ---------------------------------------------------------------- design ----
+# The seeded canvas is 2.7 MB of editor; the artboards and build.mjs are
+# the source, the artifact link is the deliverable
+design/**/begia-android.html
+
+# ------------------------------------------------------------- scratch ------
+boot-test-data/
+*.log
+.pytest_cache/
+
+# --------------------------------------------------------------- editors ----
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini

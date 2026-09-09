@@ -1,0 +1,131 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Live · portrait",
+      "x": 0,
+      "y": 0,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "LiveRecording.dc.html",
+      "title": "Live · recording",
+      "x": 511,
+      "y": 0,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "LiveLandscape.dc.html",
+      "title": "Live · landscape, one pane",
+      "x": 1022,
+      "y": 0,
+      "w": 891,
+      "h": 411
+    },
+    {
+      "file": "TrialBar.dc.html",
+      "title": "Trial bar · states",
+      "x": 1022,
+      "y": 531,
+      "w": 411,
+      "h": 700
+    },
+    {
+      "file": "Signals.dc.html",
+      "title": "Signals · search first",
+      "x": 0,
+      "y": 1011,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "Trials.dc.html",
+      "title": "Trials · share, send",
+      "x": 511,
+      "y": 1011,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "Setup.dc.html",
+      "title": "Setup",
+      "x": 1022,
+      "y": 1360,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "Update.dc.html",
+      "title": "Setup · Update",
+      "x": 1533,
+      "y": 1360,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "Boot.dc.html",
+      "title": "Shell · boot",
+      "x": 0,
+      "y": 2022,
+      "w": 411,
+      "h": 891
+    },
+    {
+      "file": "Rollback.dc.html",
+      "title": "Shell · rollback",
+      "x": 511,
+      "y": 2022,
+      "w": 411,
+      "h": 891
+    }
+  ],
+  "annotations": [
+    {
+      "id": "frame",
+      "x": 0,
+      "y": -170,
+      "w": 411,
+      "text": "Samsung S23: 411 × 891 dp (1080 × 2340 at 2.625×). The top 28 dp and the bottom 20 dp are left to the system, no fake status bar here.\nEvery size is the desktop token at --fs-scale 1: same panel, line, accent, rec, warn; IBM Plex Sans / IBM Plex Mono; pane, statechip, btn, chip, wsel, card, trial bar are the classes in ui/style.css."
+    },
+    {
+      "id": "layout-mode",
+      "x": 511,
+      "y": -170,
+      "w": 411,
+      "text": "Not a fork. This is a third layout mode, phone, beside classic and rail: the same DOM re-parented (placeNav already does this), the sidebar cards become the Signals, Trials and Setup tabs, the trial bar is docked and always visible.\nDigital signals are 22 dp lanes, not 96 dp charts: two lanes cost what half a pane used to."
+    },
+    {
+      "id": "gestures",
+      "x": 1453,
+      "y": 531,
+      "w": 380,
+      "text": "Touch replaces the modifier-wheel:\n• pinch = zoom time · drag = pan (steps out of live, LIVE rejoins)\n• long-press = cursor readout · double-tap = full recorded range\n• two-finger drag on an axis = offset that axis\n• tap a pane = landscape, one pane full screen; swipe = next pane\n• space / M / L / F keys become Start, Mark, LIVE, and the tap-to-maximize"
+    },
+    {
+      "id": "workflow",
+      "x": 1963,
+      "y": 0,
+      "w": 340,
+      "text": "The FAT day on a phone, in order of how often it happens:\n1 glance at live values\n2 Start · Mark · Stop, without navigating anywhere\n3 open a trial, share the CSV or the report, or send it to the laptop\n4 add a signal: search first, the tree is the fallback\n5 rarely: pick the furnace, the set, update the app\nAnalyse waits for a tablet width."
+    },
+    {
+      "id": "update",
+      "x": 2044,
+      "y": 1360,
+      "w": 340,
+      "text": "Update without reinstalling: the shell (APK) holds Python and the wheels; the payload (.begia) holds app/, ui/, presets.json and a manifest with the honest git build stamp.\nThree ways in: the laptop's BEGIA over WiFi, a file from anywhere, adb from the dev PC.\nA payload that does not answer /api/state in 30 s is rolled back to the previous slot, and the screen says so."
+    },
+    {
+      "id": "open",
+      "x": 2044,
+      "y": 1700,
+      "w": 340,
+      "text": "Open for you to settle on the canvas:\n• the window chip: tap-to-pick (30 s / 1 min / 5 min / 10 min) or pinch only?\n• quick-mark chips: three fixed, or the desktop's nine keys?\n• Stop: plain tap, or hold-to-stop so a pocket cannot end a trial?\n• the second-screen mode lives in Setup today; a switch on the boot screen instead?"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  }
+}

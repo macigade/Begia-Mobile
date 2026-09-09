@@ -1,0 +1,37 @@
+# The phone's Python stack: what the shell's Chaquopy pip block installs into
+# the APK, and what tools\phone_env.bat installs on the laptop so a payload
+# can be boot-tested before an APK exists.
+#
+# Why these and not the desktop's pins: pydantic-core (pydantic v2's Rust
+# core) has no Android wheel anywhere - not in Chaquopy's index, not on PyPI
+# (checked 2026-09-09) - so the phone runs pydantic v1, and app/config.py in
+# the desktop repo carries the v1/v2 compat base every model inherits.
+# fastapi 0.125.0 is the newest release whose metadata still accepts
+# pydantic v1. cryptography 42.0.8 is the newest Chaquopy builds for Android
+# (cp310-cp313, arm64-v8a); pyOpenSSL 24.3 is the newest that accepts it.
+# Everything else is pure Python and ships as a py3-none-any wheel.
+#
+# Resolved 2026-09-09 on Python 3.11.9 from:
+#   pip install "pydantic<2" fastapi uvicorn websockets asyncua==2.0.1 cryptography==42.0.8 "pyOpenSSL<25"
+pydantic==1.10.26
+fastapi==0.125.0
+starlette==0.50.0
+uvicorn==0.52.4            # plain, not uvicorn[standard]: uvloop, httptools and watchfiles are native and unneeded
+websockets==17.1
+asyncua==2.0.1
+cryptography==42.0.8       # the Chaquopy wheel version - keep in step with shell/app/build.gradle
+pyOpenSSL==24.3.0
+aiosqlite==0.22.1
+anyio==4.15.1
+sortedcontainers==2.4.0
+python-dateutil==2.9.0.post0
+pytz==2026.3.post1
+typing_extensions==4.16.0
+wait_for2==0.4.1           # asyncua asks for it below Python 3.12
+h11==0.16.0
+click==8.5.0
+idna==3.19
+six==1.17.0
+cffi==2.1.1                # cryptography's binding; Chaquopy ships its own build of it
+pycparser==3.0
+annotated-doc==0.0.5
