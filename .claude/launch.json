@@ -10,7 +10,7 @@
     {
       "name": "begia-desktop",
       "runtimeExecutable": "cmd",
-      "runtimeArgs": ["/c", "cd /d C:\\Users\\user\\Desktop\\IBA-CODE && set \"TRIALREC_DATA_DIR=C:\\Users\\user\\Desktop\\IBA-CODE\\sim_data\" && .venv\\Scripts\\python -m app.main"],
+      "runtimeArgs": ["/c", "C:\\Users\\user\\IBA_ANDROID-CODE\\tools\\run_desktop_demo.bat"],
       "port": 8080
     }
   ]

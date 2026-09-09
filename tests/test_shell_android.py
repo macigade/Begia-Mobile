@@ -127,6 +127,29 @@ def test_dev_server_installs_activates_and_asks_for_a_restart(tmp_path):
             info = json.loads(r.read())
         assert info["active"]["build"] == "v0.10"
 
+        # the config door, for the rate test: read, change, write, restart
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/config", timeout=10) as r:
+            assert json.loads(r.read()) == {}, "no config.json yet"
+        cfg = {"endpoint": "", "udp": {"enabled": True, "port": 5555, "signals": [{"name": "Load.S0"}]}}
+        req = urllib.request.Request(f"http://127.0.0.1:{port}/config", data=json.dumps(cfg).encode(), method="PUT")
+        with urllib.request.urlopen(req, timeout=10) as r:
+            assert json.loads(r.read())["restart_to_apply"] is True
+        assert json.loads((tmp_path / "data" / "config.json").read_text()) == cfg
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/config", timeout=10) as r:
+            assert json.loads(r.read()) == cfg
+        req = urllib.request.Request(f"http://127.0.0.1:{port}/config", data=b"not json", method="PUT")
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(req, timeout=10)
+        assert e.value.code == 422
+        req = urllib.request.Request(f"http://127.0.0.1:{port}/restart", data=b"", method="POST")
+        with urllib.request.urlopen(req, timeout=10) as r:
+            assert json.loads(r.read()) == {"restarting": True}
+        for _ in range(40):
+            if restart.calls >= 2:
+                break
+            time.sleep(0.05)
+        assert restart.calls == 2
+
         bad = make_payload(tmp_path / "bad.begia", build="v0.11", tamper=True).read_bytes()
         req = urllib.request.Request(f"http://127.0.0.1:{port}/payload", data=bad, method="PUT")
         with pytest.raises(urllib.error.HTTPError) as e:

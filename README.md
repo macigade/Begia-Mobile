@@ -25,6 +25,12 @@ runtime/begia_shell/   payload.py  verify a .begia, install it into a slot, roll
 tools/boot_test.py     boot a payload on the phone's Python stack and record a trial with it
 tools/push_payload.bat push a payload to the plugged-in phone and restart the recorder (~10 s)
 tools/logcat.bat       only what BEGIA logs on the phone
+tools/rate_test.py     the 10 ms measurement: N signals at 100 Hz over the UDP channel into the
+                       phone's SQLite for M minutes, then the trial file measured
+tools/udp_load.py      the load itself, in the PLC's frame format (also for a laptop)
+tools/trial_gaps.py    measure any trial file: samples, rate, every gap that should not be there
+tools/screenoff_test.sh the screen-off recording test, with what the first run taught
+tools/run_desktop_demo.bat the desktop BEGIA on its demo data directory, never the live config
 tools/phone_env.bat    the phone's Python stack (3.11 + requirements-phone.txt) as a laptop venv
 requirements-phone.txt the pins the APK installs - and why they differ from the desktop's
 design/s23/            the S23 screens (build.mjs generates the artboards; the canvas is the spec)

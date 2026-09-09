@@ -11,6 +11,7 @@ because a payload is code.
 from __future__ import annotations
 
 import json
+import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -38,12 +39,48 @@ def serve(files_dir: str, port: int, restart=None) -> ThreadingHTTPServer:
             if self.path == "/info":
                 from .android import info_dict
                 self._send(200, info_dict(files_dir))
+            elif self.path == "/config":
+                # the recorder's config.json as it is on disk, for a test
+                # harness to read, change and PUT back
+                p = files / "data" / "config.json"
+                self._send(200, json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {})
             else:
-                self._send(404, {"error": "GET /info or PUT /payload"})
+                self._send(404, {"error": "GET /info, GET /config, PUT /payload, PUT /config, POST /restart"})
+
+        def do_POST(self):
+            if self.path != "/restart":
+                return self._send(404, {"error": "POST /restart"})
+            self._send(200, {"restarting": restart is not None})
+            if restart is not None:
+                threading.Timer(0.5, restart.run).start()
+
+        def _read_body(self) -> bytes:
+            n = int(self.headers.get("Content-Length") or 0)
+            out = bytearray()
+            while len(out) < n:
+                chunk = self.rfile.read(min(65536, n - len(out)))
+                if not chunk:
+                    break
+                out += chunk
+            return bytes(out)
 
         def do_PUT(self):
+            if self.path == "/config":
+                # what the UI cannot set (the UDP channel's signal list lives
+                # only in config.json): written whole, applied on restart
+                body = self._read_body()
+                try:
+                    json.loads(body)
+                except ValueError:
+                    return self._send(422, {"error": "the body is not JSON"})
+                data = files / "data"
+                data.mkdir(parents=True, exist_ok=True)
+                tmp = data / "config.json.tmp"
+                tmp.write_bytes(body)
+                os.replace(tmp, data / "config.json")
+                return self._send(200, {"written": "data/config.json", "bytes": len(body), "restart_to_apply": True})
             if self.path != "/payload":
-                return self._send(404, {"error": "PUT /payload"})
+                return self._send(404, {"error": "PUT /payload or PUT /config"})
             n = int(self.headers.get("Content-Length") or 0)
             incoming = files / "incoming-dev.begia"
             with open(incoming, "wb") as f:
