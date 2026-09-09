@@ -68,6 +68,16 @@ trial and checks the trial file names the payload's build.
   with the note on screen. Debugging the phone from this VM works over
   wireless debugging (`adb pair`, `adb mdns services`, `adb connect`);
   USB passthrough shows the phone to Windows but not to adb.
-  Next: the phone layout mode in the desktop repo's `ui/`, then the
-  screen-off recording and the 10 ms sustained-rate measurements.
+- 2026-09-09, evening: **the phone layout** is in the desktop repo's `ui/`
+  (bottom tabs, docked trial bar, list-as-page Trials, landscape single
+  pane, tab icons) and verified on the S23 through the shell. **Both
+  measurements taken** on the S23: a screen-off recording ran 6.9 min
+  continuous, max gap 146 ms, no gap over 1 s, at the same rate as with
+  the screen on; and 32 signals at 100 Hz over the UDP channel gave 19 496
+  samples on every signal of 19 999 frames sent, no gap over 30 ms, about
+  2 600 samples/s into SQLite, screen asleep for part of it (`tools/`).
+  **The laptop update path** (`GET /api/payload` on the desktop, Check and
+  Install in the phone's Setup) was exercised end to end on the phone
+  against its own loopback, since this VM is not reachable from the phone.
+  Next: touch gestures on the charts, digital-signal lanes, payload signing.
   Handoff for the port: `..\Desktop\IBA-CODE\docs\ANDROID-PORT-HANDOFF.md`.
