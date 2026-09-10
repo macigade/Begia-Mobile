@@ -110,6 +110,15 @@ trial and checks the trial file names the payload's build.
   emulation (`tools/phone_shots.py` in the desktop repo). Not yet tried
   on a real tablet: the shell APK is the same; a tablet just needs it
   installed.
+- 2026-09-11: **one welcome, not two.** The shell now shows the payload's
+  own `ui/boot.html` (the app's eye animation with a line of state under
+  it) from the slot directory the moment it opens, while the recorder
+  process starts, and loads the app with `?splash_start=` so the
+  animation carries on there instead of replaying. The native boot
+  screen remains for a payload without the page, a failed start and the
+  rollback note. The page wears the app's last theme and text size
+  (`BegiaShell.noteLook`). Needs the APK rebuilt (shell change) and the
+  payload from desktop commit "The phone's boot page".
   Next: the second-screen mode, payload signing, a real tablet in hand.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).

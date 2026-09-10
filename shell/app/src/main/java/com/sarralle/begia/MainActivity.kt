@@ -27,6 +27,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
@@ -55,6 +56,8 @@ class MainActivity : AppCompatActivity() {
     private var notedBoot: String? = null   // the last_boot.json "at" already shown
     private var holding = false             // the boot screen shows a note to read first
     private var polling = false
+    private var splashStart = 0L            // when the payload's boot page went up (epoch ms)
+    private var splashPage = false          // the WebView shows that page, not the app
 
     private val picker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { offerInstall(it) }
@@ -79,6 +82,7 @@ class MainActivity : AppCompatActivity() {
             javaScriptEnabled = true
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
+            allowFileAccess = true      // the payload's boot page, from the slot directory
         }
         web.addJavascriptInterface(ShellBridge(this), "BegiaShell")
         val debug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
@@ -86,8 +90,13 @@ class MainActivity : AppCompatActivity() {
         web.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 loading = false
-                pageLoaded = true
-                if (!holding) hideBoot()
+                // the boot page finishing is not the app being up
+                val isApp = url.startsWith(Recorder.BASE_URL)
+                pageLoaded = isApp
+                if (isApp) {
+                    splashPage = false
+                    if (!holding) hideBoot()
+                }
             }
 
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
@@ -99,6 +108,8 @@ class MainActivity : AppCompatActivity() {
         }
         askOnce()
         Recorder.start(this)
+        // the welcome plays while the recorder starts, not after it
+        if (!showSplashPage()) showBoot(getString(R.string.boot_starting), activeBuildLine())
         handleIntent(intent)
     }
 
@@ -148,7 +159,9 @@ class MainActivity : AppCompatActivity() {
             showBootNoteIfNew()
             if (!pageLoaded && !loading) {
                 loading = true
-                web.loadUrl(Recorder.BASE_URL + "/")
+                // the app carries the welcome on from the boot page's start
+                val q = if (splashStart > 0L) "?splash_start=$splashStart" else ""
+                web.loadUrl(Recorder.BASE_URL + "/" + q)
             }
             return
         }
@@ -158,8 +171,43 @@ class MainActivity : AppCompatActivity() {
         if (unansweredSince == 0L) unansweredSince = now
         if (!holding) {
             if (now - unansweredSince > FAILED_AFTER_MS) showFailed()
+            else if (splashPage) splashStatus(getString(R.string.boot_starting), activeBuildLine())
             else showBoot(getString(R.string.boot_starting), activeBuildLine())
         }
+    }
+
+    /** The payload's own boot page - the welcome animation with a line of
+     *  state under it - from the slot that is booting or active. Null for a
+     *  payload that predates it, when the native screen stands in. */
+    private fun bootPage(): File? {
+        val s = Recorder.slotState(this) ?: return null
+        val build = s.optString("booting", "").ifEmpty { s.optString("active", "") }
+        if (build.isEmpty()) return null
+        val slot = build.replace(Regex("[^A-Za-z0-9._-]"), "_")   // payload.slot_name
+        val f = File(Recorder.slotsDir(this), "$slot/ui/boot.html")
+        return if (f.isFile) f else null
+    }
+
+    /** Put the boot page up, wearing the app's last theme and text size, with
+     *  the instant it went up: the app is loaded with the same instant and the
+     *  animation carries on there instead of starting again. */
+    private fun showSplashPage(): Boolean {
+        val page = bootPage() ?: return false
+        val prefs = getSharedPreferences("shell", MODE_PRIVATE)
+        splashStart = System.currentTimeMillis()
+        splashPage = true
+        pageLoaded = false
+        loading = false
+        val theme = Uri.encode(prefs.getString("theme", "dark") ?: "dark")
+        val scale = Uri.encode(prefs.getString("scale", "1.15") ?: "1.15")
+        web.loadUrl(Uri.fromFile(page).toString() + "?theme=$theme&scale=$scale&start=$splashStart")
+        boot.visibility = View.GONE
+        return true
+    }
+
+    private fun splashStatus(status: String, detail: String) {
+        web.evaluateJavascript(
+            "window.bootStatus && bootStatus(${JSONObject.quote(status)}, ${JSONObject.quote(detail)})", null)
     }
 
     private fun activeBuildLine(): String {
@@ -221,7 +269,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         pageLoaded = false
-        showBoot(getString(R.string.boot_starting), activeBuildLine())
+        if (!showSplashPage()) showBoot(getString(R.string.boot_starting), activeBuildLine())
         io.execute { Recorder.restart(this) }
     }
 

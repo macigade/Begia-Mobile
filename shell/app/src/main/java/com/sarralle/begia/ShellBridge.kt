@@ -47,4 +47,13 @@ class ShellBridge(private val activity: MainActivity) {
     fun installFromUrl(payloadUrl: String) {
         activity.offerInstallFromUrl(payloadUrl)
     }
+
+    /** What the page looks like - theme and text size - so the boot page,
+     *  which is shown before the page exists and cannot read its storage,
+     *  wears the same next time. */
+    @JavascriptInterface
+    fun noteLook(theme: String, scale: String) {
+        activity.getSharedPreferences("shell", android.content.Context.MODE_PRIVATE)
+            .edit().putString("theme", theme).putString("scale", scale).apply()
+    }
 }
