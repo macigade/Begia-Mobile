@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The capability the watch app looks for to find the phone that carries
+     BEGIA (wear/WatchLink.kt, CapabilityClient). -->
+<resources>
+    <string-array name="android_wear_capabilities">
+        <item>begia_phone</item>
+    </string-array>
+</resources>

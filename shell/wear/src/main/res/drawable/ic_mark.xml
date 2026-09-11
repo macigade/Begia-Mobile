@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A stand-in for the brand's wave mark, drawn as a vector so it needs no
+     asset pipeline: the almond, the iris, and the stepped trace as the lower
+     lid. Replace with an export of ui/brand/begia-mark.svg when convenient. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="174dp"
+    android:height="116dp"
+    android:viewportWidth="174"
+    android:viewportHeight="116">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M30,50 C52,20 122,20 144,50 C122,80 52,80 30,50 Z"
+        android:strokeColor="#DCE8F2"
+        android:strokeWidth="3.2" />
+    <path
+        android:fillColor="#169DD8"
+        android:pathData="M87,50 m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0" />
+    <path
+        android:fillColor="#0E141A"
+        android:pathData="M87,50 m-4.5,0 a4.5,4.5 0 1,0 9,0 a4.5,4.5 0 1,0 -9,0" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M8,92 H26 V82 H40 V98 H54 V86 H68 V104 H82 V78 H96 V96 H110 V88 H124 V100 H138 V84 H152 V92 H166"
+        android:strokeColor="#5CC8F5"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.6" />
+</vector>

@@ -15,4 +15,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "BEGIA"
-include ":app"
+include ":app"      // the phone: Python runtime, WebView, the recorder service
+include ":wear"     // the watch: a remote for the phone over the Data Layer

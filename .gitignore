@@ -12,6 +12,7 @@ __pycache__/
 *.begia
 *.begia.sha256
 shell/app/build/
+shell/wear/build/
 shell/.gradle/
 shell/.kotlin/
 shell/build/

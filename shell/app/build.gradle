@@ -78,6 +78,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.core:core-ktx:1.13.1"
     implementation "androidx.activity:activity-ktx:1.9.3"
+    // the watch companion's messages arrive here (WearRelayService)
+    implementation "com.google.android.gms:play-services-wearable:18.2.0"
 }
 
 // The embedded payload goes into the APK's assets from wherever the payload

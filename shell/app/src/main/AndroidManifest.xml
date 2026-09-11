@@ -51,5 +51,17 @@
             android:exported="false"
             android:process=":recorder"
             android:foregroundServiceType="dataSync" />
+
+        <!-- The watch companion's messages (wear/), relayed to the recorder's
+             API on the loopback. Exported for Play Services to deliver into;
+             only /begia paths from a paired watch running this same package. -->
+        <service
+            android:name=".WearRelayService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/begia" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

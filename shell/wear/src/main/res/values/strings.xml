@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BEGIA</string>
+    <string name="no_phone">phone not reachable</string>
+    <string name="no_recorder">BEGIA not running on the phone</string>
+    <string name="idle">idle</string>
+    <string name="rec">REC</string>
+    <string name="mark">Mark</string>
+    <string name="marked">marked</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="stop_ask">Stop the trial?</string>
+    <string name="keep">Keep going</string>
+    <string name="marks">marks</string>
+</resources>

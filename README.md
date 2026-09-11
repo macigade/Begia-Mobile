@@ -119,6 +119,21 @@ trial and checks the trial file names the payload's build.
   rollback note. The page wears the app's last theme and text size
   (`BegiaShell.noteLook`). Needs the APK rebuilt (shell change) and the
   payload from desktop commit "The phone's boot page".
+- 2026-09-11, later: **the watch companion** (`shell/wear/`, Wear OS 3+,
+  built for a Galaxy Watch 7). A remote for the phone, not a recorder:
+  one screen with the recording state and elapsed time, the marks so
+  far, one analog signal's latest reading, a big Mark button (felt on
+  the wrist), Start, and Stop behind a confirmation. It talks to the
+  phone over the Wearable Data Layer (Bluetooth): the shell gained
+  `WearRelayService`, which turns `/begia/state|mark|start|stop`
+  messages into calls on the recorder's loopback API and answers with
+  `GET /api/watch` (new in the desktop repo, `app/watch.py`). Same
+  applicationId as the phone app on purpose - the Data Layer routes
+  between the two apps of one package. Both APKs build
+  (`gradlew :wear:assembleDebug :app:assembleDebug`); neither is on a
+  device yet: the phone needs the new APK (the relay) and the watch
+  needs `wear-debug.apk` over its own wireless debugging, paired the
+  same way as the phone.
   Next: the second-screen mode, payload signing, a real tablet in hand.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).
