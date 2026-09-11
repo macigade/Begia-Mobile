@@ -20,40 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
-## 2026-09-11 — the launcher icon is generated from the brand mark
+## 2026-09-11 — the launcher icon is the kit's eye (settled)
 
-`tools/make_android_icon.py` (desktop repo) writes
-`shell/{app,wear}/src/main/res/drawable/ic_launcher_foreground.xml` from
-`ui/brand/begia-mark.svg` — the crop the brand kit designates for an icon. It
-replaces the hand-drawn stand-in with the real mark: the lens band, the two
-crossing orbits, the amber iris and its spark. **Do not hand-edit those two
-files**; regenerate them on the desktop side, the same way the bulletin you are
-reading is mirrored rather than edited here.
+Both modules now carry the real mark instead of the hand-drawn stand-in, and
+the phone side is where it was finished. `begia-wave-through.svg`: the stepped
+trace at full strength outside the lens and at 40% seen through it, the lens
+ring, the amber iris. Scaled 0.48 and centred so the trace's tails end 30dp
+from the centre.
 
-    python tools/make_android_icon.py            write both
-    python tools/make_android_icon.py --check    stale? exit 1
-    python tools/make_android_icon.py --preview P.html   look at it
+**Do not "fix" that 0.48.** It is the result of two rounds against real masks:
+at 0.58 the tails were cut by the phone's squircle *and* by the tighter circle
+Wear crops to. A launcher keeps only the central 72 of the 108 and scales it to
+fill, so previewing the whole canvas makes the mark look far smaller than it
+lands — which is exactly how an icon gets talked into being too big again.
 
-**This collided with work you already had in flight.** When I came to install
-it, both `ic_launcher_foreground.xml` files were already modified in your
-working tree — your own version, built from `begia-wave-behind.svg` (the eye
-with the stepped trace behind it), scaled 0.55. I did not touch it. Mine is on
-the branch **`icon/brand-eye`**, committed from a detached worktree so your
-uncommitted work was never in the way. Take it, take yours, or take neither;
-if yours wins, delete the branch and the generator, and say so — the generator
-is only worth having if it is what the launcher actually ships.
+The file is hand-written and the desktop side has no generator for it any more:
+one existed briefly on the `icon/brand-eye` branch, that branch was merged and
+the artwork then taken further by hand, so the generator was deleted rather than
+left in the tree to overwrite the better version. The icon lives on the phone
+side now. If it should ever be driven from the brand kit again, say so and it
+can come back pointed at the asset that actually ships.
 
-Two differences to decide on, not defects: mine uses the eye alone
-(`begia-mark.svg`) where yours keeps the trace, and mine keeps the orbit
-ellipses and the spark, which yours had not drawn yet at the point I looked.
-
-If you keep the generator, note what the conversion has to get right, because
-both are easy to get wrong and neither fails loudly: Android has no
-`<circle>`/`<ellipse>`, so each becomes a pair of arcs; and Android gradients
-are absolute, so SVG `objectBoundingBox` gradients must be resolved against
-each shape's own box. The scale exists because a launcher keeps only the
-central 72 of the 108 and Wear always crops to a circle — the eye's tips are
-the first thing a mask shaves off.
+Two facts about the format worth keeping, since both fail silently rather than
+erroring: Android has no `<circle>` or `<ellipse>`, so each becomes a pair of
+arcs; and Android gradients are absolute, so SVG `objectBoundingBox` gradients
+must be resolved against each shape's own box.
 
 ---
 
