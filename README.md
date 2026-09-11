@@ -12,6 +12,15 @@ The shell never holds a copy of `app/` or `ui/`. The payload is built from
 the desktop working tree, so the phone and the laptop run the same source
 with the same git build stamp, and every trial file names it.
 
+> **Read [docs/FROM-DESKTOP.md](docs/FROM-DESKTOP.md) at the start of a
+> session.** Because `app/` and `ui/` are the desktop's, a change made over
+> there lands here without anyone saying so - new endpoints, changed
+> contracts, and bugs already fixed that would otherwise be rediscovered.
+> That file is the running bulletin of those, newest first. It is a **mirror**
+> of `docs/ANDROID-INFORM.md` in the desktop repo and is overwritten by
+> `tools/sync_android_inform.py` there; edits made here are lost, so raise
+> anything that belongs in it on the desktop side.
+
 ## Layout
 
 ```
