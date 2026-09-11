@@ -128,6 +128,10 @@ class MainActivity : AppCompatActivity() {
         val light = theme == "daylight" || theme == "hmi"
         window.statusBarColor = color
         window.navigationBarColor = color
+        // the window and the WebView too, so the instant before the boot page
+        // paints is already the page's colour rather than a dark flash
+        window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(color))
+        web.setBackgroundColor(color)
         androidx.core.view.WindowInsetsControllerCompat(window, web).apply {
             isAppearanceLightStatusBars = light
             isAppearanceLightNavigationBars = light

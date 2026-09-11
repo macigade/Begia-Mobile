@@ -204,10 +204,63 @@ private fun LivePage(link: WatchLink, s: WatchState, buzz: () -> Unit) {
 }
 
 // --- page 2: the picker, turned with the bezel ---------------------------
+// A tree of the dotted names, the way a PLC's blocks nest: a block is a row
+// that opens on a tap to show what is in it, a member deeper still opens
+// the same way, and a signal is a row that chooses. One branch open at a
+// time at every level - `open` is the one path that is expanded, so tapping
+// a sibling closes the other by replacing it.
+private class TreeNode {
+    val kids = LinkedHashMap<String, TreeNode>()
+    var sig: Sig? = null
+    var count = 0
+}
+
+private sealed class TreeRow {
+    data class Folder(val path: List<String>, val name: String, val count: Int, val open: Boolean) : TreeRow()
+    data class Leaf(val path: List<String>, val sig: Sig) : TreeRow()
+}
+
+private fun treeOf(sigs: List<Sig>): TreeNode {
+    val root = TreeNode()
+    for (sig in sigs.sortedBy { it.name }) {
+        var node = root
+        node.count++
+        for (seg in sig.name.split('.')) {
+            node = node.kids.getOrPut(seg) { TreeNode() }
+            node.count++
+        }
+        node.sig = sig
+    }
+    return root
+}
+
+private fun flatten(node: TreeNode, path: List<String>, open: List<String>, out: MutableList<TreeRow>) {
+    for ((name, kid) in node.kids) {
+        if (kid.kids.isEmpty() && kid.sig != null) {
+            out.add(TreeRow.Leaf(path, kid.sig!!))
+        } else {
+            val isOpen = open.size > path.size && open.subList(0, path.size) == path && open[path.size] == name
+            out.add(TreeRow.Folder(path, name, kid.count, isOpen))
+            if (isOpen) flatten(kid, path + name, open, out)
+        }
+    }
+}
+
 @Composable
 private fun SignalsPage(link: WatchLink, s: WatchState, onPicked: () -> Unit) {
     val chosen by link.chosen
     val listState = rememberScalingLazyListState()
+    var open by remember { mutableStateOf<List<String>>(emptyList()) }
+    // the first time the list arrives, the branch holding the chosen signal is open
+    var seeded by remember { mutableStateOf(false) }
+    LaunchedEffect(s.signals.isNotEmpty()) {
+        if (!seeded && s.signals.isNotEmpty()) {
+            seeded = true
+            val id = chosen.ifEmpty { s.signalId }
+            val name = s.signals.firstOrNull { it.id == id }?.name ?: ""
+            if (name.contains('.')) open = name.split('.').dropLast(1)
+        }
+    }
     if (!s.up || s.signals.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(if (s.up) stringResource(R.string.no_signals) else stringResource(R.string.no_recorder),
@@ -215,50 +268,50 @@ private fun SignalsPage(link: WatchLink, s: WatchState, onPicked: () -> Unit) {
         }
         return
     }
-    // A tree, the way the phone's Signals page reads: the block a signal lives
-    // in as a heading (its full path), the members under it by their own
-    // name - so every name is read in full without repeating the block on
-    // every row of a 200px screen. Sorted by the full name, like the phone.
-    val rows = remember(s.signals) {
-        val out = ArrayList<Any>()
-        var block: String? = null
-        for (sig in s.signals.sortedBy { it.name }) {
-            val b = sig.name.substringBeforeLast('.', "")
-            if (b != block) { block = b; out.add(b) }
-            out.add(sig)
-        }
-        out
+    val rows = remember(s.signals, open) {
+        ArrayList<TreeRow>().also { flatten(treeOf(s.signals), emptyList(), open, it) }
     }
     ScalingLazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(top = 28.dp, bottom = 34.dp, start = 10.dp, end = 10.dp),
+        contentPadding = PaddingValues(top = 28.dp, bottom = 34.dp, start = 8.dp, end = 8.dp),
         rotaryScrollableBehavior = RotaryScrollableDefaults.behavior(listState),
     ) {
         item {
             Text(stringResource(R.string.pick_signal), color = Muted, fontSize = 11.sp,
                  modifier = Modifier.padding(bottom = 2.dp))
         }
-        items(rows.size, key = { i -> val r = rows[i]; if (r is Sig) r.id else "block:$r" }) { i ->
+        items(rows.size, key = { i ->
             when (val r = rows[i]) {
-                is String -> Text(
-                    r.ifEmpty { "·" }, color = Accent, fontFamily = Mono, fontSize = 11.sp,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth().padding(start = 6.dp, top = 6.dp, bottom = 2.dp),
+                is TreeRow.Folder -> "f:" + (r.path + r.name).joinToString(".")
+                is TreeRow.Leaf -> "s:" + r.sig.id
+            }
+        }) { i ->
+            when (val r = rows[i]) {
+                is TreeRow.Folder -> Chip(
+                    onClick = { open = if (r.open) r.path else r.path + r.name },
+                    colors = if (r.open) ChipDefaults.secondaryChipColors(backgroundColor = Panel, contentColor = Accent)
+                             else ChipDefaults.secondaryChipColors(),
+                    modifier = Modifier.fillMaxWidth().padding(start = (r.path.size * 10).dp),
+                    label = {
+                        Text((if (r.open) "▾ " else "▸ ") + r.name, fontSize = 13.sp, maxLines = 1,
+                             overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold)
+                    },
+                    secondaryLabel = { Text("${r.count}", fontFamily = Mono, fontSize = 11.sp) },
                 )
-                is Sig -> {
-                    val on = r.id == chosen || (chosen.isEmpty() && r.id == s.signalId)
+                is TreeRow.Leaf -> {
+                    val on = r.sig.id == chosen || (chosen.isEmpty() && r.sig.id == s.signalId)
                     Chip(
-                        onClick = { link.choose(r.id); onPicked() },
+                        onClick = { link.choose(r.sig.id); onPicked() },
                         colors = if (on) ChipDefaults.primaryChipColors(backgroundColor = Accent, contentColor = Bg)
                                  else ChipDefaults.secondaryChipColors(),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(start = (r.path.size * 10).dp),
                         label = {
-                            Text(r.name.substringAfterLast('.'), fontSize = 13.sp, maxLines = 2,
+                            Text(r.sig.name.substringAfterLast('.'), fontSize = 13.sp, maxLines = 2,
                                  overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold)
                         },
                         secondaryLabel = {
-                            Text((r.value.ifEmpty { "—" }) + if (r.unit.isNotEmpty()) " ${r.unit}" else "",
+                            Text((r.sig.value.ifEmpty { "—" }) + if (r.sig.unit.isNotEmpty()) " ${r.sig.unit}" else "",
                                  fontFamily = Mono, fontSize = 12.sp, maxLines = 1)
                         },
                     )
