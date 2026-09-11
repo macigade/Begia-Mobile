@@ -143,6 +143,14 @@ trial and checks the trial file names the payload's build.
   device yet: the phone needs the new APK (the relay) and the watch
   needs `wear-debug.apk` over its own wireless debugging, paired the
   same way as the phone.
+- 2026-09-11, afternoon: **on the wrist, for real.** Watch paired, both
+  APKs installed, and the companion talks to the phone: three pages a
+  swipe apart - Live (the reading, and Mark while recording), Signals (a
+  picker of every ticked signal, turned with the bezel, a tap chooses what
+  Live shows), Trial (Start, Stop behind a confirmation). `GET /api/watch`
+  now lists every ticked signal and takes `?signal=` for the choice. The
+  launcher icon on both apps is the current mark (the stepped trace behind
+  the eye, `ui/brand/begia-wave-behind.svg` as a vector drawable).
   Next: the second-screen mode, payload signing, a real tablet in hand.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).

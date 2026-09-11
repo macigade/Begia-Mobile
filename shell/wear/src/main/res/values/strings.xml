@@ -3,6 +3,7 @@
     <string name="app_name">BEGIA</string>
     <string name="no_phone">phone not reachable</string>
     <string name="no_recorder">BEGIA not running on the phone</string>
+    <string name="no_signals">no signals ticked on the phone</string>
     <string name="idle">idle</string>
     <string name="rec">REC</string>
     <string name="mark">Mark</string>
@@ -12,4 +13,5 @@
     <string name="stop_ask">Stop the trial?</string>
     <string name="keep">Keep going</string>
     <string name="marks">marks</string>
+    <string name="pick_signal">watch which signal</string>
 </resources>

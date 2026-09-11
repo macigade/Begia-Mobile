@@ -1,24 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- The BEGIA mark as the app wears it now (desktop repo,
+     ui/brand/begia-wave-behind.svg): the stepped trace behind the eye, the
+     lens ring, the gold iris. The same geometry, scaled 0.55 and centred, so
+     the eye sits inside the adaptive icon's 66dp safe circle; the trace is
+     cut to the tails that still fit it. The inner almond is filled with the
+     icon's background, which is what the eye hides of the trace. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M28,50 C40,32 68,32 80,50 C68,68 40,68 28,50 Z"
-        android:strokeColor="#DCE8F2"
-        android:strokeWidth="3.2" />
-    <path
-        android:fillColor="#169DD8"
-        android:pathData="M54,50 m-7.5,0 a7.5,7.5 0 1,0 15,0 a7.5,7.5 0 1,0 -15,0" />
-    <path
-        android:fillColor="#0E141A"
-        android:pathData="M54,50 m-2.8,0 a2.8,2.8 0 1,0 5.6,0 a2.8,2.8 0 1,0 -5.6,0" />
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M20,74 H30 V68 H38 V78 H46 V70 H54 V82 H62 V64 H70 V76 H78 V70 H88"
-        android:strokeColor="#5CC8F5"
-        android:strokeLineJoin="round"
-        android:strokeWidth="2.6" />
+    <group
+        android:scaleX="0.55"
+        android:scaleY="0.55"
+        android:translateX="-271.05"
+        android:translateY="7.8">
+        <!-- the trace -->
+        <path
+            android:pathData="M 526 84 H 536 V 84 H 552 V 70 H 562 V 96 H 572 V 74 H 584 V 64 H 598 V 94 H 610 V 72 H 620 V 84 H 646 V 84 H 656"
+            android:fillColor="#00000000"
+            android:strokeColor="#BFE4F8"
+            android:strokeWidth="3.6"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="miter" />
+        <!-- the inside of the eye: the background, over the trace -->
+        <path
+            android:pathData="M 544 84 A 58.02 58.02 0 0 0 638 84 A 58.02 58.02 0 0 0 544 84 Z"
+            android:fillColor="@color/bg" />
+        <!-- the lens ring -->
+        <path
+            android:fillType="evenOdd"
+            android:pathData="M 536 84 A 63.27 63.27 0 0 1 646 84 A 63.27 63.27 0 0 1 536 84 Z M 544 84 A 58.02 58.02 0 0 0 638 84 A 58.02 58.02 0 0 0 544 84 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="591" android:startY="52"
+                    android:endX="591" android:endY="116">
+                    <item android:offset="0" android:color="#F6FAFD" />
+                    <item android:offset="0.18" android:color="#DCE7F2" />
+                    <item android:offset="0.42" android:color="#AFC3D8" />
+                    <item android:offset="0.62" android:color="#8AA3BD" />
+                    <item android:offset="0.86" android:color="#74909F" />
+                    <item android:offset="1" android:color="#B6C9DB" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <!-- the iris glow -->
+        <path android:pathData="M 591 84 m -24 0 a 24 24 0 1 0 48 0 a 24 24 0 1 0 -48 0">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="radial"
+                    android:centerX="591" android:centerY="84"
+                    android:gradientRadius="24">
+                    <item android:offset="0.55" android:color="#61F5B731" />
+                    <item android:offset="0.82" android:color="#21E09A22" />
+                    <item android:offset="1" android:color="#00D6851A" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <!-- the iris -->
+        <path android:pathData="M 591 84 m -13 0 a 13 13 0 1 0 26 0 a 13 13 0 1 0 -26 0">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="radial"
+                    android:centerX="586" android:centerY="79"
+                    android:gradientRadius="20">
+                    <item android:offset="0" android:color="#FFF9DE" />
+                    <item android:offset="0.16" android:color="#FFEFAE" />
+                    <item android:offset="0.5" android:color="#F5B731" />
+                    <item android:offset="0.84" android:color="#DE9020" />
+                    <item android:offset="1" android:color="#D6851A" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M 591 84 m -13 0 a 13 13 0 1 0 26 0 a 13 13 0 1 0 -26 0">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="radial"
+                    android:centerX="599" android:centerY="93"
+                    android:gradientRadius="15">
+                    <item android:offset="0.5" android:color="#007A3F06" />
+                    <item android:offset="1" android:color="#577A3F06" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
 </vector>

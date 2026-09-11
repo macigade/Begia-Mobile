@@ -18,6 +18,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
+/** One ticked signal, as the picker lists it. */
+data class Sig(val id: String, val name: String, val unit: String, val value: String, val bool: Boolean)
+
 /** What the wrist knows about the recorder, as of the last reply. */
 data class WatchState(
     val linked: Boolean = false,      // a phone with BEGIA is reachable over Bluetooth
@@ -26,9 +29,11 @@ data class WatchState(
     val trial: String = "",
     val startedMs: Long = 0L,
     val marks: Int = 0,
-    val signal: String = "",
+    val signal: String = "",          // the one shown: the watch's choice, else the first analog
+    val signalId: String = "",
     val value: String = "",
     val unit: String = "",
+    val signals: List<Sig> = emptyList(),
     val error: String = "",
     val nowMs: Long = 0L,             // the phone's clock at the reply, for the elapsed time
     val receivedAt: Long = 0L,        // this watch's clock at the reply
@@ -36,14 +41,17 @@ data class WatchState(
 
 /**
  * The watch's end of the Data Layer. Every few seconds while the screen is
- * on it asks the phone's relay (shell, WearRelayService) for the state, and
- * an action is a message the same way; the reply to either is the new state.
- * Request and reply rather than a synced data item: a remote wants an answer
- * to the thing it just did, not a mirror that catches up eventually.
+ * on it asks the phone's relay (shell, WearRelayService) for the state -
+ * naming the signal it wants to see - and an action is a message the same
+ * way; the reply to either is the new state. Request and reply rather than
+ * a synced data item: a remote wants an answer to the thing it just did,
+ * not a mirror that catches up eventually.
  */
 class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListener {
     val state = mutableStateOf(WatchState())
     val justMarked = mutableStateOf(false)
+    /** The node id the wrist chose to watch; remembered across launches. */
+    val chosen = mutableStateOf(ctx.getSharedPreferences("watch", Context.MODE_PRIVATE).getString("signal", "") ?: "")
 
     private var scope: CoroutineScope? = null
     private var poller: Job? = null
@@ -56,7 +64,7 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
         Wearable.getMessageClient(ctx).addListener(this)
         poller = s.launch {
             while (true) {
-                ask("/begia/state")
+                ask("/begia/state", chosen.value)
                 delay(POLL_MS)
             }
         }
@@ -73,6 +81,13 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
     fun mark() = act("/begia/mark", "mark (watch)")
     fun startTrial() = act("/begia/start", "")
     fun stopTrial() = act("/begia/stop", "")
+
+    /** Show this signal on the Live page from now on. */
+    fun choose(id: String) {
+        chosen.value = id
+        ctx.getSharedPreferences("watch", Context.MODE_PRIVATE).edit().putString("signal", id).apply()
+        act("/begia/state", id)
+    }
 
     private fun act(path: String, body: String) {
         scope?.launch { ask(path, body) }
@@ -110,6 +125,13 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
         if (event.path != "/begia/state/reply") return
         val j = try { JSONObject(String(event.data)) } catch (e: Exception) { JSONObject() }
         val wasMarks = state.value.marks
+        val list = ArrayList<Sig>()
+        val arr = j.optJSONArray("signals")
+        if (arr != null) for (i in 0 until arr.length()) {
+            val o = arr.optJSONObject(i) ?: continue
+            list.add(Sig(o.optString("id"), o.optString("name"), o.optString("unit"),
+                         o.optString("value"), o.optBoolean("bool", false)))
+        }
         val next = WatchState(
             linked = true,
             up = j.optBoolean("up", false),
@@ -118,8 +140,10 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
             startedMs = j.optLong("started_ms", 0L),
             marks = j.optInt("marks", 0),
             signal = j.optString("signal", ""),
+            signalId = j.optString("signal_id", ""),
             value = j.optString("value", ""),
             unit = j.optString("unit", ""),
+            signals = list,
             error = j.optString("error", ""),
             nowMs = j.optLong("now_ms", 0L),
             receivedAt = System.currentTimeMillis(),

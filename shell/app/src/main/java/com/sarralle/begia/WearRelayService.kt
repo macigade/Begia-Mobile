@@ -7,6 +7,7 @@ import com.google.android.gms.wearable.WearableListenerService
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -18,17 +19,17 @@ import java.util.Locale
  * 127.0.0.1:8080; every one of them is answered with the state the watch
  * shows (GET /api/watch), so the wrist sees what it just did.
  *
- * Paths: /begia/state (ask), /begia/mark (data = the mark's text),
- * /begia/start, /begia/stop. The reply goes back as /begia/state/reply.
- * Declared for the watch to find through the begia_phone capability
- * (res/values/wear.xml).
+ * Paths: /begia/state (ask; data = the node id the watch chose to show,
+ * or empty), /begia/mark (data = the mark's text), /begia/start,
+ * /begia/stop. The reply goes back as /begia/state/reply. Declared for the
+ * watch to find through the begia_phone capability (res/values/wear.xml).
  */
 class WearRelayService : WearableListenerService() {
 
     override fun onMessageReceived(event: MessageEvent) {
         val data = String(event.data)
         val error: String? = when (event.path) {
-            "/begia/state" -> null
+            "/begia/state" -> { lastChosen = data; null }
             "/begia/mark" -> post("/api/trial/mark",
                 JSONObject().put("text", data.ifBlank { "mark (watch)" }).toString())
             "/begia/start" -> post("/api/trial/start",
@@ -36,7 +37,7 @@ class WearRelayService : WearableListenerService() {
             "/begia/stop" -> post("/api/trial/stop", "{}")
             else -> return
         }
-        val reply = watchState()
+        val reply = watchState(lastChosen)
         if (!error.isNullOrEmpty()) reply.put("error", error)
         try {
             Wearable.getMessageClient(this)
@@ -46,9 +47,11 @@ class WearRelayService : WearableListenerService() {
         }
     }
 
-    /** GET /api/watch, or {"up": false} when the recorder is not answering. */
-    private fun watchState(): JSONObject = try {
-        val c = URL("${Recorder.BASE_URL}/api/watch").openConnection() as HttpURLConnection
+    /** GET /api/watch for the chosen signal, or {"up": false} when the
+     *  recorder is not answering. */
+    private fun watchState(chosen: String): JSONObject = try {
+        val q = if (chosen.isBlank()) "" else "?signal=" + URLEncoder.encode(chosen, "UTF-8")
+        val c = URL("${Recorder.BASE_URL}/api/watch$q").openConnection() as HttpURLConnection
         c.connectTimeout = 1500
         c.readTimeout = 2500
         c.inputStream.bufferedReader().use { JSONObject(it.readText()) }.put("up", true)
@@ -78,4 +81,10 @@ class WearRelayService : WearableListenerService() {
     }
 
     private fun stamp(): String = SimpleDateFormat("HH:mm", Locale.ROOT).format(Date())
+
+    companion object {
+        /** The signal the watch last asked to see, so the reply to a mark or
+         *  a stop shows the same one rather than the default. */
+        @Volatile private var lastChosen: String = ""
+    }
 }
