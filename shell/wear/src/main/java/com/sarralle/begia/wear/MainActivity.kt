@@ -178,7 +178,8 @@ private fun LivePage(link: WatchLink, s: WatchState, buzz: () -> Unit) {
                     Text(s.unit, color = Muted, fontSize = 13.sp, modifier = Modifier.padding(bottom = 5.dp))
                 }
             }
-            Text(s.signal.substringAfterLast('.'), color = Muted, fontSize = 11.sp, maxLines = 1,
+            // the full name, as the phone shows it: the block tells the signals apart
+            Text(s.signal, color = Muted, fontSize = 11.sp, maxLines = 2,
                  overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
         }
         if (s.up && s.recording) {
@@ -214,6 +215,20 @@ private fun SignalsPage(link: WatchLink, s: WatchState, onPicked: () -> Unit) {
         }
         return
     }
+    // A tree, the way the phone's Signals page reads: the block a signal lives
+    // in as a heading (its full path), the members under it by their own
+    // name - so every name is read in full without repeating the block on
+    // every row of a 200px screen. Sorted by the full name, like the phone.
+    val rows = remember(s.signals) {
+        val out = ArrayList<Any>()
+        var block: String? = null
+        for (sig in s.signals.sortedBy { it.name }) {
+            val b = sig.name.substringBeforeLast('.', "")
+            if (b != block) { block = b; out.add(b) }
+            out.add(sig)
+        }
+        out
+    }
     ScalingLazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize(),
@@ -222,24 +237,33 @@ private fun SignalsPage(link: WatchLink, s: WatchState, onPicked: () -> Unit) {
     ) {
         item {
             Text(stringResource(R.string.pick_signal), color = Muted, fontSize = 11.sp,
-                 modifier = Modifier.padding(bottom = 4.dp))
+                 modifier = Modifier.padding(bottom = 2.dp))
         }
-        items(s.signals, key = { it.id }) { sig ->
-            val on = sig.id == chosen || (chosen.isEmpty() && sig.id == s.signalId)
-            Chip(
-                onClick = { link.choose(sig.id); onPicked() },
-                colors = if (on) ChipDefaults.primaryChipColors(backgroundColor = Accent, contentColor = Bg)
-                         else ChipDefaults.secondaryChipColors(),
-                modifier = Modifier.fillMaxWidth(),
-                label = {
-                    Text(sig.name.substringAfterLast('.'), fontSize = 13.sp, maxLines = 1,
-                         overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold)
-                },
-                secondaryLabel = {
-                    Text((sig.value.ifEmpty { "—" }) + if (sig.unit.isNotEmpty()) " ${sig.unit}" else "",
-                         fontFamily = Mono, fontSize = 12.sp, maxLines = 1)
-                },
-            )
+        items(rows.size, key = { i -> val r = rows[i]; if (r is Sig) r.id else "block:$r" }) { i ->
+            when (val r = rows[i]) {
+                is String -> Text(
+                    r.ifEmpty { "·" }, color = Accent, fontFamily = Mono, fontSize = 11.sp,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth().padding(start = 6.dp, top = 6.dp, bottom = 2.dp),
+                )
+                is Sig -> {
+                    val on = r.id == chosen || (chosen.isEmpty() && r.id == s.signalId)
+                    Chip(
+                        onClick = { link.choose(r.id); onPicked() },
+                        colors = if (on) ChipDefaults.primaryChipColors(backgroundColor = Accent, contentColor = Bg)
+                                 else ChipDefaults.secondaryChipColors(),
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(r.name.substringAfterLast('.'), fontSize = 13.sp, maxLines = 2,
+                                 overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold)
+                        },
+                        secondaryLabel = {
+                            Text((r.value.ifEmpty { "—" }) + if (r.unit.isNotEmpty()) " ${r.unit}" else "",
+                                 fontFamily = Mono, fontSize = 12.sp, maxLines = 1)
+                        },
+                    )
+                }
+            }
         }
     }
 }
