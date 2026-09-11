@@ -55,5 +55,6 @@ class ShellBridge(private val activity: MainActivity) {
     fun noteLook(theme: String, scale: String) {
         activity.getSharedPreferences("shell", android.content.Context.MODE_PRIVATE)
             .edit().putString("theme", theme).putString("scale", scale).apply()
+        activity.runOnUiThread { activity.applyLook(theme) }
     }
 }

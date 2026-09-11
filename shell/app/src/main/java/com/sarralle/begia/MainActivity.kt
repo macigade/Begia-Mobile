@@ -108,9 +108,30 @@ class MainActivity : AppCompatActivity() {
         }
         askOnce()
         Recorder.start(this)
+        applyLook(getSharedPreferences("shell", MODE_PRIVATE).getString("theme", "dark") ?: "dark")
         // the welcome plays while the recorder starts, not after it
         if (!showSplashPage()) showBoot(getString(R.string.boot_starting), activeBuildLine())
         handleIntent(intent)
+    }
+
+    /** The status and navigation bars wear the page's theme (the app's own
+     *  meta theme-color per theme, ui/app.js THEME_META), light ones with
+     *  dark icons - a dark strip over the Daylight theme was the phone's
+     *  own bar, not the page. Told by the page through BegiaShell.noteLook,
+     *  and from the saved preference before the page exists. */
+    fun applyLook(theme: String) {
+        val color = when (theme) {
+            "carbon" -> 0xFF111318; "sarralle" -> 0xFF131B24; "blueprint" -> 0xFF151D31
+            "amber" -> 0xFF1B1815; "daylight" -> 0xFFE2E7EC; "hmi" -> 0xFFDDE1E6
+            else -> 0xFF151D25
+        }.toInt()
+        val light = theme == "daylight" || theme == "hmi"
+        window.statusBarColor = color
+        window.navigationBarColor = color
+        androidx.core.view.WindowInsetsControllerCompat(window, web).apply {
+            isAppearanceLightStatusBars = light
+            isAppearanceLightNavigationBars = light
+        }
     }
 
     override fun onStart() {
@@ -180,8 +201,7 @@ class MainActivity : AppCompatActivity() {
      *  state under it - from the slot that is booting or active. Null for a
      *  payload that predates it, when the native screen stands in. */
     private fun bootPage(): File? {
-        val s = Recorder.slotState(this) ?: return null
-        val build = s.optString("booting", "").ifEmpty { s.optString("active", "") }
+        val build = bootingOrActive()
         if (build.isEmpty()) return null
         val slot = build.replace(Regex("[^A-Za-z0-9._-]"), "_")   // payload.slot_name
         val f = File(Recorder.slotsDir(this), "$slot/ui/boot.html")
@@ -210,10 +230,16 @@ class MainActivity : AppCompatActivity() {
             "window.bootStatus && bootStatus(${JSONObject.quote(status)}, ${JSONObject.quote(detail)})", null)
     }
 
-    private fun activeBuildLine(): String {
+    /** The build that is booting, else the active one. org.json's optString
+     *  answers the STRING "null" for a JSON null, which is what "booting" is
+     *  most of the time - so it is asked first whether the key is null. */
+    private fun bootingOrActive(): String {
         val s = Recorder.slotState(this) ?: return ""
-        return s.optString("booting", "").ifEmpty { s.optString("active", "") }
+        val booting = if (s.isNull("booting")) "" else s.optString("booting", "")
+        return booting.ifEmpty { if (s.isNull("active")) "" else s.optString("active", "") }
     }
+
+    private fun activeBuildLine(): String = bootingOrActive()
 
     /** last_boot.json is written by the recorder process at the end of every
      *  start. A rollback note is shown once, and held until it has been read. */
