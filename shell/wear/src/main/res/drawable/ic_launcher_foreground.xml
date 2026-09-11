@@ -2,9 +2,10 @@
 <!-- The BEGIA mark with the waveform through the eye: ui/brand/
      begia-wave-through.svg in the desktop repo, the same geometry - the
      stepped trace at full strength outside the lens and at 40% seen
-     through it, the lens ring, the amber iris - scaled 0.58 and centred so
-     the eye's half-width is 32 inside the launcher's 72dp keep-zone and its
-     round mask. Android has no clip here, so "outside" is the trace drawn
+     through it, the lens ring, the amber iris - scaled 0.52 and centred so
+     the trace's tails (with their round caps) end 33dp from the centre:
+     inside the launcher's 72dp keep-zone and inside the tighter circle Wear
+     crops to, which cut them at 0.58. Android has no clip here, so "outside" is the trace drawn
      in full, the inside of the eye painted over in the icon's background,
      and the trace drawn once more at 40% (the same colour over itself
      changes nothing outside, and is the 40% inside).
@@ -19,10 +20,10 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="0.58"
-        android:scaleY="0.58"
-        android:translateX="-288.78"
-        android:translateY="5.28">
+        android:scaleX="0.52"
+        android:scaleY="0.52"
+        android:translateX="-253.32"
+        android:translateY="10.32">
         <!-- the glow behind everything -->
         <path android:pathData="M 591 84 m -42 0 a 42 42 0 1 0 84 0 a 42 42 0 1 0 -84 0">
             <aapt:attr name="android:fillColor">
