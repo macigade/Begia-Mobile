@@ -18,6 +18,7 @@ from . import boot
 from . import payload as pl
 
 LAST_BOOT = "last_boot.json"
+POLICY = "policy.json"           # {"require_signed": bool}; off until a site asks
 
 
 def _dirs(files_dir: str):
@@ -90,14 +91,34 @@ def _write(files_dir: str, report: dict) -> None:
     tmp.replace(p)
 
 
+def policy(files_dir: str) -> dict:
+    p = _read_json(Path(files_dir) / POLICY) or {}
+    return {"require_signed": bool(p.get("require_signed", False))}
+
+
+def set_policy(files_dir: str, require_signed: bool) -> str:
+    _write_json(Path(files_dir) / POLICY, {"require_signed": bool(require_signed)})
+    return json.dumps(policy(files_dir))
+
+
+def _write_json(p: Path, obj: dict) -> None:
+    tmp = p.with_suffix(p.suffix + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=1), encoding="utf-8")
+    tmp.replace(p)
+
+
 def install(zip_path: str, files_dir: str) -> str:
-    """Verify and extract; nothing is activated. Returns what to ask the operator."""
+    """Verify and extract; nothing is activated. Returns what to ask the
+    operator. A pushed or picked payload is subject to the phone's policy;
+    the APK's own embedded payload (ensure_embedded) is not - the APK is
+    the trust root, and what it carries is its own."""
     slots, _ = _dirs(files_dir)
-    slot, m = pl.install(Path(zip_path), slots)
+    slot, m = pl.install(Path(zip_path), slots, require_signed=policy(files_dir)["require_signed"])
     return json.dumps({
         "version": m["version"], "build": m["build"], "min_shell": m["min_shell"],
         "file_count": m.get("file_count", len(m["files"])), "created": m.get("created"),
         "already_active": pl.Slots(slots).active == m["build"],
+        "signature": m.get("signature"),
     })
 
 
@@ -119,11 +140,20 @@ def info_dict(files_dir: str) -> dict:
         "installed": s.installed(),
         "bad": s.state.get("bad", [])[-5:],
         "last_boot": _read_json(Path(files_dir) / LAST_BOOT),
+        "policy": policy(files_dir),
+        "trusted_keys": {k: v.get("name", k) for k, v in __import__(
+            "begia_shell.trust", fromlist=["TRUSTED_KEYS"]).TRUSTED_KEYS.items()},
     }
+    for entry in out["installed"]:
+        try:
+            entry["signature"] = pl.slot_signature(s.slot_path(entry["build"]))
+        except Exception:
+            pass
     if s.active:
         try:
             m = pl.slot_manifest(s.slot_path(s.active))
-            out["active"] = {"build": m["build"], "version": m["version"], "created": m.get("created")}
+            out["active"] = {"build": m["build"], "version": m["version"], "created": m.get("created"),
+                             "signature": pl.slot_signature(s.slot_path(s.active))}
         except pl.PayloadError:
             out["active"] = {"build": s.active}
     return out

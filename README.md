@@ -164,8 +164,25 @@ trial and checks the trial file names the payload's build.
   that stops answering shows Try again / This phone after 12 s. Built,
   not yet on a device or tried across a real WiFi (this VM cannot be
   reached from the phone).
-  Next: payload signing, a real tablet in hand, second-screen mode on
-  the plant WiFi.
+- 2026-09-11, late: **payload signing.** The desktop builder signs the
+  manifest (payload.json, which names every file with its sha256) with an
+  Ed25519 key from `tools/payload_keys.py` (kept at
+  `~/.begia/payload-signing.key` on the build machine, never in a repo)
+  and writes `payload.sig`. The phone verifies against the public keys in
+  `runtime/begia_shell/trust.py` - baked into the APK, so a payload cannot
+  vouch for itself - and records who signed each slot. The "This phone"
+  card says who signed the running build and has the switch that refuses
+  unsigned payloads from then on (`policy.json`, off until a site asks).
+  The APK's own embedded payload is never subject to the policy. Adding
+  or retiring a key is a new APK. Five tests on the verifying side, two
+  on the building side.
+  Also: the phone refuses its own address as a second-screen target, and
+  the WebView now trusts a CA the user installs on the phone (the
+  laptop's) and allows plain HTTP on the LAN - both for second-screen
+  mode, whose WebSocket over the laptop's own certificate would otherwise
+  fail silently.
+  Next: a real tablet in hand, second-screen mode on the plant WiFi, a
+  release signing key when a site asks.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).
   Handoff for the port: `..\Desktop\IBA-CODE\docs\ANDROID-PORT-HANDOFF.md`.

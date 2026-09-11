@@ -103,4 +103,8 @@ object Installer {
     }
 
     fun info(ctx: Context): String = guarded { py(ctx).callAttr("info", ctx.filesDir.path).toString() }
+
+    /** Whether an unsigned payload is refused from now on (policy.json). */
+    fun setRequireSigned(ctx: Context, on: Boolean): String =
+        guarded { py(ctx).callAttr("set_policy", ctx.filesDir.path, on).toString() }
 }

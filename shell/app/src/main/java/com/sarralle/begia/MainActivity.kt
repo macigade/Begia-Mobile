@@ -232,6 +232,13 @@ class MainActivity : AppCompatActivity() {
     fun watchLaptop(url: String) {
         val target = url.trim().trimEnd('/')
         if (target.isEmpty()) return
+        // this phone's own address is not a laptop: the page would be the
+        // one already on screen, with a strip claiming it is someone else's
+        val host = Source.host(target)
+        if (host == "127.0.0.1" || host == "localhost" || host == "::1" || host == "0.0.0.0") {
+            tell(getString(R.string.app_name), getString(R.string.second_self))
+            return
+        }
         io.execute {
             val local = probeAt(Recorder.BASE_URL)
             if (local != null && local.optBoolean("recording", false)) {

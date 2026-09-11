@@ -71,6 +71,15 @@ class ShellBridge(private val activity: MainActivity) {
         activity.runOnUiThread { activity.watchThisPhone() }
     }
 
+    /** Only install payloads signed by a key this app trusts, from now on
+     *  (or not). The APK's own embedded payload is never subject to it. */
+    @JavascriptInterface
+    fun requireSigned(on: Boolean): String = try {
+        Installer.setRequireSigned(activity, on)
+    } catch (e: Exception) {
+        JSONObject().put("error", e.message ?: "unknown").toString()
+    }
+
     /** {"remote": "https://192.168.0.5:8443"} while showing a laptop, else "". */
     @JavascriptInterface
     fun source(): String = JSONObject().put("remote", Source.remote(activity) ?: "").toString()

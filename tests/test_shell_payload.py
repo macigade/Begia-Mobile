@@ -221,3 +221,72 @@ def test_torn_state_file_starts_clean(tmp_path):
     slots_dir.mkdir()
     (slots_dir / "state.json").write_text('{"active": "v0.9", "boo')
     assert pl.Slots(slots_dir).state["active"] is None
+
+
+# --- signatures ----------------------------------------------------------
+# A payload signed by a key in trust.py is trusted; one signed by any other
+# key, or altered after signing, is not; an unsigned one is neither. Only
+# require_signed turns "not trusted" into a refusal - and then nothing is
+# written - so a phone that never asked keeps installing what it always did.
+def _sign(path: Path, monkeypatch=None, trusted=True, tamper=False):
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    from begia_shell import trust
+    key = ed25519.Ed25519PrivateKey.generate()
+    pub = key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+    key_id = hashlib.sha256(pub).hexdigest()[:16]
+    with zipfile.ZipFile(path) as z:
+        names = [n for n in z.namelist()]
+        raw = z.read(pl.MANIFEST)
+        others = {n: z.read(n) for n in names if n != pl.MANIFEST}
+    sig = {"alg": "ed25519", "key_id": key_id, "public": pub.hex(), "sig": key.sign(raw).hex()}
+    if tamper:
+        raw = raw + b" "
+    with zipfile.ZipFile(path, "w") as z:
+        z.writestr(pl.MANIFEST, raw)
+        z.writestr(pl.SIGNATURE, json.dumps(sig))
+        for n, d in others.items():
+            z.writestr(n, d)
+    if monkeypatch is not None and trusted:
+        monkeypatch.setitem(trust.TRUSTED_KEYS, key_id, {"name": "test", "public": pub.hex()})
+    return key_id
+
+
+def test_unsigned_is_reported_and_still_installs_by_default(tmp_path):
+    z = tmp_path / "p.begia"; make_payload(z)
+    st = pl.signature_status(z)
+    assert st == {"signed": False, "key_id": None, "trusted": False, "why": "no signature"}
+    slot, m = pl.install(z, tmp_path / "slots")
+    assert m["signature"]["signed"] is False
+    assert pl.slot_signature(slot)["signed"] is False
+
+
+def test_signed_by_a_trusted_key(tmp_path, monkeypatch):
+    z = tmp_path / "p.begia"; make_payload(z)
+    kid = _sign(z, monkeypatch)
+    st = pl.signature_status(z)
+    assert st["signed"] and st["trusted"] and st["key_id"] == kid and st["name"] == "test"
+    slot, m = pl.install(z, tmp_path / "slots", require_signed=True)
+    assert pl.slot_signature(slot)["trusted"] is True
+    assert pl.verify_zip(z)["build"]            # payload.sig is not an "unlisted file"
+
+
+def test_an_unknown_key_is_not_trusted(tmp_path, monkeypatch):
+    z = tmp_path / "p.begia"; make_payload(z)
+    _sign(z, monkeypatch, trusted=False)
+    st = pl.signature_status(z)
+    assert st["signed"] and not st["trusted"] and "does not know" in st["why"]
+
+
+def test_a_manifest_changed_after_signing_is_not_trusted(tmp_path, monkeypatch):
+    z = tmp_path / "p.begia"; make_payload(z)
+    _sign(z, monkeypatch, tamper=True)
+    st = pl.signature_status(z)
+    assert st["signed"] and not st["trusted"] and "does not verify" in st["why"]
+
+
+def test_require_signed_refuses_before_writing(tmp_path):
+    z = tmp_path / "p.begia"; make_payload(z)
+    with pytest.raises(pl.PayloadError, match="only installs signed"):
+        pl.install(z, tmp_path / "slots", require_signed=True)
+    assert not (tmp_path / "slots").exists() or not any((tmp_path / "slots").iterdir())

@@ -89,9 +89,20 @@ def test_info_reports_what_the_screen_needs(tmp_path):
     (tmp_path / android.LAST_BOOT).write_text(json.dumps({"ok": True, "build": "v0.9", "at": "t"}))
     i = json.loads(android.info(str(tmp_path)))
     assert i["shell"] == pl.SHELL_VERSION
-    assert i["active"] == {"build": "v0.9", "version": "0.9", "created": None}
+    # the embedded payload is unsigned and says so; the APK is its own trust
+    assert i["active"] == {"build": "v0.9", "version": "0.9", "created": None,
+                           "signature": {"signed": False, "key_id": None, "trusted": False, "why": "no signature"}}
     assert [x["build"] for x in i["installed"]] == ["v0.9"]
+    assert i["installed"][0]["signature"]["signed"] is False
     assert i["last_boot"]["build"] == "v0.9"
+    # the policy is off until a site asks, and the keys the APK trusts are named
+    assert i["policy"] == {"require_signed": False}
+    assert isinstance(i["trusted_keys"], dict)
+    android.set_policy(str(tmp_path), True)
+    assert json.loads(android.info(str(tmp_path)))["policy"] == {"require_signed": True}
+    # ...and with it on, the dev server's next push of an unsigned payload is refused
+    with pytest.raises(pl.PayloadError, match="only installs signed"):
+        android.install(str(make_payload(tmp_path / "pushed.begia", build="v0.9-1-gaaaaaaa")), str(tmp_path))
 
 
 class FakeRestart:

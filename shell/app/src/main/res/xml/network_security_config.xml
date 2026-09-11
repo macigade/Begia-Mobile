@@ -3,9 +3,18 @@
      own loopback; nothing else may go in the clear. The laptop's BEGIA (the
      second-screen mode) is HTTPS with its own CA and is handled separately. -->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="false" />
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">127.0.0.1</domain>
-        <domain includeSubdomains="false">localhost</domain>
-    </domain-config>
+    <!-- Second-screen mode reaches a laptop's BEGIA over the plant WiFi:
+         plain HTTP when the laptop is started with TRIALREC_HTTP_LAN=1, or
+         HTTPS with the laptop's own CA. Cleartext is allowed for that (the
+         WiFi is the trust boundary, as Net.kt says), and a CA the user has
+         installed on the phone is trusted - which is what lets the laptop's
+         WebSocket connect over HTTPS: the WebView does not route a
+         WebSocket's certificate error through onReceivedSslError, so with
+         an untrusted CA the page loads and the live feed never does. -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
 </network-security-config>

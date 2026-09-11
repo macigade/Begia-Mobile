@@ -22,5 +22,6 @@
     <string name="second_connecting">Connecting to the laptop</string>
     <string name="second_unreachable">The laptop is not answering</string>
     <string name="second_none">No BEGIA answered at %1$s</string>
+    <string name="second_self">That is this phone\'s own address. Type the laptop\'s, the one on the WiFi.</string>
     <string name="second_recording">This phone is recording a trial. Stop it before showing another BEGIA here.</string>
 </resources>

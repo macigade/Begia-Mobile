@@ -37,6 +37,7 @@ from typing import Dict, List, Optional, Tuple
 FORMAT = 1
 SHELL_VERSION = 1
 MANIFEST = "payload.json"
+SIGNATURE = "payload.sig"        # Ed25519 over the manifest bytes, by a key in trust.py
 REQUIRED = ("format", "version", "build", "min_shell", "files", "ui_dir", "sys_path", "entry")
 
 
@@ -91,11 +92,51 @@ def check_compatible(m: dict, shell_version: int = SHELL_VERSION) -> None:
             f"and this is shell {shell_version} - install the newer APK first")
 
 
+def signature_status(zip_path: Path) -> dict:
+    """Is the payload signed, by which key, and is that key trusted here.
+
+    The signature is over the manifest's exact bytes, and the manifest
+    names every file with its sha256, so one signature covers the zip.
+    It is checked against the public key this APK carries for the key id
+    (trust.TRUSTED_KEYS) - never against the copy the payload brings, which
+    anyone could write. Answers, never raises: policy decides what to do.
+    """
+    from . import trust
+    out = {"signed": False, "key_id": None, "trusted": False, "why": "no signature"}
+    try:
+        with zipfile.ZipFile(zip_path) as z:
+            raw = z.read(MANIFEST)
+            try:
+                sig = json.loads(z.read(SIGNATURE))
+            except KeyError:
+                return out
+    except (zipfile.BadZipFile, KeyError, ValueError):
+        return dict(out, why="unreadable")
+    out["signed"] = True
+    key_id = str(sig.get("key_id", ""))
+    out["key_id"] = key_id
+    known = trust.TRUSTED_KEYS.get(key_id)
+    if not known:
+        out["why"] = f"signed by a key this app does not know ({key_id or '?'})"
+        return out
+    try:
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+        pub = ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(known["public"]))
+        pub.verify(bytes.fromhex(sig["sig"]), raw)
+    except Exception as e:  # InvalidSignature, a bad hex, no cryptography
+        out["why"] = f"the signature by {known.get('name', key_id)} does not verify ({type(e).__name__})"
+        return out
+    out["trusted"] = True
+    out["name"] = known.get("name", key_id)
+    out["why"] = f"signed by {out['name']}"
+    return out
+
+
 def verify_zip(zip_path: Path) -> dict:
     """Every listed file present and matching; nothing unlisted."""
     m = read_manifest(zip_path)
     with zipfile.ZipFile(zip_path) as z:
-        names = {n for n in z.namelist() if not n.endswith("/")} - {MANIFEST}
+        names = {n for n in z.namelist() if not n.endswith("/")} - {MANIFEST, SIGNATURE}
         listed = set(m["files"])
         if names - listed:
             raise PayloadError(f"the zip holds files the manifest does not list: {sorted(names - listed)[:3]}")
@@ -111,12 +152,21 @@ def verify_zip(zip_path: Path) -> dict:
 
 # ---------------------------------------------------------- installing ------
 
-def install(zip_path: Path, slots_dir: Path, shell_version: int = SHELL_VERSION) -> Tuple[Path, dict]:
+def install(zip_path: Path, slots_dir: Path, shell_version: int = SHELL_VERSION,
+            require_signed: bool = False) -> Tuple[Path, dict]:
     """Verify, extract into a fresh slot, verify again on disk. Returns
-    (slot_dir, manifest). A build already installed is left as it is."""
+    (slot_dir, manifest) - the manifest with a "signature" entry saying how
+    it was signed. A build already installed is left as it is. With
+    require_signed, a payload not signed by a trusted key is refused
+    before anything is written."""
     zip_path, slots_dir = Path(zip_path), Path(slots_dir)
     m = verify_zip(zip_path)
     check_compatible(m, shell_version)
+    sig = signature_status(zip_path)
+    if require_signed and not sig["trusted"]:
+        raise PayloadError("this phone only installs signed payloads, and this one is "
+                           + ("unsigned" if not sig["signed"] else sig["why"]))
+    m = dict(m, signature=sig)
     slots_dir.mkdir(parents=True, exist_ok=True)
     slot = slots_dir / slot_name(m["build"])
     if (slot / "slot.json").is_file():
@@ -144,6 +194,7 @@ def install(zip_path: Path, slots_dir: Path, shell_version: int = SHELL_VERSION)
     (tmp / "slot.json").write_text(json.dumps({
         "version": m["version"], "build": m["build"],
         "installed_at": _now(), "source": zip_path.name,
+        "signature": sig,
     }, indent=1), encoding="utf-8")
     shutil.rmtree(slot, ignore_errors=True)
     os.replace(tmp, slot)
@@ -155,6 +206,15 @@ def slot_manifest(slot: Path) -> dict:
     if not p.is_file():
         raise PayloadError(f"{slot} is not an installed slot")
     return json.loads(p.read_text(encoding="utf-8"))
+
+
+def slot_signature(slot: Path) -> dict:
+    """How an installed slot was signed, as recorded when it was installed."""
+    try:
+        return json.loads((Path(slot) / "slot.json").read_text(encoding="utf-8")).get(
+            "signature") or {"signed": False, "key_id": None, "trusted": False, "why": "no signature"}
+    except (OSError, ValueError):
+        return {"signed": False, "key_id": None, "trusted": False, "why": "unknown"}
 
 
 # ----------------------------------------------------------------- slots ----
