@@ -151,7 +151,21 @@ trial and checks the trial file names the payload's build.
   now lists every ticked signal and takes `?signal=` for the choice. The
   launcher icon on both apps is the current mark (the stepped trace behind
   the eye, `ui/brand/begia-wave-behind.svg` as a vector drawable).
-  Next: the second-screen mode, payload signing, a real tablet in hand.
+- 2026-09-11, evening: **second-screen mode, prepared.** The phone can show
+  a laptop's BEGIA instead of its own: on the "This phone" card, the
+  laptop's address and "Show the laptop's BEGIA here". The shell checks a
+  BEGIA answers there, refuses while the phone's own recorder is in a
+  trial, then points the WebView at the laptop (its own certificate
+  accepted for that one host, as the installer does), keeps a strip at
+  the top saying whose screen it is with "This phone" as the way back,
+  and remembers the choice across launches. `Source` is the one place
+  the base URL comes from, so the watch's relay follows: what the phone
+  sees, the wrist sees, and the watch says "via <laptop>". A laptop
+  that stops answering shows Try again / This phone after 12 s. Built,
+  not yet on a device or tried across a real WiFi (this VM cannot be
+  reached from the phone).
+  Next: payload signing, a real tablet in hand, second-screen mode on
+  the plant WiFi.
   Known gap: sideways, the single pane is the first one; reaching another
   pane takes the pane menu (Restore, then Maximize on the other).
   Handoff for the port: `..\Desktop\IBA-CODE\docs\ANDROID-PORT-HANDOFF.md`.

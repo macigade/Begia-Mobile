@@ -137,9 +137,14 @@ fun BegiaWatch(link: WatchLink, buzz: () -> Unit) {
     }
 }
 
-/** What the recorder is doing, in a line. */
+/** What the recorder is doing, in a line - and whose it is, when the phone
+ *  is showing a laptop's BEGIA rather than its own. */
 @Composable
 private fun StateLine(s: WatchState) {
+    if (s.linked && s.up && s.source.isNotEmpty()) {
+        Text("via " + s.source, color = Accent, fontFamily = Mono, fontSize = 10.sp, maxLines = 1,
+             overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 2.dp))
+    }
     when {
         !s.linked -> Text(stringResource(R.string.no_phone), color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center)
         !s.up -> Text(stringResource(R.string.no_recorder), color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center)

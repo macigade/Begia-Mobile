@@ -39,6 +39,8 @@ class WearRelayService : WearableListenerService() {
         }
         val reply = watchState(lastChosen)
         if (!error.isNullOrEmpty()) reply.put("error", error)
+        // the wrist sees what the phone sees: in second-screen mode, whose
+        Source.remote(this)?.let { reply.put("source", Source.host(it)) }
         try {
             Wearable.getMessageClient(this)
                 .sendMessage(event.sourceNodeId, "/begia/state/reply", reply.toString().toByteArray())
@@ -51,9 +53,7 @@ class WearRelayService : WearableListenerService() {
      *  recorder is not answering. */
     private fun watchState(chosen: String): JSONObject = try {
         val q = if (chosen.isBlank()) "" else "?signal=" + URLEncoder.encode(chosen, "UTF-8")
-        val c = URL("${Recorder.BASE_URL}/api/watch$q").openConnection() as HttpURLConnection
-        c.connectTimeout = 1500
-        c.readTimeout = 2500
+        val c = Net.connect("${Source.base(this)}/api/watch$q", 1500, 2500)
         c.inputStream.bufferedReader().use { JSONObject(it.readText()) }.put("up", true)
     } catch (e: Exception) {
         JSONObject().put("up", false)
@@ -61,10 +61,8 @@ class WearRelayService : WearableListenerService() {
 
     /** POST to the recorder; null on success, else what it said. */
     private fun post(path: String, json: String): String? = try {
-        val c = URL(Recorder.BASE_URL + path).openConnection() as HttpURLConnection
+        val c = Net.connect(Source.base(this) + path, 2000, 6000)
         c.requestMethod = "POST"
-        c.connectTimeout = 2000
-        c.readTimeout = 6000
         c.doOutput = true
         c.setRequestProperty("Content-Type", "application/json")
         c.outputStream.use { it.write(json.toByteArray()) }

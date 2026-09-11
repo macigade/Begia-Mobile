@@ -34,6 +34,7 @@ data class WatchState(
     val value: String = "",
     val unit: String = "",
     val signals: List<Sig> = emptyList(),
+    val source: String = "",          // the laptop the phone is showing, in second-screen mode
     val error: String = "",
     val nowMs: Long = 0L,             // the phone's clock at the reply, for the elapsed time
     val receivedAt: Long = 0L,        // this watch's clock at the reply
@@ -144,6 +145,7 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
             value = j.optString("value", ""),
             unit = j.optString("unit", ""),
             signals = list,
+            source = j.optString("source", ""),
             error = j.optString("error", ""),
             nowMs = j.optLong("now_ms", 0L),
             receivedAt = System.currentTimeMillis(),

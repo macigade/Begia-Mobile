@@ -57,4 +57,21 @@ class ShellBridge(private val activity: MainActivity) {
             .edit().putString("theme", theme).putString("scale", scale).apply()
         activity.runOnUiThread { activity.applyLook(theme) }
     }
+
+    /** Second-screen mode: show a laptop's BEGIA on this phone (and to the
+     *  watch) instead of this phone's own. The address is the same one the
+     *  update check takes. */
+    @JavascriptInterface
+    fun watchLaptop(baseUrl: String) {
+        activity.watchLaptop(baseUrl)
+    }
+
+    @JavascriptInterface
+    fun watchThisPhone() {
+        activity.runOnUiThread { activity.watchThisPhone() }
+    }
+
+    /** {"remote": "https://192.168.0.5:8443"} while showing a laptop, else "". */
+    @JavascriptInterface
+    fun source(): String = JSONObject().put("remote", Source.remote(activity) ?: "").toString()
 }

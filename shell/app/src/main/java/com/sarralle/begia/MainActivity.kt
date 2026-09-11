@@ -58,6 +58,10 @@ class MainActivity : AppCompatActivity() {
     private var polling = false
     private var splashStart = 0L            // when the payload's boot page went up (epoch ms)
     private var splashPage = false          // the WebView shows that page, not the app
+    private var remote: String? = null      // second-screen mode: the laptop's BEGIA, else null
+    private lateinit var bootAction2: Button
+    private lateinit var second: View
+    private lateinit var secondText: TextView
 
     private val picker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { offerInstall(it) }
@@ -77,6 +81,12 @@ class MainActivity : AppCompatActivity() {
         bootNote = findViewById(R.id.boot_note)
         bootProgress = findViewById(R.id.boot_progress)
         bootAction = findViewById(R.id.boot_action)
+        bootAction2 = findViewById(R.id.boot_action2)
+        second = findViewById(R.id.second)
+        secondText = findViewById(R.id.second_text)
+        findViewById<Button>(R.id.second_back).setOnClickListener { watchThisPhone() }
+        remote = Source.remote(this)
+        updateBanner()
 
         web.settings.apply {
             javaScriptEnabled = true
@@ -91,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView, url: String) {
                 loading = false
                 // the boot page finishing is not the app being up
-                val isApp = url.startsWith(Recorder.BASE_URL)
+                val isApp = url.startsWith(base())
                 pageLoaded = isApp
                 if (isApp) {
                     splashPage = false
@@ -104,6 +114,13 @@ class MainActivity : AppCompatActivity() {
                     loading = false
                     pageLoaded = false
                 }
+            }
+
+            /** A laptop's BEGIA serves HTTPS with its own CA (see Net): the
+             *  one host this phone was pointed at is accepted, nothing else. */
+            override fun onReceivedSslError(view: WebView, handler: android.webkit.SslErrorHandler, error: android.net.http.SslError) {
+                val r = remote
+                if (r != null && Source.host(error.url) == Source.host(r)) handler.proceed() else handler.cancel()
             }
         }
         askOnce()
@@ -168,10 +185,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun probe(): JSONObject? = try {
-        val c = URL("${Recorder.BASE_URL}/api/state").openConnection() as HttpURLConnection
-        c.connectTimeout = 1200
-        c.readTimeout = 1200
+    /** The BEGIA this screen shows: this phone's recorder, or the laptop's. */
+    private fun base(): String = remote ?: Recorder.BASE_URL
+
+    private fun probe(): JSONObject? = probeAt(base())
+
+    private fun probeAt(baseUrl: String): JSONObject? = try {
+        val c = Net.connect("$baseUrl/api/state", 1500, 1500)
         c.inputStream.bufferedReader().use { r -> JSONObject(r.readText()) }
     } catch (e: Exception) {
         null
@@ -186,19 +206,73 @@ class MainActivity : AppCompatActivity() {
                 loading = true
                 // the app carries the welcome on from the boot page's start
                 val q = if (splashStart > 0L) "?splash_start=$splashStart" else ""
-                web.loadUrl(Recorder.BASE_URL + "/" + q)
+                web.loadUrl(base() + "/" + q)
             }
             return
         }
-        // not answering: booting, restarting, or dead
+        // not answering: booting, restarting, or dead - or a laptop out of reach
         pageLoaded = false
         val now = System.currentTimeMillis()
         if (unansweredSince == 0L) unansweredSince = now
+        val r = remote
+        val status = if (r != null) getString(R.string.second_connecting) else getString(R.string.boot_starting)
+        val detail = if (r != null) Source.host(r) else activeBuildLine()
         if (!holding) {
-            if (now - unansweredSince > FAILED_AFTER_MS) showFailed()
-            else if (splashPage) splashStatus(getString(R.string.boot_starting), activeBuildLine())
-            else showBoot(getString(R.string.boot_starting), activeBuildLine())
+            if (now - unansweredSince > (if (r != null) REMOTE_FAILED_AFTER_MS else FAILED_AFTER_MS)) showFailed()
+            else if (splashPage) splashStatus(status, detail)
+            else showBoot(status, detail)
         }
+    }
+
+    // ---------------------------------------------------- second screen ----
+
+    /** Point this screen - and the watch, through Source - at a laptop's
+     *  BEGIA. Refused while this phone's own recorder is in a trial: leaving
+     *  that unwatched is how a recording ends without anyone noticing. */
+    fun watchLaptop(url: String) {
+        val target = url.trim().trimEnd('/')
+        if (target.isEmpty()) return
+        io.execute {
+            val local = probeAt(Recorder.BASE_URL)
+            if (local != null && local.optBoolean("recording", false)) {
+                ui.post { tell(getString(R.string.app_name), getString(R.string.second_recording)) }
+                return@execute
+            }
+            val there = probeAt(target)
+            ui.post {
+                if (there == null || there.optString("app") != "begia") {
+                    tell(getString(R.string.app_name), getString(R.string.second_none, target))
+                    return@post
+                }
+                Source.set(this, target)
+                remote = target
+                switchSource()
+            }
+        }
+    }
+
+    fun watchThisPhone() {
+        Source.set(this, null)
+        remote = null
+        switchSource()
+    }
+
+    private fun switchSource() {
+        web.stopLoading()
+        pageLoaded = false
+        loading = false
+        holding = false
+        unansweredSince = 0L
+        updateBanner()
+        if (!showSplashPage()) showBoot(
+            if (remote != null) getString(R.string.second_connecting) else getString(R.string.boot_starting),
+            if (remote != null) Source.host(remote!!) else activeBuildLine())
+    }
+
+    private fun updateBanner() {
+        val r = remote
+        second.visibility = if (r != null) View.VISIBLE else View.GONE
+        if (r != null) secondText.text = getString(R.string.second_watching, Source.host(r))
     }
 
     /** The payload's own boot page - the welcome animation with a line of
@@ -274,10 +348,24 @@ class MainActivity : AppCompatActivity() {
         bootProgress.visibility = View.VISIBLE
         bootNote.visibility = View.GONE
         bootAction.visibility = View.GONE
+        bootAction2.visibility = View.GONE
         boot.visibility = View.VISIBLE
     }
 
     private fun showFailed() {
+        val r = remote
+        if (r != null) {
+            // a laptop out of reach is not a failed boot: try again, or come home
+            showBoot(getString(R.string.second_unreachable), r)
+            bootProgress.visibility = View.GONE
+            bootAction.text = getString(R.string.boot_try_again)
+            bootAction.visibility = View.VISIBLE
+            bootAction.setOnClickListener { unansweredSince = 0L; switchSource() }
+            bootAction2.text = getString(R.string.second_back)
+            bootAction2.visibility = View.VISIBLE
+            bootAction2.setOnClickListener { watchThisPhone() }
+            return
+        }
         val err = Recorder.lastBoot(this)?.optString("error", "") ?: ""
         showBoot(getString(R.string.boot_failed), err.ifEmpty { "no answer on /api/state" })
         bootProgress.visibility = View.GONE
@@ -404,10 +492,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun post(path: String, json: String) {
         try {
-            val c = URL(Recorder.BASE_URL + path).openConnection() as HttpURLConnection
+            val c = Net.connect(base() + path, 2000, 4000)
             c.requestMethod = "POST"
-            c.connectTimeout = 2000
-            c.readTimeout = 4000
             c.doOutput = true
             c.setRequestProperty("Content-Type", "application/json")
             c.outputStream.use { it.write(json.toByteArray()) }
@@ -445,5 +531,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val FAILED_AFTER_MS = 90_000L
+        private const val REMOTE_FAILED_AFTER_MS = 12_000L   // a laptop answers at once or not at all
     }
 }

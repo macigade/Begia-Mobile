@@ -16,4 +16,11 @@
     <string name="install_cancel">Not now</string>
     <string name="install_refused">This file cannot be installed</string>
     <string name="ok">OK</string>
+    <!-- second-screen mode: this phone showing a laptop's BEGIA -->
+    <string name="second_watching">Showing the BEGIA at %1$s — its recording, not this phone\'s</string>
+    <string name="second_back">This phone</string>
+    <string name="second_connecting">Connecting to the laptop</string>
+    <string name="second_unreachable">The laptop is not answering</string>
+    <string name="second_none">No BEGIA answered at %1$s</string>
+    <string name="second_recording">This phone is recording a trial. Stop it before showing another BEGIA here.</string>
 </resources>
