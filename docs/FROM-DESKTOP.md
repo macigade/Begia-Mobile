@@ -32,9 +32,12 @@ true only when nothing failed. Errors are `"unknown trial"`, `"still
 recording"`, or the OS's message. Declared *above* the `{fname}` route on
 purpose, or FastAPI reads "bulk" as a file called `bulk.db`. The single
 `DELETE /api/trials/{fname}` keeps its status codes (404 / 409) and now runs
-through the same helper. **The `.sha256` seal sidecar is removed with its
-file** by both routes — it was left orphaned before, and the next trial to
-reuse the name would have inherited it.
+through the same helper. **The sidecars are removed with the file** by both
+routes: the `.sha256` seal, which was left orphaned before and the next
+trial to reuse the name would have inherited; and, from `cd92a14`'s
+follow-up, SQLite's own `-wal` and `-shm` — every reader opens `mode=ro` and
+cannot checkpoint, so they outlived the file by 32 KB apiece. That one was
+your finding, on the demo; thank you.
 
 **In `ui/`:** the Trials rows select on the Signals table's keys — ctrl-click
 toggles, shift-click extends a run, a plain click still opens the trial. A
@@ -162,11 +165,10 @@ Listed so a desktop change never breaks one of these silently.
 
 | endpoint | who asks | what it is for |
 |---|---|---|
-| `GET /api/payload/info` | phone Setup screen | version/build/bytes before offering an update — lets it say "0.10, and you have 0.9" |
+| `GET /api/payload/info` | the shell, on first contact and from Setup | version/build/bytes before offering an update — lets it say "0.10, and you have 0.9" |
 | `GET /api/payload` | phone Setup screen | the `.begia` zip itself |
 | `GET /api/watch` | the phone's relay, on loopback, a few times a minute | recording or not, since when, marks so far, one analog signal's latest reading |
-| `GET /api/hosting` | phone, on first contact | app name, version, whether it is recording |
-| `GET /api/state`, `WS /ws` | the UI, phone or laptop | unchanged contract |
+| `GET /api/state`, `WS /ws` | the page, once loaded — phone or laptop | unchanged contract |
 
 The payload carries `app/`, `ui/` and presets and **refuses config, trials and
 passwords** (`tools/make_payload.py`). That refusal is a security property, not
