@@ -20,6 +20,63 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-13 — delete several trials at once (shared `ui/`, new endpoint)
+
+The operator's one open request from use: a tuning session leaves a dozen
+throwaway recordings and the per-row trash can meant a dozen confirms.
+
+**New endpoint:** `DELETE /api/trials/bulk` with body `{"files": [...]}`.
+It answers per file, never rounded to "done":
+`{"ok": bool, "deleted": [names], "failed": [{"file", "error"}]}` — `ok` is
+true only when nothing failed. Errors are `"unknown trial"`, `"still
+recording"`, or the OS's message. Declared *above* the `{fname}` route on
+purpose, or FastAPI reads "bulk" as a file called `bulk.db`. The single
+`DELETE /api/trials/{fname}` keeps its status codes (404 / 409) and now runs
+through the same helper. **The `.sha256` seal sidecar is removed with its
+file** by both routes — it was left orphaned before, and the next trial to
+reuse the name would have inherited it.
+
+**In `ui/`:** the Trials rows select on the Signals table's keys — ctrl-click
+toggles, shift-click extends a run, a plain click still opens the trial. A
+bar above the list (`#trial-selbar`) shows "N selected · Delete · Clear". The
+confirm is one dialog naming what goes, with count and size, and it leaves
+out (and says so) the trial being recorded and the one open in the viewer.
+The pure parts are `pickTrial()` and `trialDeletePlan()` in `app.js`, and
+`tests/test_trial_select.js` pins them.
+
+**On a phone:** ctrl-click and shift-click do not exist under a finger. If
+the phone layout shows the Trials list, it needs its own way in — a long
+press to start selecting is the usual answer — and then the same
+`trialSel` / `paintTrialSelection()` / `deleteSelectedTrials()` path works
+unchanged. The endpoint and the plan logic need nothing from you.
+
+---
+
+## 2026-09-11 — the pane "..." menu now fits the window (shared `ui/`)
+
+`ui/app.js` + `ui/style.css`, so this is yours too, and it matters more on a
+phone than on a laptop.
+
+The pane's y-limit menu was `position: fixed`, clamped horizontally and not at
+all vertically. On a pane with many signals — 68 on one is a real config — the
+column of rows ran off the bottom of the screen, nothing scrolled, and the
+maximize button at the end of it went off the edge with them.
+
+Now `placePaneMenu(el, list, btn)` caps the list to the room actually
+available, opens the menu upward when it does not fit below and there is more
+room above, and clamps the whole thing inside the window. The rows are a
+scrolling box (`.pane-menu-list`); the rule and the button below stay put, so a
+long list costs scrolling rather than the button. The list keeps a 72px floor
+so a short window gives something usable instead of a sliver.
+
+**If you have your own placement for this on a phone, check it against the same
+cases** — a short viewport and a button near the bottom are where it broke.
+`placePaneMenu` takes an optional fourth argument (a window-like
+`{innerWidth, innerHeight}`) purely so it can be exercised without a browser;
+`tests/test_pane_menu.js` uses it.
+
+---
+
 ## 2026-09-11 — the launcher icon is the kit's eye (settled)
 
 Both modules now carry the real mark instead of the hand-drawn stand-in, and
