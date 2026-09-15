@@ -20,6 +20,32 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-15 — a desktop polish pass over shared `ui/` (no behaviour change)
+
+Sixteen small consistency fixes from a five-lens audit, all in `ui/style.css`,
+`ui/index.html` and three strings in `ui/app.js`. None changes behaviour or
+any id/class app.js relies on. The ones that could show on a phone:
+
+- `input:focus-visible, select:focus-visible` replaces `:focus` — a checkbox
+  or select tapped no longer keeps the keyboard ring.
+- `.btn.small` follows `--fs-small`, and the compact-density rule is now
+  `.btn:not(.small)` — it used to make small buttons LARGER in Compact.
+- `.sig-val` reserves `min-width` and right-aligns, like `.pane-head .val`,
+  so a value gaining a digit no longer moves the name's ellipsis.
+- `.pane-tools .pane-more` padding matches the LIVE chip's box.
+- `.trial-row .tools button` is 13px with a 20px min-width and 16px line box
+  (the Open button's); TRUNC badge weight/tracking match the other badges.
+- Trial-row info reads "148.9 s · 0 events · 1764 kB" (was "148.9s · 0ev ·
+  1764kB"); the empty state says what to do next; toolbar buttons are
+  Sentence case ("Fix names", "Export CSV").
+- Buttons/tabs/headings use `--ui-font` instead of a hardcoded Segoe UI.
+
+Left for a later pass, found but not done in the box: `--ok` is read in three
+places and declared in none (each theme block would need it); folder rows in
+the signal table use `--sel` where signal rows use `--accent-dim`.
+
+---
+
 ## 2026-09-13 — delete several trials at once (shared `ui/`, new endpoint)
 
 The operator's one open request from use: a tuning session leaves a dozen
