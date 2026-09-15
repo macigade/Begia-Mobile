@@ -20,6 +20,27 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-15 — seven fixes from a RENDERED audit (shared `ui/`; `RULER_H` = 58)
+
+Headless Chrome at 1280/1366/1920, pictures read by the auditors. Two of
+these touch things you share:
+
+- **`RULER_H` in `app.js` is 58 now, not 46** — the desktop value you had
+  already changed on the phone side, for the same reason (uPlot draws two
+  label lines under a tick). If your branch overrides it, the override is
+  redundant now.
+- Under 1500px the topbar's connection chip hides its state text and the
+  third action (Start simulator) and clips at its own border, so the buttons
+  never paint over the gear and the window selector. If the phone layout has
+  its own chip rules they win by specificity; check `#chip-conn` once.
+
+The rest: `.pane-name` is 116px (a named pane no longer cuts mid-glyph), the
+Signals Pane select is width auto (min 74, max 168), the Analyse palette
+heading is nowrap, `.cv-form` grows to 760px at 1920, `.wsel-opt` is nowrap
+above 1500px so "1 min" is one chip.
+
+---
+
 ## 2026-09-15 — a desktop polish pass over shared `ui/` (no behaviour change)
 
 Sixteen small consistency fixes from a five-lens audit, all in `ui/style.css`,
