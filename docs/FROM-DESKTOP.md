@@ -40,9 +40,14 @@ any id/class app.js relies on. The ones that could show on a phone:
   Sentence case ("Fix names", "Export CSV").
 - Buttons/tabs/headings use `--ui-font` instead of a hardcoded Segoe UI.
 
-Left for a later pass, found but not done in the box: `--ok` is read in three
-places and declared in none (each theme block would need it); folder rows in
-the signal table use `--sel` where signal rows use `--accent-dim`.
+Second box, same day, thirteen more from the same audit: the `panes` select
+now matches the window segment's face, height and corner; `--ok` is declared
+once in `:root` as `var(--confirm-fg)` (resolves per theme); folder rows in
+the signal table use `--accent-dim` like signal rows; the chart drag-select,
+the Analyse drop target and the connection fault chip follow the theme's
+accent/warn via `color-mix` instead of hardcoded teal/amber; the palette flash
+icon has a 15px hit box; the pane-header dot sits on the name's baseline; the
+CSV/Grid labels share one column; `#sig-hint` scales with the density.
 
 ---
 
