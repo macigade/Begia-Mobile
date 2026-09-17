@@ -20,6 +20,43 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-17 — five recorder/trigger bugs fixed in `app/` (it ships in your payload)
+
+From an adversarial bug hunt; the write-up is `docs/BUG-HUNT-2026-09-16.md`
+(34 verified defects, 29 still open - worth reading if the phone ever acquires).
+
+- **A trial has a third sidecar now: `<file>.db.name`.** Renaming a SEALED
+  trial used to rewrite its meta table, which changed the bytes the `.sha256`
+  describes - every renamed trial carried a stale seal. The label now lives
+  beside the file; `list_trials`, `trial_data` and the CSV preamble read it
+  through `recorder.read_name()`. `_delete_trials` removes it. **If anything on
+  the phone copies, syncs or deletes trial files, it must carry `.name` the way
+  it carries `.sha256`.** `PATCH /api/trials/{fname}` keeps its contract.
+- `Recorder.flush()` moves its watermarks only after the commit lands. On a
+  full disk sqlite rolled the whole flush back but the watermarks had already
+  moved, and the trial stopped normally with a hole in it. A phone's storage
+  fills more readily than a laptop's; this one mattered more for you than for us.
+- New 422s: `POST /api/trial/start` with a negative `pretrigger_s`;
+  `PUT /api/trigger` with `stop_mode: duration` and `duration_s <= 0`.
+  `POST /api/trigger/arm` now also refuses a signal stop with no stop signal or
+  an unknown `stop_op`, and an armed trigger disarms itself if its stop signal
+  leaves the signal list. If the phone UI has its own trigger form, surface
+  the `detail` string - it says what is wrong in the operator's words.
+- **Payload additions, all optional to consume:** the trigger payload carries
+  `disarm_reason` (non-empty when the engine disarmed itself - show it, the
+  chip alone just reads DISARMED); `GET /api/trials` rows and
+  `GET /api/trials/{f}/data` carry `recorded_name` beside `name` (the label);
+  `.../data` also carries `seal_ok` - `true`, `false` when the file was changed
+  after it was sealed, `null` when there is no seal. It is a re-hash on open,
+  so a very large trial opens a second or two slower.
+- `PUT /api/trigger` validates as a DRAFT while disarmed (a stop mode chosen
+  before its signal is accepted) and fully while armed or recording (422, and
+  the trigger keeps the rule it had). NaN and Infinity are refused everywhere
+  a number is taken. One validator: `app.trigger.validate_trigger`.
+- Labels are one printable line, at most 120 characters (`recorder.clean_label`).
+
+---
+
 ## 2026-09-15 — seven fixes from a RENDERED audit (shared `ui/`; `RULER_H` = 58)
 
 Headless Chrome at 1280/1366/1920, pictures read by the auditors. Two of
