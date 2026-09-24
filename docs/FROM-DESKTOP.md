@@ -51,7 +51,12 @@ the tool connects. Three things you need to know:
   `/api/connect` accepts a bare host the same way, and refuses an empty one.
 - `status.endpoint`, `status.username` and `status.has_password` now fall back
   to the active named connection (or the only one) when `cfg.endpoint` is
-  empty - that is what the door pre-fills from.
+  empty. **The door pre-fills its address from `status.plc_endpoint`**, a new
+  field: the plant (`cfg.endpoint`, else the named connection) whatever the
+  driver is dialling right now - with the simulator up, `status.endpoint` is
+  `localhost:4855` and the first exe offered exactly that as the PLC. Use
+  `plc_endpoint` for anything that means "the PLC", `endpoint` for "what the
+  driver is on".
 
 The gate is markup inside `#splash` (`form#gate`) and lives in shared `ui/`,
 so it is on the phone too; the markup was added after the `data-el="tag"`
