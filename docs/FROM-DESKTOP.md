@@ -20,6 +20,42 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-24 — the welcome asks for the PLC and the login (boot behaviour change)
+
+After the eye has opened, the welcome screen now stays and asks for the PLC
+address, the user and the password, pre-filled from the saved config, before
+the tool connects. Three things you need to know:
+
+- **The server no longer dials the saved plant on its own at boot** while this
+  is on (`AppConfig.startup_gate`, default `true`). The simulator still comes
+  back if it was on. If the phone acquires and you relied on the boot
+  auto-connect, either turn the switch off (`PUT /api/startup {"ask": false}`,
+  also in Options → "Ask at start-up") or connect from the gate. Off, the
+  behaviour is exactly what it was.
+- **The gate does not show to a browser that finds the tool already
+  connected or connecting**, nor while the simulator runs, nor when the switch
+  is off - so the phone as a second screen never sees it. The decision is
+  `gateWanted(status)` in `app.js`; `status` now carries `startup_gate`.
+- **The door posts to `POST /api/welcome/connect`** `{host, username,
+  password}`, not to `/api/connect`: that one clears `active_connection` and
+  with it the connection's own signal list, so confirming the same PLC would
+  have arrived at empty charts. The new route finds the named connection the
+  address belongs to (or makes one), takes the login as typed, and activates
+  it the way Setup does. A bare host takes the scheme of the endpoint in use
+  (`main.resolve_endpoint`): `"10.6.70.153"` → `s7plus://10.6.70.153` or
+  `opc.tcp://10.6.70.153:4840`; anything with a scheme is taken as written.
+  `/api/connect` accepts a bare host the same way, and refuses an empty one.
+- `status.endpoint`, `status.username` and `status.has_password` now fall back
+  to the active named connection (or the only one) when `cfg.endpoint` is
+  empty - that is what the door pre-fills from.
+
+The gate is markup inside `#splash` (`form#gate`) and lives in shared `ui/`,
+so it is on the phone too; the markup was added after the `data-el="tag"`
+line so `tests/test_boot_page.js` still holds. On the packaged Windows exe the
+console window minimises itself two seconds after the browser opens.
+
+---
+
 ## 2026-09-17 — five recorder/trigger bugs fixed in `app/` (it ships in your payload)
 
 From an adversarial bug hunt; the write-up is `docs/BUG-HUNT-2026-09-16.md`
