@@ -32,10 +32,14 @@ the tool connects. Three things you need to know:
   auto-connect, either turn the switch off (`PUT /api/startup {"ask": false}`,
   also in Options → "Ask at start-up") or connect from the gate. Off, the
   behaviour is exactly what it was.
-- **The gate does not show to a browser that finds the tool already
-  connected or connecting**, nor while the simulator runs, nor when the switch
-  is off - so the phone as a second screen never sees it. The decision is
-  `gateWanted(status)` in `app.js`; `status` now carries `startup_gate`.
+- **The door shows once per launch.** The server keeps an in-memory
+  `gate_passed`, set by `POST /api/welcome/connect` and by the new
+  `POST /api/welcome/skip` (Not now), and reports it in `status`; a browser
+  that finds it set - a second tab, the phone as a second screen - goes
+  straight in. It also skips when the tool is connected to a real PLC, or when
+  the switch is off. It does NOT skip for the simulator any more: the simulator
+  coming back at boot is not an operator's connection, and on a config with it
+  enabled the door never showed at all. The decision is `gateWanted(status)`.
 - **The door posts to `POST /api/welcome/connect`** `{host, username,
   password}`, not to `/api/connect`: that one clears `active_connection` and
   with it the connection's own signal list, so confirming the same PLC would
