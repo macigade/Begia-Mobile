@@ -20,6 +20,48 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-25 — shared `ui/`: two typefaces, an Options grid that holds, signal sets on the Signals page, a shorter warning
+
+Four changes in the shared `ui/` folder; the phone runs the same files, so
+they are yours the moment you take a payload from a `v0.9-53` or later exe.
+
+- **The typeface picker offers two faces, not fourteen.** Interface: Franklin
+  Gothic (Windows) falling to IBM Plex Sans, which ships in `ui/`. Data and
+  addresses: DejaVu Sans Mono falling to JetBrains Mono, also shipped. On a
+  phone neither first choice is installed, so you get the shipped fallbacks -
+  that is intended, nothing to add to the shell. A `ui_font` / `data_font`
+  saved in the WebView's localStorage under an old id (`plexsans`,
+  `plexmono`, ...) falls back to the one offered; no migration needed.
+- **The Options grid cannot be grown by its content any more.** `.ov-row`'s
+  value track is `minmax(0, 1fr)` and a select or input fills it and no more
+  (`ui/style.css`). At 130 % text the Layout select used to push its track
+  past the card and lose its arrow; re-render Options at 145-160 % on a 360 px
+  phone once, and if anything still sticks out it is a phone-only rule of
+  yours, not this file.
+- **The signal-set controls live on the Signals page** (`#signals-view`, the
+  `.sig-sets` row under the toolbar): the dropdown, Load, delete, the name
+  field and Save. They were a sidebar card shown only in the Trials module,
+  and the Signals module hides the sidebar - so from the one place the list
+  is managed there was no way to save or load it. The card (`<h2>Signal
+  sets`) is gone; the element ids (`set-sel`, `btn-set-load`, `btn-set-del`,
+  `set-name`, `btn-set-save`) are unchanged, so a phone rule that targets
+  them still applies. If your layout hides `#signals-view`, the sets are now
+  hidden with it.
+- **The standing warning names six signals and counts the rest.** `#warnbar`
+  used to list every missing or unacquired signal; 291 of them filled a
+  laptop screen at 160 % and would fill a phone at any size. It now says six
+  names and "… and 285 more (hover for all)", with the full roll call on the
+  bar's `title`. A phone has no hover, so the full list is unreachable there
+  by design; the *remove N from this PLC's list* button beside it is the
+  action, and it asks before it acts. If you want the names on the phone,
+  read `document.getElementById("warnbar").title` on tap - do not widen the
+  bar.
+
+Tests: `tests/test_faces.js`, `tests/test_signal_sets_place.js`,
+`tests/test_banner_names.js` (Node, no server).
+
+---
+
 ## 2026-09-25 — `GET /api/payload` is refused unless the laptop is sharing (403)
 
 The payload is the full source, readable, and it was one GET away for anyone
