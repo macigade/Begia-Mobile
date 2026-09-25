@@ -20,6 +20,36 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-24 — no readings while the link is down; Reconnect and the simulator; five axes a side
+
+Three things from the first hour of the door on the exe, all in shared code:
+
+- **Readings are dashes when not connected** (`ui/app.js`, `readingText`).
+  The store keeps the last minute, and a value two minutes old sat on the tile
+  and in the pane header as if it were live; a bool read FALSE. Now: not
+  connected, or no sample ARRIVED in the last 3 s (5× the rate if slower) →
+  `—`, never a number, never 0. Freshness is by arrival time (`e.at`), not the
+  sample's own stamp, which on OPC UA is the PLC's clock. `body.link-down`,
+  `#linkbar` ("No live data since 17:43:35: reconnecting to … — the PLC did not
+  answer in time"), and the LIVE chips read NO DATA. `repaintReadings()` runs
+  every second and on every status, because the redraw loop only runs when
+  frames arrive - exactly when nothing needs to change.
+- **`POST /api/connect` with the simulator's own address dials it
+  anonymously and writes nothing**; before, Reconnect posted whatever the
+  driver was on, so with the simulator up the plant's login went to
+  `localhost:4855` (`BadIdentityTokenRejected`), the address went into
+  `cfg.endpoint` and the park the simulator restores, and the named connection
+  was dropped. It also keeps `active_connection` when the address is the
+  active connection's. The hidden endpoint the Reconnect button posts is
+  `status.plc_endpoint` now.
+- **At most five Y axes a side, ten a pane** (`axisPlan`, `monSideOf`,
+  `monAxisShown`). A trace whose side is full is drawn on the other side while
+  that has room; past ten its axis is not drawn (the trace still plots to its
+  own range and the header carries its value). The pane header and the sidebar
+  L/R show the side actually drawn.
+
+---
+
 ## 2026-09-24 — the welcome asks for the PLC and the login (boot behaviour change)
 
 After the eye has opened, the welcome screen now stays and asks for the PLC
