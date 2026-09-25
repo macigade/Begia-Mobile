@@ -20,6 +20,60 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-25 — shared `ui/`: the panels hold at every text size; a bool in a mixed pane takes an axis slot
+
+At 130-160 % text the laptop's sidebar kept its 320 pixels and everything in
+it came apart: the trigger sentence broke mid-clause, the connection card
+wrapped its address one word a line, the top bar wrapped "30" over "s" and
+cut "Start simulator" mid-word, and the charts kept 100 % gutters, tick pitch
+and ruler height under labels drawn 60 % larger. All in shared `ui/`, so all
+yours with the next payload.
+
+- **Panel widths are stored at 100 % and drawn at the text size.** `#sidebar`
+  is `calc(320px * var(--fs-scale))` with a scaled floor and ceiling, and
+  `makeResizable({scaled: true})` does the same for a dragged width (the
+  sidebar and the analysis palette). A `sidebar_w` / `palette_w` your WebView
+  has in localStorage now means "at 100 %" - it draws wider at a larger
+  text size, which is the point. **The drawer is exempt**: inside the
+  drawer media block the sidebar has `min-width: 0 !important; max-width:
+  none !important`, so a phone's drawer is still `min(86vw, 340px)`.
+- **Chart pixels that hold text go through `chartPx()`**: the axis gutters
+  (56 live / 52 analysis), the per-pane time axis (`paneXAxisH()`, was the
+  bare `PANE_X_AXIS_H`), lane heights (`laneHeight`), the ruler (`rulerH()`)
+  and the tick pitch (`space`). At 100 % every number is what it was. The
+  phone page-fit (`phonePageCount`) uses `paneXAxisH()`, so a page holds the
+  same panes at 100 % and fewer at 160 % - do not pin those counts in a test
+  without setting `uiScale`.
+- **The top bar's narrow mode is a container query, in em.** Short window
+  chips, the state label hidden, the simulator button hidden: this used to be
+  `@media (max-width: 1500px)` and is `@container topbar (max-width: 107em)`
+  now (`#topbar` carries `container-type: inline-size` and the body's
+  font-size, so nothing inside it changes). 107em is the old 1500px at 14px;
+  at 160 % it fires at 2400px. Needs container queries - Chrome/WebView 105+
+  - which your shell has; on anything older the bar simply never enters
+  narrow mode.
+- **`monPlan()`: a bool among analog traces takes an axis slot.** It is drawn
+  as a 0..1 trace with its own axis column, so it counts toward five a side
+  and ten a pane; a pane of nothing but bools is a strip of lanes and plans
+  no axis. Skipping every bool let a pane of feedback bits draw eleven axes on
+  the left. The pane header's L/R and the sidebar's follow the same plan.
+- **Trigger sentence:** `.trig-bit` spans keep a value with its unit and
+  punctuation (`[3] s`, `[0.5],`, `Stop [after]`, `[trial_{n}].`) so the
+  sentence breaks only between clauses; the name field has `max-width:
+  calc(100% - 1.4em)` so its full stop stays beside it. Every `trig-*` id is
+  unchanged.
+- **`tools/phone_shots.py`** takes `"touch": false` (a desktop window: a fine
+  pointer, no mobile viewport) and `"probe": "<js expression>"` (its value
+  goes into `audit.json` and the console). Use `touch: false` to see the
+  laptop's sidebar at all - with touch emulation on, `(pointer: coarse)`
+  under 1366px is the drawer layout at every width.
+
+Tests: `tests/test_scale_panels.js` (the width maths, the wiring, the bits),
+`tests/test_axis_plan.js` (the bool rule), and the `test_pane_page.js` /
+`test_phone_layout.js` contexts now carry `uiScale` and `chartPx`.
+
+---
+
 ## 2026-09-25 — shared `ui/`: two typefaces, an Options grid that holds, signal sets on the Signals page, a shorter warning
 
 Four changes in the shared `ui/` folder; the phone runs the same files, so
