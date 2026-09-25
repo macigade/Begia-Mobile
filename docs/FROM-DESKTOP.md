@@ -20,6 +20,118 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-24 — no readings while the link is down; Reconnect and the simulator; five axes a side
+
+Three things from the first hour of the door on the exe, all in shared code:
+
+- **Readings are dashes when not connected** (`ui/app.js`, `readingText`).
+  The store keeps the last minute, and a value two minutes old sat on the tile
+  and in the pane header as if it were live; a bool read FALSE. Now: not
+  connected, or no sample ARRIVED in the last 3 s (5× the rate if slower) →
+  `—`, never a number, never 0. Freshness is by arrival time (`e.at`), not the
+  sample's own stamp, which on OPC UA is the PLC's clock. `body.link-down`,
+  `#linkbar` ("No live data since 17:43:35: reconnecting to … — the PLC did not
+  answer in time"), and the LIVE chips read NO DATA. `repaintReadings()` runs
+  every second and on every status, because the redraw loop only runs when
+  frames arrive - exactly when nothing needs to change.
+- **`POST /api/connect` with the simulator's own address dials it
+  anonymously and writes nothing**; before, Reconnect posted whatever the
+  driver was on, so with the simulator up the plant's login went to
+  `localhost:4855` (`BadIdentityTokenRejected`), the address went into
+  `cfg.endpoint` and the park the simulator restores, and the named connection
+  was dropped. It also keeps `active_connection` when the address is the
+  active connection's. The hidden endpoint the Reconnect button posts is
+  `status.plc_endpoint` now.
+- **At most five Y axes a side, ten a pane** (`axisPlan`, `monSideOf`,
+  `monAxisShown`). A trace whose side is full is drawn on the other side while
+  that has room; past ten its axis is not drawn (the trace still plots to its
+  own range and the header carries its value). The pane header and the sidebar
+  L/R show the side actually drawn.
+
+---
+
+## 2026-09-24 — the welcome asks for the PLC and the login (boot behaviour change)
+
+After the eye has opened, the welcome screen now stays and asks for the PLC
+address, the user and the password, pre-filled from the saved config, before
+the tool connects. Three things you need to know:
+
+- **The server no longer dials the saved plant on its own at boot** while this
+  is on (`AppConfig.startup_gate`, default `true`). The simulator still comes
+  back if it was on. If the phone acquires and you relied on the boot
+  auto-connect, either turn the switch off (`PUT /api/startup {"ask": false}`,
+  also in Options → "Ask at start-up") or connect from the gate. Off, the
+  behaviour is exactly what it was.
+- **The door shows once per launch.** The server keeps an in-memory
+  `gate_passed`, set by `POST /api/welcome/connect` and by the new
+  `POST /api/welcome/skip` (Not now), and reports it in `status`; a browser
+  that finds it set - a second tab, the phone as a second screen - goes
+  straight in. It also skips when the tool is connected to a real PLC, or when
+  the switch is off. It does NOT skip for the simulator any more: the simulator
+  coming back at boot is not an operator's connection, and on a config with it
+  enabled the door never showed at all. The decision is `gateWanted(status)`.
+- **The door posts to `POST /api/welcome/connect`** `{host, username,
+  password}`, not to `/api/connect`: that one clears `active_connection` and
+  with it the connection's own signal list, so confirming the same PLC would
+  have arrived at empty charts. The new route finds the named connection the
+  address belongs to (or makes one), takes the login as typed, and activates
+  it the way Setup does. A bare host takes the scheme of the endpoint in use
+  (`main.resolve_endpoint`): `"10.6.70.153"` → `s7plus://10.6.70.153` or
+  `opc.tcp://10.6.70.153:4840`; anything with a scheme is taken as written.
+  `/api/connect` accepts a bare host the same way, and refuses an empty one.
+- `status.endpoint`, `status.username` and `status.has_password` now fall back
+  to the active named connection (or the only one) when `cfg.endpoint` is
+  empty. **The door pre-fills its address from `status.plc_endpoint`**, a new
+  field: the plant (`cfg.endpoint`, else the named connection) whatever the
+  driver is dialling right now - with the simulator up, `status.endpoint` is
+  `localhost:4855` and the first exe offered exactly that as the PLC. Use
+  `plc_endpoint` for anything that means "the PLC", `endpoint` for "what the
+  driver is on".
+
+The gate is markup inside `#splash` (`form#gate`) and lives in shared `ui/`,
+so it is on the phone too; the markup was added after the `data-el="tag"`
+line so `tests/test_boot_page.js` still holds. On the packaged Windows exe the
+console window minimises itself two seconds after the browser opens.
+
+---
+
+## 2026-09-17 — five recorder/trigger bugs fixed in `app/` (it ships in your payload)
+
+From an adversarial bug hunt; the write-up is `docs/BUG-HUNT-2026-09-16.md`
+(34 verified defects, 29 still open - worth reading if the phone ever acquires).
+
+- **A trial has a third sidecar now: `<file>.db.name`.** Renaming a SEALED
+  trial used to rewrite its meta table, which changed the bytes the `.sha256`
+  describes - every renamed trial carried a stale seal. The label now lives
+  beside the file; `list_trials`, `trial_data` and the CSV preamble read it
+  through `recorder.read_name()`. `_delete_trials` removes it. **If anything on
+  the phone copies, syncs or deletes trial files, it must carry `.name` the way
+  it carries `.sha256`.** `PATCH /api/trials/{fname}` keeps its contract.
+- `Recorder.flush()` moves its watermarks only after the commit lands. On a
+  full disk sqlite rolled the whole flush back but the watermarks had already
+  moved, and the trial stopped normally with a hole in it. A phone's storage
+  fills more readily than a laptop's; this one mattered more for you than for us.
+- New 422s: `POST /api/trial/start` with a negative `pretrigger_s`;
+  `PUT /api/trigger` with `stop_mode: duration` and `duration_s <= 0`.
+  `POST /api/trigger/arm` now also refuses a signal stop with no stop signal or
+  an unknown `stop_op`, and an armed trigger disarms itself if its stop signal
+  leaves the signal list. If the phone UI has its own trigger form, surface
+  the `detail` string - it says what is wrong in the operator's words.
+- **Payload additions, all optional to consume:** the trigger payload carries
+  `disarm_reason` (non-empty when the engine disarmed itself - show it, the
+  chip alone just reads DISARMED); `GET /api/trials` rows and
+  `GET /api/trials/{f}/data` carry `recorded_name` beside `name` (the label);
+  `.../data` also carries `seal_ok` - `true`, `false` when the file was changed
+  after it was sealed, `null` when there is no seal. It is a re-hash on open,
+  so a very large trial opens a second or two slower.
+- `PUT /api/trigger` validates as a DRAFT while disarmed (a stop mode chosen
+  before its signal is accepted) and fully while armed or recording (422, and
+  the trigger keeps the rule it had). NaN and Infinity are refused everywhere
+  a number is taken. One validator: `app.trigger.validate_trigger`.
+- Labels are one printable line, at most 120 characters (`recorder.clean_label`).
+
+---
+
 ## 2026-09-15 — seven fixes from a RENDERED audit (shared `ui/`; `RULER_H` = 58)
 
 Headless Chrome at 1280/1366/1920, pictures read by the auditors. Two of
