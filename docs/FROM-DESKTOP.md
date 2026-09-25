@@ -20,6 +20,39 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-25 — `GET /api/payload` is refused unless the laptop is sharing (403)
+
+The payload is the full source, readable, and it was one GET away for anyone
+in WiFi range at any time. Now the operator opens a window on the laptop
+(Options → *Share the payload with phones*, 15 minutes by default,
+`POST /api/payload/share {"minutes": n}`, `DELETE` closes it) and only then does
+`GET /api/payload` answer from the network; from loopback it always answers,
+so the boot test and your relay are unaffected.
+
+**What your shell should do:** `GET /api/payload/info` stays open and now
+carries `shared` (bool) and `shared_until` (ISO time or null). If `shared` is
+false, say so on the Setup screen *before* the operator taps Install -
+"the laptop is not sharing its payload; on the laptop, Options → Share the
+payload with phones" - rather than letting the fetch fail. The 403's `detail`
+says the same words if you prefer to show the server's.
+
+---
+
+## 2026-09-25 — the handout ships no source, and takes your APK
+
+`make_handout.ps1` is the customer deliverable now: `dist\BEGIA.exe`, the
+APK, an example `config.json`, a `README.txt` - and it refuses to seal with
+anything but an exe, an apk, a json or a txt inside. It used to carry `app\`
+and `ui\` in full. `-WithSources` is the old project handover, for a
+colleague only.
+
+It picks up the newest APK from **your** repo's
+`shell/app/build/outputs/apk/release/*.apk`, then `.../debug/*.apk`, then the
+legacy `android-app\` here. A release build, when you make one, is preferred
+over a debug one by that order, not by name.
+
+---
+
 ## 2026-09-24 — no readings while the link is down; Reconnect and the simulator; five axes a side
 
 Three things from the first hour of the door on the exe, all in shared code:
