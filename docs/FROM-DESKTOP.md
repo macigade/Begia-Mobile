@@ -25,7 +25,8 @@ as the change. Entries say what to *do*, not just what happened.
 `app/main.py` now refuses any `/api/*` request from anywhere but the
 machine it runs on unless it carries a session cookie, and the socket does
 the same: one `{"type": "auth"}` frame, then close 4401. The password is set
-on the laptop (Options, *App password*; `PUT /api/auth/password`), signed in
+on the laptop (Options, *App password*; `PUT /api/auth/password`, loopback
+only, no old password asked), signed in
 with `POST /api/login` (`{username, password, remember}` → cookie
 `begia_session`, HttpOnly, SameSite=Lax, Secure over HTTPS), and asked about
 with `GET /api/auth` (`{enabled, required, user, username}`). Until a
