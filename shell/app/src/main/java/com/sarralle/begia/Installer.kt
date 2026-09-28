@@ -48,9 +48,13 @@ object Installer {
      * the one open door - the decision taken for now, with payload signing
      * as the answer when a site's IT asks for it.
      */
-    fun download(ctx: Context, url: String): File {
+    fun download(ctx: Context, url: String, code: String = ""): File {
         val f = File(ctx.cacheDir, "incoming.begia")
         val c = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        // The laptop shares its payload only for a while and, since 70e6c81,
+        // only to whoever presents the six-digit code shown on its own
+        // screen. A header, not the URL: the URL is logged, the code is not.
+        if (code.isNotBlank()) c.setRequestProperty("X-Begia-Pair", code.filter { it.isDigit() })
         if (c is javax.net.ssl.HttpsURLConnection) {
             val trustAll = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
                 override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
@@ -65,8 +69,14 @@ object Installer {
         c.connectTimeout = 5000
         c.readTimeout = 30000
         if (c.responseCode != 200) {
-            val why = try { c.errorStream?.bufferedReader()?.readText() } catch (e: Exception) { null }
-            throw Refused("the laptop answered ${c.responseCode}" + (why?.let { ": ${it.take(160)}" } ?: ""))
+            val body = try { c.errorStream?.bufferedReader()?.readText() } catch (e: Exception) { null }
+            // the server's own words when it gives them ({"detail": "..."}):
+            // "wrong pairing code", "sharing is closed; open it again on the
+            // laptop" - the operator has to walk back to the laptop, and the
+            // text says so
+            val why = try { body?.let { JSONObject(it).optString("detail", "") }?.takeIf { it.isNotBlank() } }
+                      catch (e: Exception) { null } ?: body?.take(160)
+            throw Refused("the laptop answered ${c.responseCode}" + (why?.let { ": $it" } ?: ""))
         }
         c.inputStream.use { i -> f.outputStream().use { o -> i.copyTo(o) } }
         return f

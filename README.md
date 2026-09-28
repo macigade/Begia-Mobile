@@ -181,6 +181,23 @@ trial and checks the trial file names the payload's build.
   laptop's) and allows plain HTTP on the LAN - both for second-screen
   mode, whose WebSocket over the laptop's own certificate would otherwise
   fail silently.
+- **2026-09-28: the laptop's pairing code, and a bytecode payload.** The
+  laptop (desktop 70e6c81) hands out its payload only while sharing AND
+  to whoever presents the six-digit code beside its switch. The Setup
+  card asks for the code when `/api/payload/info` says `pairing`, Install
+  waits for six digits, and the shell sends them as the `X-Begia-Pair`
+  header (`ShellBridge.installFromLaptop`, `Installer.download(url, code)`);
+  a refusal shows the server's `detail`, since five wrong codes shut the
+  window and the operator has to walk back to the laptop. The payload is
+  sourceless CPython 3.11 bytecode now (`app/*.pyc`, `vendor/*.pyc`), which
+  the shell needed nothing for: `boot.py` imports `app.main:app` and the
+  import system loads a `.pyc` beside where the `.py` would be - the boot
+  test passes on it (11 checks, python 3.11.9). If the shell ever moves off
+  3.11, the builder must compile for the new version or every import
+  fails at boot. Also this fortnight: the Trials rows and the Signals tree
+  wrap on a phone, the signal-set row has its own phone layout, the
+  laptop-only share switch is hidden on a phone, and the welcome asks for
+  the PLC login at launch (desktop `startup_gate`; "Not now" enters).
   Next: a real tablet in hand, second-screen mode on the plant WiFi, a
   release signing key when a site asks.
   Known gap: sideways, the single pane is the first one; reaching another

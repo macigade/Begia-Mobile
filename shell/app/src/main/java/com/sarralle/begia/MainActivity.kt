@@ -417,11 +417,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** The laptop path: download, verify and extract, then the same dialog. */
-    fun offerInstallFromUrl(url: String) {
+    /** The laptop path: download (with the laptop's pairing code, when it
+     *  asks for one), verify and extract, then the same dialog. */
+    fun offerInstallFromUrl(url: String, code: String = "") {
         io.execute {
             try {
-                val staged = Installer.download(this, url)
+                val staged = Installer.download(this, url, code)
                 val m = Installer.install(this, staged)
                 ui.post { askToActivate(m) }
             } catch (e: Exception) {

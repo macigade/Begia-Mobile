@@ -48,6 +48,15 @@ class ShellBridge(private val activity: MainActivity) {
         activity.offerInstallFromUrl(payloadUrl)
     }
 
+    /** The same, presenting the six-digit pairing code the laptop shows
+     *  while it shares (sent as a header, never in the URL). The page
+     *  feature-tests for this method and falls back to ?code= on an older
+     *  shell. */
+    @JavascriptInterface
+    fun installFromLaptop(payloadUrl: String, code: String) {
+        activity.offerInstallFromUrl(payloadUrl, code)
+    }
+
     /** What the page looks like - theme and text size - so the boot page,
      *  which is shown before the page exists and cannot read its storage,
      *  wears the same next time. */
