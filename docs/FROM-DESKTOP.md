@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — Options: an Access card, a checkbox that is a box (shared `ui/`; nothing to do)
+
+The sign-in, licence and phone-sharing rows left the Display card for a card
+of their own, **Access** (`#ov-access`, `ov-desktop`, so not on a phone),
+each row a sentence over its control (`.ov-row.ov-top` + `.ov-stack`,
+`.ov-says` for the sentence in the interface face). The welcome animation's
+note is back under the welcome animation. Every id is unchanged
+(`auth-row`, `auth-says`, `auth-new`, `btn-auth-set`, `btn-auth-out`,
+`lic-row`, `lic-says`, `btn-lic-door`, `btn-share-payload`,
+`share-payload-says`), so `paintAuth()`, `paintLicence()` and the share
+button's `paint()` are untouched.
+
+One rule to know about: `.ov-chk input[type="checkbox"] { width: auto;
+height: auto; min-height: 0 }`. The global `input { width: 100% }` reached
+the Options checkboxes and made each one fill its value column, with its
+label text pushed outside the card one word a line; if your phone Options
+view has a checkbox in an `.ov-chk`, it is fixed there too. The Options grid
+is `max-width: 1800px` now (five cards in one row at 1920), and the This
+machine card wraps with `overflow-wrap: anywhere` instead of `break-all`.
+
+---
+
 ## 2026-09-28 — a DAT link beside CSV: an iba .dat through iba's library (nothing to do; the link is muted on the phone)
 
 Every trial row has a **DAT** link now (`ui/app.js` `datLink()`), for an
