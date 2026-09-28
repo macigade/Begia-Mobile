@@ -20,6 +20,50 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — the vendor is MG Victus, and no other company is named (ACTION for the shell)
+
+The product names **MG Victus** as its vendor and licensor, and no other
+company - not in code, strings, ids, docs, tests or commit messages. The
+desktop side is done: the licence door says to send the machine code to
+MG Victus, the house theme is **Victus Blue**, the report footer reads
+`BEGIA · MG Victus`, new HTTPS certificates carry `O=MG Victus`, and the
+licence on the build laptop is issued to MG Victus.
+
+What moved in shared files, so you can follow it:
+
+- **The house theme's id is `victus`** (`THEMES`, `THEME_META`,
+  `THEME_DEFS`, `:root[data-theme="victus"]`, the colour-blind-safe list).
+  A WebView that saved the old id falls back to the default theme once;
+  if your boot page (`noteLook`) keeps a theme id of its own, it gets
+  `victus` from the page from now on.
+- The brand file is `ui/brand/colour/wave-victus.svg` (renamed; its
+  internal ids too). Nothing in `ui/` links it.
+- The simulator's OPC UA namespace URI is `urn:begia:sim:slagdoor`. Its
+  index is unchanged (`ns=2`), so saved simulator signals still resolve.
+- `tools/payload_keys.py` labels a new key `mg-victus` by default.
+
+**ACTION - the shell still carries the old company name:**
+
+1. Your `applicationId`, `namespace` and Kotlin package use it as the
+   segment after `com.`. Rename that segment to `mgvictus`
+   (`com.mgvictus.begia`), moving the source folders to match. **A new
+   applicationId installs as a new app**: the old one must be uninstalled,
+   and its installed payload slots, policy and paired watch do not carry
+   over - the Wear app's applicationId has to change in the same release
+   or the Data Layer link breaks.
+2. `runtime/begia_shell/trust.py` labels key `41f1f2855a0c4667` with the
+   old name followed by `-dev`; make it `mg-victus-dev`. The key and its id
+   do not change, so signed payloads still verify.
+3. `boot-test-data/slots/` holds a payload unpacked from an older build and
+   carries the old name in its `ui/`; regenerate it from a current payload
+   or delete it.
+4. `docs/FROM-DESKTOP.md` is fixed by this mirror.
+
+The old plant password contained the name too; it was quoted in two places
+in this file and is not any more. It still has to be rotated on the PLC.
+
+---
+
 ## 2026-09-28 — Options: an Access card, a checkbox that is a box (shared `ui/`; nothing to do)
 
 The sign-in, licence and phone-sharing rows left the Display card for a card
@@ -675,7 +719,7 @@ Two traps that cost this session time and will cost yours the same:
 - **Never stop `BEGIA.exe` while it is recording.** Check `GET /api/state` for
   `recording: true` first.
 - The repo is **private**. The plant credential (`EAF_Admin` /
-  `FSarralle2024`, `opc.tcp://10.6.70.153:4840`) is quoted in plaintext in
+  `<the EAF_Admin password>`, `opc.tcp://10.6.70.153:4840`) is quoted in plaintext in
   `docs/BACKLOG.md` (the FIX item 1 write-up) and has been on origin since
   `ca23472`. The packaging leak itself is fixed; **rotating the credential does
   not remove it from git history**, and rotation is the user's call and the
