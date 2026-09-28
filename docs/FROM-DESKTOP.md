@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — a saved theme the build does not offer opens as Victus Blue (shared `ui/`; replaces `7fe9c67`'s fallback)
+
+`7fe9c67` kept a saved house-palette choice by matching the palette's old
+id - and that id is the old company's name, which the product no longer
+writes anywhere (the entry below). The rule is generic now and does the
+same thing: in `app.js`, a saved theme id not in `THEMES` opens as
+`victus`; `boot.html` carries the same list and the same rule for the id
+the shell hands it. No theme id other than the house palette's has ever
+been dropped, so that is the only id the rule meets.
+`tests/test_theme_ids.js` keeps the two lists equal and runs both.
+
+Please keep the old company name out of code, comments, tests and commit
+messages; `7fe9c67`'s message names it.
+
+---
+
 ## 2026-09-28 — the vendor is MG Victus, and no other company is named (ACTION for the shell)
 
 The product names **MG Victus** as its vendor and licensor, and no other
