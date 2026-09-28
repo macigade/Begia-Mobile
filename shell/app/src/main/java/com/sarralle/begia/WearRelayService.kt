@@ -53,15 +53,23 @@ class WearRelayService : WearableListenerService() {
      *  recorder is not answering. */
     private fun watchState(chosen: String): JSONObject = try {
         val q = if (chosen.isBlank()) "" else "?signal=" + URLEncoder.encode(chosen, "UTF-8")
-        val c = Net.connect("${Source.base(this)}/api/watch$q", 1500, 2500)
-        c.inputStream.bufferedReader().use { JSONObject(it.readText()) }.put("up", true)
+        val url = "${Source.base(this)}/api/watch$q"
+        val c = Net.connect(url, 1500, 2500, Source.cookieFor(this, url))
+        if (c.responseCode == 401) {
+            // a laptop's API asks a stranger to sign in (desktop ee07d6d):
+            // the phone's page has the door, the wrist can only say so
+            JSONObject().put("up", false).put("error", "sign in to the laptop on the phone first")
+        } else {
+            c.inputStream.bufferedReader().use { JSONObject(it.readText()) }.put("up", true)
+        }
     } catch (e: Exception) {
         JSONObject().put("up", false)
     }
 
     /** POST to the recorder; null on success, else what it said. */
     private fun post(path: String, json: String): String? = try {
-        val c = Net.connect(Source.base(this) + path, 2000, 6000)
+        val url = Source.base(this) + path
+        val c = Net.connect(url, 2000, 6000, Source.cookieFor(this, url))
         c.requestMethod = "POST"
         c.doOutput = true
         c.setRequestProperty("Content-Type", "application/json")

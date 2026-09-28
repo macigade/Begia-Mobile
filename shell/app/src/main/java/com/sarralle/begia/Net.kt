@@ -19,8 +19,11 @@ import javax.net.ssl.X509TrustManager
  * trust boundary here, not the certificate.
  */
 object Net {
-    fun connect(url: String, connectMs: Int, readMs: Int): HttpURLConnection {
+    /** `cookie`: the laptop's session (Source.cookieFor), sent as the
+     *  Cookie header; a laptop's API refuses a stranger without it. */
+    fun connect(url: String, connectMs: Int, readMs: Int, cookie: String? = null): HttpURLConnection {
         val c = URL(url).openConnection() as HttpURLConnection
+        if (!cookie.isNullOrBlank()) c.setRequestProperty("Cookie", cookie)
         if (c is HttpsURLConnection) {
             val trustAll = arrayOf<TrustManager>(object : X509TrustManager {
                 override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}

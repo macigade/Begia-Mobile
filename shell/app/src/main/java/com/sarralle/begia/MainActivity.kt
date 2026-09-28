@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
+import android.webkit.CookieManager
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -106,6 +107,14 @@ class MainActivity : AppCompatActivity() {
                 if (isApp) {
                     splashPage = false
                     if (!holding) hideBoot()
+                    // second-screen mode: the laptop's page carries the
+                    // session its sign-in door set (the door reloads the
+                    // page after a sign-in, and a sign-out); the relay and
+                    // the volume key dial the laptop with the same one
+                    remote?.let { r ->
+                        Source.setCookie(this@MainActivity,
+                            try { CookieManager.getInstance().getCookie(r) } catch (e: Exception) { null })
+                    }
                 }
             }
 
@@ -500,7 +509,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun post(path: String, json: String) {
         try {
-            val c = Net.connect(base() + path, 2000, 4000)
+            val c = Net.connect(base() + path, 2000, 4000, Source.cookieFor(this, base() + path))
             c.requestMethod = "POST"
             c.doOutput = true
             c.setRequestProperty("Content-Type", "application/json")

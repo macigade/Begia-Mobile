@@ -198,6 +198,18 @@ trial and checks the trial file names the payload's build.
   wrap on a phone, the signal-set row has its own phone layout, the
   laptop-only share switch is hidden on a phone, and the welcome asks for
   the PLC login at launch (desktop `startup_gate`; "Not now" enters).
+- **2026-09-28: the laptop's session rides along in second-screen mode.**
+  A laptop's API now refuses a request from another machine unless it
+  carries the session its sign-in door set (desktop ee07d6d; loopback is
+  never asked, so the phone's own page and relay are unaffected). In
+  second-screen mode the page in the WebView signs in and has the cookie;
+  the relay and the volume-key mark did not, and `/api/watch` and
+  `/api/trial/*` would answer 401. The activity copies the WebView's
+  cookie for the laptop into the shell prefs whenever the laptop's page
+  has loaded (the door reloads the page after a sign-in and a sign-out),
+  `Source.cookieFor(url)` hands it to `Net.connect` for that laptop only,
+  and a 401 on the wrist reads "sign in to the laptop on the phone first".
+  Payload v0.9-62-gee07d6d boot-tested (11 checks); APK rebuilt to embed it.
   Next: a real tablet in hand, second-screen mode on the plant WiFi, a
   release signing key when a site asks.
   Known gap: sideways, the single pane is the first one; reaching another
