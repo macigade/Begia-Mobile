@@ -20,6 +20,39 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — the API asks a stranger to sign in (loopback never; nothing for the phone to do, two things to know)
+
+`app/main.py` now refuses any `/api/*` request from anywhere but the
+machine it runs on unless it carries a session cookie, and the socket does
+the same: one `{"type": "auth"}` frame, then close 4401. The password is set
+on the laptop (Options, *App password*; `PUT /api/auth/password`), signed in
+with `POST /api/login` (`{username, password, remember}` → cookie
+`begia_session`, HttpOnly, SameSite=Lax, Secure over HTTPS), and asked about
+with `GET /api/auth` (`{enabled, required, user, username}`). Until a
+password is set nothing from the network gets in. `app/auth.py`, README
+*Signing in from another machine*.
+
+**The phone is never asked**: its page talks to the phone's own server on
+loopback, and `required` is false there - no door, and the `#auth-row` in
+Options is `ov-desktop`. The phone's relay reads `/api/watch` on loopback:
+exempt.
+
+Two things to know:
+
+- **If the shell ever calls the laptop's API over the network** for anything
+  but `/api/payload` and `/api/payload/info` (both open, with the pairing
+  code), it would get 401 and need a session. Today it does not.
+- **A laptop that upgrades to this build has no app password yet**, so an
+  HMI panel or a second laptop that used to open the page over HTTPS now
+  gets the sign-in door saying to set one on the laptop. That is the
+  feature; say so if anyone asks why the panel stopped.
+
+Shared `ui/` additions, all inert on loopback: `#auth-overlay`/`#auth-door`
+(next to the licence door), `authDoor()` in `app.js`, and the row + note in
+Options.
+
+---
+
 ## 2026-09-28 — the packaged exe runs under a machine-bound licence (nothing for the phone to do, one thing to know)
 
 `BEGIA.exe` now runs for the machine its `licence.json` names: an Ed25519
