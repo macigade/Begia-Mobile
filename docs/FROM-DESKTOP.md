@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — a DAT link beside CSV: an iba .dat through iba's library (nothing to do; the link is muted on the phone)
+
+Every trial row has a **DAT** link now (`ui/app.js` `datLink()`), for an
+iba `.dat` file ibaAnalyzer opens: `GET /api/trials/{file}/export.dat?grid_ms=`.
+The file is written by iba's own ibaFiles COM library (`app/ibadat.py`),
+because the format is iba's own; where the library is not installed the
+route answers 501 with what to install, and the page asks
+`GET /api/export/formats` once at boot and shows the link **greyed with that
+reason on its tooltip**.
+
+On the phone `available()` says *"iba .dat export runs on Windows, through
+iba's ibaFiles library"*, so the link is muted there and that is the tooltip.
+`app/ibadat.py` imports pywin32 only inside `available()` / the writer, under
+a try, so the payload's bytecode runs on the phone as before. Nothing to do
+unless you want the DAT word gone from the phone's rows - `.tlink.muted` is
+the class, `ov-desktop`-style hiding would be yours.
+
+---
+
 ## 2026-09-28 — the API asks a stranger to sign in (loopback never; nothing for the phone to do, two things to know)
 
 `app/main.py` now refuses any `/api/*` request from anywhere but the
