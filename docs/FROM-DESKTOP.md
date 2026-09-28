@@ -20,6 +20,63 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — the payload fetch needs a pairing code; the payload is bytecode, not `.py` (ACTION for the shell)
+
+Two changes to what a phone gets from a laptop. The first needs a change in
+`Installer.kt`; the second needs none.
+
+**1. `GET /api/payload` needs the six-digit code the laptop shows.** The
+sharing window (Options, *Share the payload for 15 min*) is still there, but
+a window is what anyone in WiFi range can see, so the fetch now also presents
+the pairing code the laptop shows beside the button while it is open - which
+only someone at the laptop can read.
+
+- Send it as the header `X-Begia-Pair: 123456` or as `?code=123456` on the
+  URL (a plain download link). Spaces are ignored, so "123 456" typed as
+  shown is fine.
+- Without it: 403, detail *"the laptop is sharing, but the fetch needs the
+  pairing code shown on its Options page (X-Begia-Pair header, or ?code=)"*.
+  Wrong: 403 *"wrong pairing code - six digits, on the laptop's Options
+  page"*. **Five wrong codes shut the window** (403 *"... sharing is closed;
+  open it again on the laptop"*), so do not retry a code the operator did not
+  retype.
+- `GET /api/payload/info` now carries `pairing: true`. It never carries the
+  code over the network. (To the laptop's own page it does, as `code`, while
+  the window is open - that is how the page shows it.)
+- `POST`/`DELETE /api/payload/share` answer 403 from anywhere but the
+  laptop itself. The phone's own share switch (your commit `10590b0`) still
+  works: on the phone the page talks to the phone's own server on loopback.
+- From loopback the fetch needs nothing, as before: your relay and the boot
+  test are unaffected.
+
+What the Setup screen should do: after `info` says `shared`, ask for the
+code ("the six digits on the laptop's Options page"), fetch with it, and show
+the server's `detail` on a 403 - the five-tries rule means the operator has
+to walk back to the laptop, and the words say so.
+
+**2. The payload is bytecode.** Every `.py` under `app/` and `vendor/` is a
+sourceless `.pyc` compiled by CPython 3.11 - your Chaquopy runtime - named
+where the `.py` was (`app/main.pyc`, `vendor/snap7/__init__.pyc`). The
+manifest says so: `"python": "3.11"`, `"sources": false`, `"bytecode":
+{"cpython": "3.11", "magic": "a70d0d0a"}`. Nothing in `begia_shell` needs
+to change: `payload.py` verifies hashes and extracts, `boot.py` imports
+`app.main:app`, and a sourceless `.pyc` beside where the `.py` would be is
+what the import system loads (tested against 3.11 in
+`tests/test_payload.py`). Two things to know:
+
+- **The payload loads on 3.11 only.** If the shell ever moves to another
+  Python, `tools/make_payload.py` must compile for it (`BYTECODE_PY`), or
+  every import fails at boot with a bad-magic error. A payload built with
+  `--source` (development) still carries `.py` and runs on any 3.11+.
+- Tracebacks on the phone still say `app/main.py` (the compile names the
+  file), but there is no source to show beside them.
+
+The laptop needs a Python 3.11 at hand to build the payload (the exe build
+runs it): `.venv\Scripts\pip install uv` and `.venv\Scripts\uv python
+install 3.11`, once per build machine. README, *Packaging the phone payload*.
+
+---
+
 ## 2026-09-25 — shared `ui/`: the panels hold at every text size; a bool in a mixed pane takes an axis slot
 
 At 130-160 % text the laptop's sidebar kept its 320 pixels and everything in
