@@ -20,6 +20,39 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-28 — the packaged exe runs under a machine-bound licence (nothing for the phone to do, one thing to know)
+
+`BEGIA.exe` now runs for the machine its `licence.json` names: an Ed25519
+signature by the vendor's key over `{product, customer, machine, issued,
+expires}`, checked against this machine's code (base32 of the Windows
+MachineGuid, `XXXX-XXXX-XXXX-XXXX-XXXX`). Without it the exe serves the page
+and refuses the API with 402; the page shows a licence door with the code to
+send and takes the file. `app/licence.py`, `tools/licence.py`, README *The
+licence*.
+
+**The phone is not asked.** `licence.required()` is `sys.frozen` - the
+packaged exe - so the same `app/main.py` running under your shell answers
+`required: false` and gates nothing. Deliberately: a phone gets its program
+only from a licensed laptop, with the pairing code, and a phone-side licence
+would be the shell's to check against an Android id, not this module's. If a
+site ever wants that, the public key and the verify function are in
+`app/licence.py` (`verify(doc, machine)`), and `tools/licence.py issue` can
+sign a licence for any code you hand it.
+
+Things that are now in the shared files and harmless on the phone:
+
+- `GET /api/licence` answers `{required: false, ok: true, ...}` on the phone;
+  `status.licence` carries the same; a `{"type": "licence"}` socket frame is
+  only ever sent by an unlicensed exe. The page's `licenceDoor()` hides the
+  Options row and the door when `required` is false.
+- `#lic-overlay` / `#lic-door` are in `index.html` outside `#splash`
+  (`.lic-overlay`, z-index 1100), hidden. `#lic-row` in Options is
+  `ov-desktop` and hidden until an exe says it is required.
+- `BEGIA_LICENCE_REQUIRED=1` makes a source run ask too - do not set it on
+  the phone unless you want the door.
+
+---
+
 ## 2026-09-28 — the payload fetch needs a pairing code; the payload is bytecode, not `.py` (ACTION for the shell)
 
 Two changes to what a phone gets from a laptop. The first needs a change in
