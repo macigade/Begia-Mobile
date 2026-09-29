@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-29 — the trigger's stop clause shows its number only where it means something (shared `ui/`; nothing to do)
+
+The trigger sentence used one seconds box for every stop mode, shown right
+after the mode: "Stop when [30] s when [signal]" and "Stop manually [30] s".
+The engine reads that number as the duration under *after*, as a cap under
+*when* (the trial stops on the condition, or after that many seconds at
+most; 0 = no limit), and not at all under *manually*. Now:
+
+- *after*: `Stop [after] [30] s.` - the box is `#trig-duration` in
+  `#trig-dur-bit`.
+- *when*: `Stop [when] [signal] [drops below] [0], or after [30] s at most.`
+  - the cap is a second box, `#trig-maxdur`, after the condition; the
+  repeated word "when" inside the condition is gone.
+- *manually*: `Stop [manually].` - neither box.
+
+Both boxes carry the one `duration_s` and are kept equal as you type;
+`syncStopMode()` decides what shows, from both `fillTriggerCfg()` and
+`pushTriggerCfg()`, and `collectTriggerCfg()` reads the box on screen. The
+read-back under the sentence now says the cap too ("until X drops below 0,
+or for 30 s at most" / "with no time limit"). The stop value and its comma
+are one `.trig-bit`. `tests/test_trigger_stop.js`.
+
+---
+
 ## 2026-09-28 — a saved theme the build does not offer opens as Victus Blue (shared `ui/`; replaces `7fe9c67`'s fallback)
 
 `7fe9c67` kept a saved house-palette choice by matching the palette's old
