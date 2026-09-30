@@ -68,6 +68,8 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
     private var lastSig = ""
     private var lastAt = 0L
     private var lastMoved = 0L
+    // when the poll that is still unanswered went out; 0 once answered
+    @Volatile private var askedAt = 0L
 
     fun start() {
         if (scope != null) return
@@ -76,7 +78,15 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
         Wearable.getMessageClient(ctx).addListener(this)
         poller = s.launch {
             while (true) {
-                ask("/begia/state", chosen.value)
+                // One question at a time: a new one only when the last was
+                // answered, or has waited long enough to be given up on - at
+                // four a second a slow relay (a laptop over the WiFi, in
+                // second-screen mode) would otherwise have a queue of them.
+                val now = System.currentTimeMillis()
+                if (askedAt == 0L || now - askedAt > REPLY_WAIT_MS) {
+                    askedAt = now
+                    ask("/begia/state", chosen.value)
+                }
                 delay(POLL_MS)
             }
         }
@@ -135,6 +145,7 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
 
     override fun onMessageReceived(event: MessageEvent) {
         if (event.path != "/begia/state/reply") return
+        askedAt = 0L
         val j = try { JSONObject(String(event.data)) } catch (e: Exception) { JSONObject() }
         val wasMarks = state.value.marks
         val list = ArrayList<Sig>()
@@ -178,9 +189,15 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
     companion object {
         const val TAG = "begia.watch"
         const val CAPABILITY = "begia_phone"
-        const val POLL_MS = 2000L
-        // two polls and a half without a new sample: the phone dashes a
-        // reading after 3 s without one; the wrist asks every 2 s
-        const val STALE_MS = 5000L
+        // Four times a second while the watch app is open: every 2 s the
+        // reading visibly trailed the phone ("the input comes after 1-2 s").
+        // A message over Bluetooth and a loopback GET are each a few tens of
+        // milliseconds; the app polls only while its screen is on.
+        const val POLL_MS = 250L
+        // a question with no answer after this is given up and asked again
+        const val REPLY_WAIT_MS = 2000L
+        // no new sample for this long: the phone dashes a reading after 3 s
+        // without one, and the wrist sees the stamp stop within a poll
+        const val STALE_MS = 3000L
     }
 }
