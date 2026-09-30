@@ -41,12 +41,56 @@ class WearRelayService : WearableListenerService() {
         if (!error.isNullOrEmpty()) reply.put("error", error)
         // the wrist sees what the phone sees: in second-screen mode, whose
         Source.remote(this)?.let { reply.put("source", Source.host(it)) }
+        val bytes = fit(reply).toString().toByteArray()
+        // One line when the wrist asks for a different signal: what it asked
+        // for, what the recorder shows, how big the answer is and from where.
+        // (Four questions a second otherwise say nothing.)
+        if (event.path == "/begia/state" && data != loggedChosen) {
+            loggedChosen = data
+            Log.i(Recorder.TAG, "watch: asked for '${data.ifEmpty { "(default)" }}', showing '" +
+                  reply.optString("signal_id", "") + "', ${bytes.size} bytes from ${Source.base(this)}")
+        }
         try {
+            // sendMessage fails later, on its Task - a try around the call
+            // alone never saw a reply the Data Layer refused
             Wearable.getMessageClient(this)
-                .sendMessage(event.sourceNodeId, "/begia/state/reply", reply.toString().toByteArray())
+                .sendMessage(event.sourceNodeId, "/begia/state/reply", bytes)
+                .addOnFailureListener { e -> Log.w(Recorder.TAG, "watch reply refused (${bytes.size} bytes): $e") }
         } catch (e: Exception) {
             Log.w(Recorder.TAG, "watch reply failed: $e")
         }
+    }
+
+    /**
+     * The answer the watch needs, and small enough to be carried. The
+     * recorder lists every ticked signal with its reading, for the wrist's
+     * picker; a laptop with hundreds of them (second-screen mode) made an
+     * answer the Data Layer will not carry in one message, and a refused
+     * reply leaves the watch showing what it had. Each row keeps what the
+     * picker uses (id, name, unit, value, digital or not); past MAX_REPLY the
+     * list keeps the shown signal and as many others as fit, and says so.
+     */
+    private fun fit(reply: JSONObject): JSONObject {
+        val rows = reply.optJSONArray("signals") ?: return reply
+        val lean = org.json.JSONArray()
+        for (i in 0 until rows.length()) {
+            val r = rows.optJSONObject(i) ?: continue
+            lean.put(JSONObject().put("id", r.optString("id")).put("name", r.optString("name"))
+                .put("unit", r.optString("unit")).put("value", r.optString("value"))
+                .put("bool", r.optBoolean("bool", false)))
+        }
+        reply.put("signals", lean)
+        if (reply.toString().length <= MAX_REPLY) return reply
+        val shownId = reply.optString("signal_id", "")
+        val kept = org.json.JSONArray()
+        var size = reply.toString().length - lean.toString().length
+        for (i in 0 until lean.length()) {
+            val r = lean.getJSONObject(i)
+            val cost = r.toString().length + 1
+            if (r.optString("id") == shownId || size + cost <= MAX_REPLY - 2000) { kept.put(r); size += cost }
+        }
+        reply.put("signals", kept).put("signals_cut", lean.length() - kept.length())
+        return reply
     }
 
     /** GET /api/watch for the chosen signal, or {"up": false} when the
@@ -92,5 +136,8 @@ class WearRelayService : WearableListenerService() {
         /** The signal the watch last asked to see, so the reply to a mark or
          *  a stop shows the same one rather than the default. */
         @Volatile private var lastChosen: String = ""
+        @Volatile private var loggedChosen: String? = null
+        /** Well under what one Data Layer message carries. */
+        private const val MAX_REPLY = 60_000
     }
 }

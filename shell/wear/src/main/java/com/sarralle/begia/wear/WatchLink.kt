@@ -106,6 +106,7 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
 
     /** Show this signal on the Live page from now on. */
     fun choose(id: String) {
+        Log.i(TAG, "chose '$id'")
         chosen.value = id
         ctx.getSharedPreferences("watch", Context.MODE_PRIVATE).edit().putString("signal", id).apply()
         act("/begia/state", id)
@@ -156,6 +157,7 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
                          o.optString("value"), o.optBoolean("bool", false)))
         }
         val sigId = j.optString("signal_id", "")
+        if (sigId != state.value.signalId) Log.i(TAG, "showing '$sigId' (asked '${chosen.value}')")
         val at = j.optLong("at_ms", 0L)
         val here = System.currentTimeMillis()
         if (sigId != lastSig || at != lastAt || lastMoved == 0L) {
