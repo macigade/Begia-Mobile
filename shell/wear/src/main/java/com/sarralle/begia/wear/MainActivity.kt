@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        link = WatchLink(this)
+        link = WatchLink.of(this)
         setContent { BegiaWatch(link, ::buzz) }
     }
 

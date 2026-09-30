@@ -53,7 +53,7 @@ data class WatchState(
  * a synced data item: a remote wants an answer to the thing it just did,
  * not a mirror that catches up eventually.
  */
-class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListener {
+class WatchLink private constructor(private val ctx: Context) : MessageClient.OnMessageReceivedListener {
     val state = mutableStateOf(WatchState())
     val justMarked = mutableStateOf(false)
     /** The node id the wrist chose to watch; remembered across launches. */
@@ -83,6 +83,12 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
                 // four a second a slow relay (a laptop over the WiFi, in
                 // second-screen mode) would otherwise have a queue of them.
                 val now = System.currentTimeMillis()
+                if (askedAt != 0L && now - askedAt > REPLY_WAIT_MS && state.value.up) {
+                    // no answer: the phone's recorder or the laptop behind it
+                    // is gone, and what is on the wrist - "via ...", the last
+                    // reading - is not true any more
+                    state.value = state.value.copy(up = false, source = "", stale = true)
+                }
                 if (askedAt == 0L || now - askedAt > REPLY_WAIT_MS) {
                     askedAt = now
                     ask("/begia/state", chosen.value)
@@ -148,6 +154,13 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
         if (event.path != "/begia/state/reply") return
         askedAt = 0L
         val j = try { JSONObject(String(event.data)) } catch (e: Exception) { JSONObject() }
+        // The phone says which signal this answer is for. An answer to any
+        // other than the one picked now - a question sent before the pick, or
+        // one from a stale sender - is not shown: seen on the plant laptop,
+        // the Live page flipped back to the old signal within 200 ms of a pick.
+        val asked = if (j.has("asked")) j.optString("asked", "") else null
+        val want = chosen.value
+        if (asked != null && want.isNotEmpty() && asked != want) return
         val wasMarks = state.value.marks
         val list = ArrayList<Sig>()
         val arr = j.optJSONArray("signals")
@@ -189,6 +202,13 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
     }
 
     companion object {
+        /** One link per watch app: every screen instance Android keeps shares
+         *  the same choice and the same poller. (A link per activity let a
+         *  second instance keep asking for the signal it was created with.) */
+        @Volatile private var one: WatchLink? = null
+        fun of(ctx: Context): WatchLink =
+            one ?: synchronized(this) { one ?: WatchLink(ctx.applicationContext).also { one = it } }
+
         const val TAG = "begia.watch"
         const val CAPABILITY = "begia_phone"
         // Four times a second while the watch app is open: every 2 s the

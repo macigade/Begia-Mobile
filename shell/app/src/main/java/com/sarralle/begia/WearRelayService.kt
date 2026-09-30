@@ -38,6 +38,9 @@ class WearRelayService : WearableListenerService() {
             else -> return
         }
         val reply = watchState(lastChosen)
+        // which signal this answer is for: the watch shows an answer only for
+        // the signal picked now, so a stale question cannot overwrite a pick
+        reply.put("asked", lastChosen)
         if (!error.isNullOrEmpty()) reply.put("error", error)
         // the wrist sees what the phone sees: in second-screen mode, whose
         Source.remote(this)?.let { reply.put("source", Source.host(it)) }
