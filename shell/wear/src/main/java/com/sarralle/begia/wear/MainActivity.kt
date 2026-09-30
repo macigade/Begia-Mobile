@@ -176,8 +176,10 @@ private fun LivePage(link: WatchLink, s: WatchState, buzz: () -> Unit) {
         if (s.up && s.signal.isNotEmpty()) {
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(s.value.ifEmpty { "—" }, color = Ink, fontFamily = Mono, fontWeight = FontWeight.Bold,
-                     fontSize = if (s.value.length > 6) 26.sp else 32.sp, maxLines = 1)
+                // a reading the PLC has stopped sending is a dash, not a number
+                val shown = if (s.stale) "—" else s.value.ifEmpty { "—" }
+                Text(shown, color = if (s.stale) Muted else Ink, fontFamily = Mono, fontWeight = FontWeight.Bold,
+                     fontSize = if (shown.length > 6) 26.sp else 32.sp, maxLines = 1)
                 if (s.unit.isNotEmpty()) {
                     Spacer(Modifier.width(5.dp))
                     Text(s.unit, color = Muted, fontSize = 13.sp, modifier = Modifier.padding(bottom = 5.dp))

@@ -38,6 +38,11 @@ data class WatchState(
     val error: String = "",
     val nowMs: Long = 0L,             // the phone's clock at the reply, for the elapsed time
     val receivedAt: Long = 0L,        // this watch's clock at the reply
+    // No new sample of the shown signal for a while: the link to the PLC is
+    // down, and the last value is not a reading any more. The phone shows a
+    // dash then (desktop: readings are dashes while the link is down); so
+    // does the wrist, rather than a number minutes old that looks live.
+    val stale: Boolean = false,
 )
 
 /**
@@ -57,6 +62,12 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
     private var scope: CoroutineScope? = null
     private var poller: Job? = null
     private var phoneNode: String? = null
+    // The shown signal's sample stamp and when (on this watch's clock) it
+    // last moved. The stamp is the sample's own time - on OPC UA the PLC's
+    // clock - so it is only ever compared with itself, never with a clock.
+    private var lastSig = ""
+    private var lastAt = 0L
+    private var lastMoved = 0L
 
     fun start() {
         if (scope != null) return
@@ -133,7 +144,14 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
             list.add(Sig(o.optString("id"), o.optString("name"), o.optString("unit"),
                          o.optString("value"), o.optBoolean("bool", false)))
         }
+        val sigId = j.optString("signal_id", "")
+        val at = j.optLong("at_ms", 0L)
+        val here = System.currentTimeMillis()
+        if (sigId != lastSig || at != lastAt || lastMoved == 0L) {
+            lastSig = sigId; lastAt = at; lastMoved = here
+        }
         val next = WatchState(
+            stale = at == 0L || here - lastMoved > STALE_MS,
             linked = true,
             up = j.optBoolean("up", false),
             recording = j.optBoolean("recording", false),
@@ -161,5 +179,8 @@ class WatchLink(private val ctx: Context) : MessageClient.OnMessageReceivedListe
         const val TAG = "begia.watch"
         const val CAPABILITY = "begia_phone"
         const val POLL_MS = 2000L
+        // two polls and a half without a new sample: the phone dashes a
+        // reading after 3 s without one; the wrist asks every 2 s
+        const val STALE_MS = 5000L
     }
 }
