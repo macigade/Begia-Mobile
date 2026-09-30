@@ -20,6 +20,32 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-30 — the S7comm-plus driver reconnects in seconds (`app/s7plus.py`; nothing to do)
+
+In your payload if the phone acquires. What changed, in case you read the
+driver or its state:
+
+- Every request the S7 client sends has a deadline (`deadline_requests`):
+  2 s while polling, 3 s to connect, 20 s while the index loads. An
+  unanswered request closes the socket, so the queue behind it fails at once.
+- Link errors (`is_link_error`: any OSError, EOFError, the library's
+  S7ConnectionError) re-raise into the reconnect instead of being counted
+  against a tag, and no longer switch batched reads off.
+- Retries after a link error: 0.25 s, 0.5 s, then every 1 s
+  (`LINK_RETRY_S`); a wait also ends early when the route to the PLC changes
+  (`route_source`, a UDP-connect route lookup, nothing sent). Other failures
+  still back off to 30 s.
+- `status.index.state` can now be `"building"` while `state` is
+  `"connected"`: the configured signals' blocks are indexed before polling
+  starts and the rest in the background (`_index_rest`), for about two
+  seconds on the plant CPU. The UI already shows it as "indexing PLC… N
+  blocks" beside a connected chip; if your phone layout hides the browse
+  tree until the index is ready, it is ready slightly later than connected.
+
+`tests/test_reconnect.py`.
+
+---
+
 ## 2026-09-29 — the trigger's stop clause shows its number only where it means something (shared `ui/`; nothing to do)
 
 The trigger sentence used one seconds box for every stop mode, shown right
