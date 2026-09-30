@@ -147,7 +147,9 @@ class MainActivity : AppCompatActivity() {
      *  and from the saved preference before the page exists. */
     fun applyLook(theme: String) {
         val color = when (theme) {
-            "carbon" -> 0xFF111318; "sarralle" -> 0xFF131B24; "blueprint" -> 0xFF151D31
+            // "victus" is the house palette since desktop d8edb47; "sarralle"
+            // is its old id, still in a preference saved before the rename
+            "carbon" -> 0xFF111318; "victus", "sarralle" -> 0xFF131B24; "blueprint" -> 0xFF151D31
             "amber" -> 0xFF1B1815; "daylight" -> 0xFFE2E7EC; "hmi" -> 0xFFDDE1E6
             else -> 0xFF151D25
         }.toInt()

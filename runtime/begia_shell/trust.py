@@ -16,6 +16,8 @@ a key not listed here is reported as untrusted whatever the policy.
 
 TRUSTED_KEYS = {
     # the development key on the build VM (2026-09-11); a site's release key
-    # is a second line here, from tools/payload_keys.py in the desktop repo
-    "41f1f2855a0c4667": {"name": "sarralle-dev", "public": "b563105607666502f0e7966c6f61c659529a8641009354268518e0a1f8272027"},
+    # is a second line here, from tools/payload_keys.py in the desktop repo.
+    # The name is only the label the Setup card shows ("signed by ..."); the
+    # key is its id and public half. Renamed with the vendor (desktop d8edb47).
+    "41f1f2855a0c4667": {"name": "mg-victus-dev", "public": "b563105607666502f0e7966c6f61c659529a8641009354268518e0a1f8272027"},
 }
