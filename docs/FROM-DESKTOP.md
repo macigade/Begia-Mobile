@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-09-30 — `app/winconsole.py`: QuickEdit off for the exe's console (nothing to do)
+
+New module, imported first by `trial_recorder.py` and at the start of
+`run()`. It switches Windows' console QuickEdit off - a click in the console
+used to freeze the whole program, because the log writes from the event-loop
+thread - and restores it at exit. It is a no-op off Windows (`sys.platform`)
+and without a console, so on the phone it does nothing.
+`tests/test_winconsole.py`.
+
+---
+
 ## 2026-09-30 — the S7comm-plus driver reconnects in seconds (`app/s7plus.py`; nothing to do)
 
 In your payload if the phone acquires. What changed, in case you read the
