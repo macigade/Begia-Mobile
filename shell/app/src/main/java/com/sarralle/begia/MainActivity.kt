@@ -59,7 +59,9 @@ class MainActivity : AppCompatActivity() {
     private var polling = false
     private var splashStart = 0L            // when the payload's boot page went up (epoch ms)
     private var splashPage = false          // the WebView shows that page, not the app
-    private var remote: String? = null      // second-screen mode: the laptop's BEGIA, else null
+    // second-screen mode: the laptop's BEGIA, else null; read on the WebView's
+    // own thread too (shouldInterceptRequest)
+    @Volatile private var remote: String? = null
     private lateinit var bootAction2: Button
     private lateinit var second: View
     private lateinit var secondText: TextView
@@ -123,6 +125,20 @@ class MainActivity : AppCompatActivity() {
                     loading = false
                     pageLoaded = false
                 }
+            }
+
+            /** Second-screen mode: the page's own files from this phone's
+             *  payload when it is the newer build (OwnUi), the data from the
+             *  laptop. Runs on the WebView's own thread; the first request
+             *  for a laptop asks it for its build, once. */
+            override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): android.webkit.WebResourceResponse? {
+                val r = remote ?: return null
+                if (request.method != "GET") return null
+                if (!request.url.toString().startsWith(r)) return null
+                val path = request.url.path ?: "/"
+                if (path == "/ws" || path == "/api" || path.startsWith("/api/")) return null
+                val dir = ownUiFor(r) ?: return null
+                return OwnUi.response(dir, path)
             }
 
             /** A laptop's BEGIA serves HTTPS with its own CA (see Net): the
@@ -198,6 +214,26 @@ class MainActivity : AppCompatActivity() {
 
     /** The BEGIA this screen shows: this phone's recorder, or the laptop's. */
     private fun base(): String = remote ?: Recorder.BASE_URL
+
+    // Which page second-screen mode draws for a laptop (OwnUi): decided once
+    // per laptop and phone build, on the WebView's thread at the first request.
+    @Volatile private var ownUiLaptop: String? = null
+    @Volatile private var ownUiPhoneBuild: String? = null
+    @Volatile private var ownUiDir: File? = null
+
+    private fun ownUiFor(laptop: String): File? {
+        val phoneBuild = OwnUi.activeBuild(this)
+        if (laptop != ownUiLaptop || phoneBuild != ownUiPhoneBuild) {
+            val lb = OwnUi.laptopBuild(laptop)
+            val draws = OwnUi.phoneDraws(phoneBuild, lb)
+            ownUiDir = if (draws) OwnUi.activeUiDir(this) else null
+            Log.i(Recorder.TAG, "second screen: phone $phoneBuild, laptop ${lb.ifEmpty { "?" }} - " +
+                  (if (ownUiDir != null) "the phone's page" else "the laptop's page"))
+            ownUiLaptop = laptop
+            ownUiPhoneBuild = phoneBuild
+        }
+        return ownUiDir
+    }
 
     private fun probe(): JSONObject? = probeAt(base())
 

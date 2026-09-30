@@ -210,6 +210,16 @@ trial and checks the trial file names the payload's build.
   `Source.cookieFor(url)` hands it to `Net.connect` for that laptop only,
   and a 401 on the wrist reads "sign in to the laptop on the phone first".
   Payload v0.9-62-gee07d6d boot-tested (11 checks); APK rebuilt to embed it.
+- **2026-09-30: second-screen mode draws the phone's own page.** Showing a
+  laptop's BEGIA, the WebView used to get the page the laptop's exe was built
+  with, so the phone's newer layout (the panes chip, the name over the value)
+  was missing in companion mode. `OwnUi` + `shouldInterceptRequest` now answer
+  the page's own files from the phone's active slot `ui/` and let `/api/*` and
+  `/ws` go to the laptop; the document keeps the laptop's address, so its
+  sign-in cookie and the socket work as before. The newer build draws the page
+  (compared as git-describe stamps from the laptop's open `/api/payload/info`).
+  Verified on the S23 against the plant laptop at 10.6.70.120: phone
+  v0.9-77 over laptop v0.9-74 draws the phone's page, signed in, live.
   Next: a real tablet in hand, second-screen mode on the plant WiFi, a
   release signing key when a site asks.
   Known gap: sideways, the single pane is the first one; reaching another
