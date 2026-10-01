@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-01 — the licence: a grace period, `GET /api/licence/request`, a door button (nothing to do)
+
+The phone is not licensed, so none of this reaches it in practice; for
+completeness, since the routes and the shared `ui/` moved:
+
+- `GET /api/licence/request` (open, like `/api/licence`) answers a JSON
+  download `licence-request-<code>.json` - the machine code, the computer's
+  name, the build; nothing secret. The licence door (`#lic-request`, shared
+  `index.html`) links to it.
+- `app/licence.py`: an expired licence verifies for `GRACE_DAYS` (14) more
+  days; `status()` then carries `grace_days_left` and a `warning` with the
+  day it stops. The 402/4402 gate is unchanged otherwise.
+- `tools/licence.py`: `issue --request FILE`, `backup`, `restore`.
+
+---
+
 ## 2026-10-01 — a stopped trial's CSV goes into Trials_DDMMYY (shared `ui/`, a new socket frame)
 
 Every stop - `/api/trial/stop`, the trigger, the shutdown - now writes the
