@@ -20,6 +20,33 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-01 — the payload share: 15 or 30 minutes, or until BEGIA closes (`/api/payload/*`, shared `ui/`)
+
+The laptop's Options → *Phones on the WiFi* row now asks how long to share:
+15 min, 30 min, or until BEGIA closes. What reaches you:
+
+- `GET /api/payload/info` carries `until_closed` (bool). While it is true,
+  `shared` is true and `shared_until` is **null** - there is no time to give.
+  Until now `shared_until` was null only when nothing was shared, so if your
+  shell reads it, test `shared` for "is it shared", never `shared_until`.
+- `POST /api/payload/share` takes `{"until_closed": true}` as well as
+  `{"minutes": n}` (still 1 to 120); its answer carries `until_closed`, and
+  `seconds` is null for the open-ended share. Still loopback only.
+- The code and the five-wrong rule hold for an open-ended window as for a
+  timed one. The window lives in the laptop's memory: when BEGIA closes there,
+  it is gone.
+- The 403 for a fetch with nothing shared now says "Options > Phones on the
+  WiFi > Share" (it said "Options > Share the payload with phones") - the row
+  and the button as they read on the laptop. If you show the server's
+  `detail`, nothing to do; if you wrote your own words, use these.
+- Shared `ui/`: the Setup card's laptop line (`laptopOffer`) says "shared
+  until BEGIA closes on the laptop" for the open-ended share, and its
+  not-shared hint names the same row and button.
+
+`tests/test_payload_share.py`, `tests/test_share_choice.js`.
+
+---
+
 ## 2026-09-30 — `app/winconsole.py`: QuickEdit off for the exe's console (nothing to do)
 
 New module, imported first by `trial_recorder.py` and at the start of
