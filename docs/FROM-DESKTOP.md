@@ -20,6 +20,34 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-01 — Text signals: STRING tags are read and shown (shared `ui/`, `data`/`init` frames, `SignalCfg`)
+
+A third signal category, Text, for STRING/WSTRING (S7) and String (OPC UA)
+tags; in your payload if the phone acquires. Nothing to do unless your shell
+reads `signals` or the socket frames itself:
+
+- `SignalCfg` carries `is_text` (bool). A text signal has `pane: -1`, is
+  never charted, never recorded (`/api/record/start` leaves it out), never
+  a trigger signal. Anything that filters on `!is_bool` to mean "analog"
+  must also exclude `is_text`.
+- The `init` frame carries `texts: {node_id: [changed_ms, text, good]}` for
+  every text signal with a value; the `data` frame carries the same map for
+  the ones that changed since the last frame, beside `series` (which is now
+  always present, possibly `{}`). A text is sent on change only: a string
+  that does not change is not stale.
+- `POST /api/signals` (and bulk, import, preset, re-point) accept a string
+  tag now - the probe answers `is_text: true` and the value as a string -
+  where it used to answer 422 "not a recordable scalar".
+- Shared `ui/`: a `Text` button in `#sig-kind`, `#text-panel` above the panes
+  in `#chart-scroll` (built by `renderTextPanel`), a `Text` tile in the
+  sidebar for the text rows (no swatch, no L/R, not draggable).
+- The simulator has `"DB_SlagDoor"."Paso_Texto"` (follows the step text) and
+  `"DB_SlagDoor"."Receta"` (constant), for trying it.
+
+`tests/test_text_signals.py`, `tests/test_text_signals.js`.
+
+---
+
 ## 2026-10-01 — the payload share: 15 or 30 minutes, or until BEGIA closes (`/api/payload/*`, shared `ui/`)
 
 The laptop's Options → *Phones on the WiFi* row now asks how long to share:
