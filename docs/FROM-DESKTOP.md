@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-02 — text signals are recorded into trials (`trial_data` payload, CSV, shared `ui/` viewer)
+
+Follow-up to the Text category: a trial now records its text signals, so
+`/api/trial/start` no longer leaves them out, and:
+
+- The trial file has a `texts (signal_id, t_ms, value, good)` table and
+  `signals.is_text`; `Recorder.flush` writes a row per change from the hub's
+  `text_log` (`hub.texts_since`), and the start writes the value the string
+  had then.
+- `GET /api/trials/{fname}/data` carries `texts: {signal_id: [[t_ms, value,
+  good], ...]}` and `signals[].is_text`; a text signal has no `series` and
+  no `stats` entry. A trial from before has `texts: {}`.
+- The CSV has one column per text signal after the numeric ones (header =
+  the name, no unit), last-value-hold, empty while the read was bad; the
+  `# signal:` preamble line says `is_text=1`.
+- Shared `ui/app.js`: the viewer draws no pane for a text signal, marks its
+  changes on the charts (`textChanges`, also in the trial analysis), counts
+  them in the info line (`textNote`), and the report has a "Text signals"
+  table (`REPORT_T.*.texts/value`). If your shell renders trial data itself,
+  skip `is_text` signals when drawing.
+
+`tests/test_text_record.py`, `tests/test_text_record.js`.
+
+---
+
 ## 2026-10-01 — the licence: a grace period, `GET /api/licence/request`, a door button (nothing to do)
 
 The phone is not licensed, so none of this reaches it in practice; for
