@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-01 — a stopped trial's CSV goes into Trials_DDMMYY (shared `ui/`, a new socket frame)
+
+Every stop - `/api/trial/stop`, the trigger, the shutdown - now writes the
+trial's CSV (and the `.dat` where iba's library exists, never on the phone)
+into `<base>/Trials_DDMMYY/` (`app/recorder.py` `dated_export_dir`,
+`auto_export`; `Recorder.on_stopped` is the hook), in a worker thread after
+the stop has answered, and then sends one socket frame:
+
+    {"type": "exported", "file": "<trial>.db", "dir": "<abs path>",
+     "folder": "Trials_011026", "csv": "<name>.csv" | null, "dat": ... | null,
+     "errors": [..]}
+
+The shared `ui/app.js` toasts it (`exportedText`). On the phone the base is
+the app's own data directory, so the folder lands there; if your shell lists
+or shares trial files, the CSV is now in `Trials_DDMMYY/`, not only under
+`trials/exports/` on demand. `AppConfig.auto_export` (default true) switches
+it off. `tests/test_auto_export.py`, `tests/test_auto_export.js`.
+
+---
+
 ## 2026-10-01 — Text signals: STRING tags are read and shown (shared `ui/`, `data`/`init` frames, `SignalCfg`)
 
 A third signal category, Text, for STRING/WSTRING (S7) and String (OPC UA)
