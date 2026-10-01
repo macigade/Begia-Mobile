@@ -20,6 +20,41 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-02 — the laptop answers "BEGIA?" on UDP 4858: build the phone half
+
+**Your side to build:** a *Find the laptop* action on the Setup screen (and,
+if you like, a quiet search when the screen opens). The laptop side is on
+main (`app/discover.py`, started from the lifespan; `AppConfig.discovery`,
+default true).
+
+The protocol, one datagram each way:
+
+- The phone sends the six bytes `BEGIA?` (or `{"begia":"probe"}`) by UDP to
+  port **4858**, to the subnet broadcast address (and/or 255.255.255.255;
+  on Android, `WifiManager.MulticastLock` is not needed for a broadcast
+  *send*, but some phones need it to *receive* the unicast reply - test on
+  the plant phone). Collect replies for about a second; send again if none.
+- Every BEGIA that hears it answers the sender, unicast, with one JSON
+  datagram:
+
+      {"begia": 1, "name": "FAT-LAPTOP", "build": "v0.9-82-g...",
+       "https": ["https://10.6.70.120:8443", "https://192.168.70.135:8443"],
+       "port": 8443, "licensed": true, "auth": "set" | "unset"}
+
+  `https` is the same list the Options page shows (every non-loopback
+  address, HTTPS port included); prefer the one on the phone's own subnet.
+  `licensed` false means the exe's door is up (it still answers); `auth`
+  "unset" means no app password is set yet - say so before the operator
+  tries to sign in, since nothing from the network gets in until it is.
+- The reply's source address is the laptop; `https` carries it already, so
+  nothing needs resolving.
+
+`GET /api/hosting` (signed in) carries `discovery` (bool) and
+`discovery_port`, for the Options page. `tests/test_discover.py` has a
+real-socket round trip you can mirror. Nothing else moved.
+
+---
+
 ## 2026-10-02 — text signals are recorded into trials (`trial_data` payload, CSV, shared `ui/` viewer)
 
 Follow-up to the Text category: a trial now records its text signals, so
