@@ -80,7 +80,7 @@ class WearRelayService : WearableListenerService() {
             val r = rows.optJSONObject(i) ?: continue
             lean.put(JSONObject().put("id", r.optString("id")).put("name", r.optString("name"))
                 .put("unit", r.optString("unit")).put("value", r.optString("value"))
-                .put("bool", r.optBoolean("bool", false)))
+                .put("bool", r.optBoolean("bool", false)).put("text", r.optBoolean("text", false)))
         }
         reply.put("signals", lean)
         if (reply.toString().length <= MAX_REPLY) return reply

@@ -19,7 +19,8 @@ import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 /** One ticked signal, as the picker lists it. */
-data class Sig(val id: String, val name: String, val unit: String, val value: String, val bool: Boolean)
+data class Sig(val id: String, val name: String, val unit: String, val value: String, val bool: Boolean,
+               val text: Boolean = false)   // a STRING tag: its value is words, sent on change
 
 /** What the wrist knows about the recorder, as of the last reply. */
 data class WatchState(
@@ -167,7 +168,7 @@ class WatchLink private constructor(private val ctx: Context) : MessageClient.On
         if (arr != null) for (i in 0 until arr.length()) {
             val o = arr.optJSONObject(i) ?: continue
             list.add(Sig(o.optString("id"), o.optString("name"), o.optString("unit"),
-                         o.optString("value"), o.optBoolean("bool", false)))
+                         o.optString("value"), o.optBoolean("bool", false), o.optBoolean("text", false)))
         }
         val sigId = j.optString("signal_id", "")
         if (sigId != state.value.signalId) Log.i(TAG, "showing '$sigId' (asked '${chosen.value}')")
@@ -177,7 +178,9 @@ class WatchLink private constructor(private val ctx: Context) : MessageClient.On
             lastSig = sigId; lastAt = at; lastMoved = here
         }
         val next = WatchState(
-            stale = at == 0L || here - lastMoved > STALE_MS,
+            // a text is sent on change only: one that has not changed is not
+            // stale, so its stamp standing still says nothing
+            stale = !j.optBoolean("text", false) && (at == 0L || here - lastMoved > STALE_MS),
             linked = true,
             up = j.optBoolean("up", false),
             recording = j.optBoolean("recording", false),

@@ -42,6 +42,13 @@ class ShellBridge(private val activity: MainActivity) {
         activity.checkLaptop(infoUrl)
     }
 
+    /** Look for BEGIA on this WiFi (UDP "BEGIA?" on 4858); the answer
+     *  arrives as a `begia-found` event on window. */
+    @JavascriptInterface
+    fun findLaptops() {
+        activity.findLaptops()
+    }
+
     /** Download a payload from a URL and offer to install it. */
     @JavascriptInterface
     fun installFromUrl(payloadUrl: String) {

@@ -479,6 +479,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Ask the WiFi which BEGIA are on it (Discovery) and hand what answered
+     *  to the page as a `begia-found` event: {ok, laptops: [...] | error}. */
+    fun findLaptops() {
+        io.execute {
+            val payload = try {
+                JSONObject().put("ok", true).put("laptops", Discovery.find(this))
+            } catch (e: Exception) {
+                JSONObject().put("ok", false).put("error", e.message ?: e.toString())
+            }
+            ui.post {
+                web.evaluateJavascript(
+                    "window.dispatchEvent(new CustomEvent('begia-found', {detail: $payload}))", null)
+            }
+        }
+    }
+
     /** Ask a laptop what it can offer and hand the answer to the page as an
      *  event, so the Setup card can say "0.10, and you have 0.9". */
     fun checkLaptop(url: String) {
