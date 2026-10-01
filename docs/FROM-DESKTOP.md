@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-02 — `POST /api/path/check` and a *Check the path* button in Setup (shared `ui/`; nothing to do)
+
+`app/pathcheck.py`: the steps to the PLC - route, ping (advisory), port,
+session, and for S7 the type-information read - as one JSON answer
+`{"ok", "protocol", "host", "port", "took_ms", "steps": [{"step", "ok":
+true|false|null, "took_ms", "text", "hint"}]}`, stopping at the first hard
+failure. Behind sign-in and licence. The shared Setup form (`#cv-check`,
+`#cv-path`, `pathCheckLines`) posts the typed address and login; the phone
+runs it against its own path to the PLC like the laptop does (the ping
+step shells out to `ping`, which exists on Android; if it does not on a
+build, the step says "ping could not be run here" and the check goes on).
+
+---
+
 ## 2026-10-02 — the laptop answers "BEGIA?" on UDP 4858: build the phone half
 
 **Your side to build:** a *Find the laptop* action on the Setup screen (and,
