@@ -20,6 +20,40 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-03 — the I/O check finds the DB member by its pattern; the CPU's %I address (shared `ui/`, `app/`; the payload and a config field)
+
+- **The popup is new** (`ui/js/284-iocheck-popup.js`, `ui/css/155-iocheck-popup.css`): an
+  input that moves opens a panel that stays until the next one - the input's
+  name, symbol and CPU address, what it did, the DB member **found** for it
+  (no list, no pairing: every DB is watched and what moves with both edges
+  of the input is named), the lag, the search in three numbers, the
+  evidence lanes, and the marks. On the phone (`data-layout="phone"`) it is
+  the full width above the bottom tabs and the marks are a sticky row under
+  the thumb (52 px). Enter / Esc are wired for the laptop only (a hardware
+  keyboard); nothing there for a phone to do.
+- **One edge is not a pattern**: after the first edge the popup waits for
+  the edge back and names nobody; a member is named only after it followed a
+  rising and a falling edge.
+- **New route** `GET /api/iocheck/scope`; `POST /api/iocheck/start` takes
+  `search: every|area|none` (`with_group` alone still works and means
+  `area`). Socket frames of type `iocheck` carry `search` and `aside` beside
+  `mapping` when the search moves; `session.members` in a full frame is only
+  the members still searched that moved - the file keeps them all.
+- **Config:** `SignalCfg.abs_address` (string, default `""`) - the absolute
+  address the CPU gives over S7comm-plus (`%I12.3`). Old configs load without
+  it. **Do:** if the phone shell parses `config.json` or the signal payload
+  with a strict schema, allow the field; nothing else changes.
+- **The module is restructured** the way BEGIA was: `ui/js/280-iocheck.js`
+  is five scripts, `280-iocheck-words.js`, `282-iocheck-state.js`,
+  `284-iocheck-popup.js`, `286-iocheck-check.js`, `288-iocheck-inputs.js`,
+  loaded last from `index.html`; the popup's styles are
+  `ui/css/155-iocheck-popup.css`, linked after `150-iocheck.css` in
+  `index.html` **and `boot.html`**. On the server `app/iocheck.py` is the
+  package `app/iocheck/` and its routes are three modules - nothing the phone
+  calls changed. **Do:** nothing if the payload carries `ui/` whole (it does:
+  `tools/make_payload.py` walks the folders); if anything of yours names
+  `280-iocheck.js`, name the five.
+
 ## 2026-10-03 — stopping a trial runs off the event loop (shared `app/` and `ui/`; nothing to do)
 
 The phone runs the same recorder from the payload, so this reaches it with
