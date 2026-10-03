@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-03 — stopping a trial runs off the event loop (shared `app/` and `ui/`; nothing to do)
+
+The phone runs the same recorder from the payload, so this reaches it with
+the next one. What changed at the edges:
+
+- The `recording` frame carries `stopping` (bool): true from the moment Stop
+  is pressed until the file is sealed, with `active` still the trial. The
+  `init` frame carries `recording_stopping` for a page that connects
+  meanwhile. The shared page shows *Stopping…* and disables Stop, Mark and
+  the quick marks; nothing in the shell needs to change.
+- `POST /api/trial/stop` answers when the trial is sealed - seconds on a
+  long trial - but the service keeps streaming meanwhile. Three new 409s:
+  a second stop (*the trial is already being stopped*), a mark
+  (*the trial is being stopped*) and a start (*the last trial is still being
+  stopped - try again in a moment*) while one runs.
+- The final `recording` frame (active null) now comes from the recorder's
+  after-stop hook, for every stop - the operator's, the trigger's, the
+  shutdown's - so it arrives once per stop.
+- A trial the stop could not fold its -wal into (something held the file
+  open for the whole wait) is stopped but left unsealed, and the stop
+  record says why in `seal_error`.
+
 ## 2026-10-03 — `ui/style.css` is `ui/css/*.css` (shared `ui/`; nothing to do unless you name the file)
 
 - The stylesheet is 15 files, `ui/css/010-base.css` … `150-iocheck.css` (the
