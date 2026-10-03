@@ -102,6 +102,9 @@ object Discovery {
                         val pkt = DatagramPacket(buf, buf.size)
                         try { s.receive(pkt) } catch (e: SocketTimeoutException) { continue }
                         val from = pkt.address?.hostAddress ?: continue
+                        // this phone's own BEGIA hears the broadcast too and
+                        // answers it: a phone is never a laptop to offer
+                        if (pkt.address.isLoopbackAddress || own.any { it.first.hostAddress == from }) continue
                         val j = try { JSONObject(String(pkt.data, 0, pkt.length, Charsets.UTF_8)) } catch (e: Exception) { continue }
                         if (j.optInt("begia", 0) < 1) continue
                         j.put("from", from).put("best", best(j, from, own))
