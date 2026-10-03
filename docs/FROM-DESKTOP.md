@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-03 — protocol badges and protocol-specific login fields (shared `ui/`; nothing to do)
+
+- `_signals_payload` carries `proto` (`s7plus` | `opcua` | `udp`, from the
+  node id) and the status frame carries `protocol` (the driver that is on);
+  the shared page shows S7 / UA / UDP beside every signal (`protoOf`,
+  `protoChip`, `.proto` styles).
+- The Setup form (`#cv-user-row`, `#cv-pass-label`) and the welcome door
+  hide the User field for S7 and call the password *PLC password*; the S7
+  driver sends a legitimation only when a password is set. If your shell
+  fills the welcome door itself, follow the same rule.
+
+---
+
 ## 2026-10-02 — `POST /api/path/check` and a *Check the path* button in Setup (shared `ui/`; nothing to do)
 
 `app/pathcheck.py`: the steps to the PLC - route, ping (advisory), port,
