@@ -105,7 +105,8 @@ def run(payload: Path, port: int, keep: bool) -> int:
         c.ok("slot marked good after the health check")
 
         status, page = api(port, "/")
-        assert status == 200 and b"app.js" in page and b"BEGIA" in page, status
+        assert (status == 200 and b"js/010-core.js" in page
+                and b'href="css/' in page and b"BEGIA" in page), status
         c.ok("serves the UI from the payload")
 
         status, r = api(port, "/api/sim/start", {})
@@ -153,6 +154,8 @@ def run(payload: Path, port: int, keep: bool) -> int:
         assert any("boot_test" in (t.get("name") or t.get("file") or "") for t in _list(trials)), trials
         c.ok("trial listed by the API")
 
+        _iocheck(port, c)
+
         # The simulator speaks OPC UA, so nothing above touched the S7comm-plus
         # driver - the one that reaches tags OPC UA hides. Prove it imports on
         # this stack from the installed slot, including the part that needs
@@ -165,6 +168,7 @@ def run(payload: Path, port: int, keep: bool) -> int:
             "import s7commplus.legitimation, s7commplus.typeinfo\n"
             "from app.s7plus import S7PlusDriver\n"
             "from app import driver, recorder, trigger, udp, tls\n"
+            "from app.iocheck import IoCheck\n"
             "print('ok')\n")
         r = subprocess.run([sys.executable, "-c", code, str(slot), str(slot / "vendor")],
                            capture_output=True, text=True, timeout=120,
@@ -185,6 +189,87 @@ def run(payload: Path, port: int, keep: bool) -> int:
                     if l.startswith("runtime ")), "")
     print(f"\nPASS  {c.n} checks  ({runtime})")
     return 0
+
+
+def _iocheck(port: int, c: Check) -> None:
+    """The I/O check on the simulator's cabinet, the way a FAT runs it from
+    the phone: inputs pressed, each one's DB member found by its pattern
+    alone. Nothing tells the check which member belongs to which input: it
+    watches every member of every DB, sets aside what moves by itself, and
+    names a member only once it followed the edge out AND the edge back -
+    one edge is not a pattern. The simulator wires DB_Cabinet.DI_xx into
+    FB_Cabinet.in_xx one cycle later, DI_07 inverted, DI_08 to nothing."""
+    status, page = api(port, "/")
+    if b"js/284-iocheck-popup.js" not in page:
+        print("  --  no I/O check search in this payload (built before it): skipped", flush=True)
+        return
+    assert b"css/155-iocheck-popup.css" in page
+    c.ok("serves the I/O check's five scripts and its popup sheet")
+
+    ids = {}
+    for name in ("DI_07", "DI_08", "DI_11"):
+        hits = _hits(api(port, f"/api/search?q={name}&limit=20")[1]) or []
+        ids[name] = next(h["node_id"] for h in hits
+                         if h.get("is_var") and h["node_id"].endswith(f'"DB_Cabinet"."{name}"'))
+    status, r = api(port, "/api/iocheck/inputs",
+                    {"items": [{"node_id": n, "path": f"DB_Cabinet.{k}"} for k, n in ids.items()],
+                     "cabinet": "boot", "rate_ms": 10})
+    assert status == 200 and r.get("added") == len(ids), r
+    c.ok(f"{len(ids)} cabinet inputs in the I/O check's list")
+
+    status, r = api(port, "/api/iocheck/start", {"name": "boot_test", "search": "every"})
+    assert status == 200, r
+    search = api(port, "/api/iocheck")[1]["session"]["search"]
+    assert search.get("mode") == "every" and search.get("watched", 0) > 0, search
+    c.ok(f"check started against every DB: {search['watched']} members watched, no match given")
+    # before the first press: a few seconds to learn what moves by itself
+    wait_for("the search to learn what moves by itself",
+             lambda: time.time() * 1000 > search["learn_until"] + 500, 15, every=0.25)
+
+    def press(name: str, value: int) -> None:
+        status, r = api(port, "/api/sim/cabinet/press", {"name": name, "value": value})
+        assert status == 200 and r.get("ok"), r
+
+    def mapping(name: str) -> dict:
+        return api(port, "/api/iocheck")[1]["session"]["mapping"].get(ids[name], {})
+
+    def found(name: str, state: str):
+        def probe():
+            m = mapping(name)
+            return m if m.get("state") == state else None
+        return wait_for(f"{name} {state}", probe, 10, every=0.25)
+
+    press("DI_11", 1)
+    found("DI_11", "searching")
+    time.sleep(1.0)
+    assert mapping("DI_11").get("state") == "searching", mapping("DI_11")
+    c.ok("DI_11 pressed and held: searching - one edge names nothing")
+    press("DI_11", 0)
+    to = found("DI_11", "mapped")["to"]
+    assert to[0]["name"].endswith("in_11") and to[0]["relation"] == "mapped", to[:2]
+    c.ok(f"DI_11 released: found {to[0]['name']}, {to[0]['lag_ms']} ms behind")
+
+    press("DI_07", 1)
+    time.sleep(1.0)
+    press("DI_07", 0)
+    to = found("DI_07", "mapped")["to"]
+    assert to[0]["name"].endswith("in_07") and to[0]["relation"] == "inverted", to[:2]
+    c.ok(f"DI_07 pressed and released: found {to[0]['name']}, inverted")
+
+    press("DI_08", 1)
+    time.sleep(1.0)
+    press("DI_08", 0)
+    found("DI_08", "not mapped")
+    time.sleep(1.5)                       # a member's late edge would still show
+    assert mapping("DI_08").get("state") == "not mapped", mapping("DI_08")
+    c.ok("DI_08 pressed and released: nothing in the DB follows it")
+
+    status, r = api(port, "/api/iocheck/stop", {})
+    assert status == 200, r
+    status, csv = api(port, "/api/iocheck/export.csv")
+    text = csv.decode("utf-8-sig") if isinstance(csv, bytes) else str(csv)
+    assert status == 200 and "found in the DB" in text and "in_11" in text and "in_07" in text, text[:400]
+    c.ok("check stopped; the CSV names the members found")
 
 
 def _hits(r):

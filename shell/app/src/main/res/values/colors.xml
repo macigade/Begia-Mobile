@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- the desktop's dark theme tokens, ui/style.css :root -->
+<!-- the desktop's dark theme tokens, ui/css/010-base.css :root -->
 <resources>
     <color name="bg">#0e141a</color>
     <color name="panel">#151d25</color>
