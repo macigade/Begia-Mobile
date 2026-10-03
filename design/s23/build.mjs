@@ -1,5 +1,5 @@
 // Builds the S23 artboards for the BEGIA Android canvas.
-// One copy of the BEGIA tokens (lifted from IBA-CODE/ui/style.css, --fs-scale 1),
+// One copy of the BEGIA tokens (lifted from IBA-CODE/ui/css/010-base.css, --fs-scale 1),
 // ten screens, one canvas.json. Run: node build.mjs
 import { writeFileSync } from "node:fs";
 
@@ -640,7 +640,7 @@ const canvas = {
     { file: "Rollback.dc.html", title: "Shell · rollback", x: 511, y: 2022, w: 411, h: 891 },
   ],
   annotations: [
-    { id: "frame", x: 0, y: -170, w: 411, text: "Samsung S23: 411 × 891 dp (1080 × 2340 at 2.625×). The top 28 dp and the bottom 20 dp are left to the system, no fake status bar here.\nEvery size is the desktop token at --fs-scale 1: same panel, line, accent, rec, warn; IBM Plex Sans / IBM Plex Mono; pane, statechip, btn, chip, wsel, card, trial bar are the classes in ui/style.css." },
+    { id: "frame", x: 0, y: -170, w: 411, text: "Samsung S23: 411 × 891 dp (1080 × 2340 at 2.625×). The top 28 dp and the bottom 20 dp are left to the system, no fake status bar here.\nEvery size is the desktop token at --fs-scale 1: same panel, line, accent, rec, warn; IBM Plex Sans / IBM Plex Mono; pane, statechip, btn, chip, wsel, card, trial bar are the classes in ui/css/." },
     { id: "layout-mode", x: 511, y: -170, w: 411, text: "Not a fork. This is a third layout mode, phone, beside classic and rail: the same DOM re-parented (placeNav already does this), the sidebar cards become the Signals, Trials and Setup tabs, the trial bar is docked and always visible.\nDigital signals are 22 dp lanes, not 96 dp charts: two lanes cost what half a pane used to." },
     { id: "gestures", x: 1453, y: 531, w: 380, text: "Touch replaces the modifier-wheel:\n• pinch = zoom time · drag = pan (steps out of live, LIVE rejoins)\n• long-press = cursor readout · double-tap = full recorded range\n• two-finger drag on an axis = offset that axis\n• tap a pane = landscape, one pane full screen; swipe = next pane\n• space / M / L / F keys become Start, Mark, LIVE, and the tap-to-maximize" },
     { id: "workflow", x: 1963, y: 0, w: 340, text: "The FAT day on a phone, in order of how often it happens:\n1 glance at live values\n2 Start · Mark · Stop, without navigating anywhere\n3 open a trial, share the CSV or the report, or send it to the laptop\n4 add a signal: search first, the tree is the fallback\n5 rarely: pick the furnace, the set, update the app\nAnalyse waits for a tablet width." },

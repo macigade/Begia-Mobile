@@ -16,7 +16,7 @@ import java.io.FileInputStream
  * the phone's own BEGIA and not in companion mode, because the laptop's
  * exe predated them.
  *
- * So the page's own files - index.html, app.js, style.css, the icons and
+ * So the page's own files - index.html, js/, css/, the icons and
  * fonts - are answered from the phone's installed payload (the active slot's
  * ui/, verified and signed like every payload), while everything that is
  * data - /api/..., the /ws socket - still goes to the laptop. The document

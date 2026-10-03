@@ -105,7 +105,8 @@ def run(payload: Path, port: int, keep: bool) -> int:
         c.ok("slot marked good after the health check")
 
         status, page = api(port, "/")
-        assert status == 200 and b"app.js" in page and b"BEGIA" in page, status
+        assert (status == 200 and b"js/010-core.js" in page
+                and b'href="css/' in page and b"BEGIA" in page), status
         c.ok("serves the UI from the payload")
 
         status, r = api(port, "/api/sim/start", {})

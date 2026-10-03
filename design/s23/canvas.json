@@ -87,7 +87,7 @@
       "x": 0,
       "y": -170,
       "w": 411,
-      "text": "Samsung S23: 411 × 891 dp (1080 × 2340 at 2.625×). The top 28 dp and the bottom 20 dp are left to the system, no fake status bar here.\nEvery size is the desktop token at --fs-scale 1: same panel, line, accent, rec, warn; IBM Plex Sans / IBM Plex Mono; pane, statechip, btn, chip, wsel, card, trial bar are the classes in ui/style.css."
+      "text": "Samsung S23: 411 × 891 dp (1080 × 2340 at 2.625×). The top 28 dp and the bottom 20 dp are left to the system, no fake status bar here.\nEvery size is the desktop token at --fs-scale 1: same panel, line, accent, rec, warn; IBM Plex Sans / IBM Plex Mono; pane, statechip, btn, chip, wsel, card, trial bar are the classes in ui/css/."
     },
     {
       "id": "layout-mode",

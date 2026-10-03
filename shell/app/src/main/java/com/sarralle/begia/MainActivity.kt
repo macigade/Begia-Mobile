@@ -157,7 +157,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** The status and navigation bars wear the page's theme (the app's own
-     *  meta theme-color per theme, ui/app.js THEME_META), light ones with
+     *  meta theme-color per theme, THEME_META in the desktop's
+     *  ui/js/100-theme.js), light ones with
      *  dark icons - a dark strip over the Daylight theme was the phone's
      *  own bar, not the page. Told by the page through BegiaShell.noteLook,
      *  and from the saved preference before the page exists. */
