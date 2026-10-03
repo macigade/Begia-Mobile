@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-03 — `ui/style.css` is `ui/css/*.css` (shared `ui/`; nothing to do unless you name the file)
+
+- The stylesheet is 15 files, `ui/css/010-base.css` … `150-iocheck.css` (the
+  I/O check's blocks, gathered; they shared no selector with what sat
+  between them), linked
+  in that order from `index.html` **and `boot.html`** (the boot page draws the
+  splash with them). Cut at the sheet's own banners, nothing moved: one
+  cascade, a later file wins a tie as a later rule did. The payload carries
+  the folder; `OwnUi.response` serves any path under the slot's `ui/`.
+- If anything of yours names `ui/style.css` (a grep, a test, a doc), it means
+  `ui/css/*.css` now; the desktop tests read it through
+  `require("./lib/ui").cssSource()` (joined in `index.html`'s order).
+- A rule you add goes in the file it belongs to, but never before a rule it
+  must beat: `100-ui-pass` and `140-late` are late on purpose.
+
 ## 2026-10-01 — the I/O check tab (on main since 2026-10-03; shared `ui/`, new routes)
 
 A loop-check list for digital inputs: the ticked bool signals are scanned for
