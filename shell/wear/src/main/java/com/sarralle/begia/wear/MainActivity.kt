@@ -102,13 +102,28 @@ private val BegiaColors = Colors(
 private const val PAGE_LIVE = 0
 private const val PAGE_SIGNALS = 1
 private const val PAGE_TRIAL = 2
-private const val PAGES = 3
+private const val PAGE_IO = 3
+private const val PAGES = 4
 
 @Composable
 fun BegiaWatch(link: WatchLink, buzz: () -> Unit) {
     val s by link.state
     val pager = rememberPagerState(pageCount = { PAGES })
     val scope = rememberCoroutineScope()
+
+    // The wrist follows the phone: into the I/O page when the phone's page
+    // opens the I/O check, back to Live when it leaves it (only if the I/O
+    // page is still showing - a swipe away on the wrist is the wrist's).
+    var followedMode by remember { mutableStateOf("") }
+    LaunchedEffect(s.mode) {
+        if (s.mode == "iocheck" && followedMode != "iocheck") pager.animateScrollToPage(PAGE_IO)
+        else if (s.mode != "iocheck" && followedMode == "iocheck" && pager.currentPage == PAGE_IO)
+            pager.animateScrollToPage(PAGE_LIVE)
+        followedMode = s.mode
+    }
+    // an input moved in the I/O check: felt, as on the phone
+    val moves by link.ioMoves
+    LaunchedEffect(moves) { if (moves > 0 && (s.mode == "iocheck" || pager.currentPage == PAGE_IO)) buzz() }
 
     MaterialTheme(colors = BegiaColors) {
         Scaffold(timeText = { TimeText() }, vignette = { Vignette(VignettePosition.TopAndBottom) }) {
@@ -119,6 +134,7 @@ fun BegiaWatch(link: WatchLink, buzz: () -> Unit) {
                         PAGE_SIGNALS -> SignalsPage(link, s) {
                             scope.launch { pager.animateScrollToPage(PAGE_LIVE) }
                         }
+                        PAGE_IO -> IoPage(link, s)
                         else -> TrialPage(link, s)
                     }
                 }
@@ -373,6 +389,70 @@ private fun TrialPage(link: WatchLink, s: WatchState) {
         if (s.error.isNotEmpty()) {
             Spacer(Modifier.height(6.dp))
             Text(s.error, color = Rec, fontSize = 11.sp, maxLines = 2, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+/**
+ * The I/O check, for the person at the cabinet: the input that moved last -
+ * its name, its address in the CPU (what is on the terminal), what it reads
+ * and where the check stands with it, the DB member found for it - the
+ * counts, and OK / Not OK for that input without the phone. The wrist comes
+ * here by itself when the phone opens the I/O check.
+ */
+@Composable
+private fun IoPage(link: WatchLink, s: WatchState) {
+    val io = s.io
+    Column(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp, vertical = 22.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(stringResource(R.string.io_title), color = Accent, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        when {
+            !s.linked || !s.up -> {
+                Spacer(Modifier.height(6.dp))
+                StateLine(s)
+            }
+            io == null -> Text(stringResource(R.string.io_none), color = Muted, fontSize = 12.sp,
+                               textAlign = TextAlign.Center, modifier = Modifier.padding(top = 6.dp))
+            else -> {
+                Text("${io.ok} ${stringResource(R.string.io_ok)} · ${io.nok} ${stringResource(R.string.io_nok)} · " +
+                     "${io.waiting + io.changed} ${stringResource(R.string.io_to_go)}",
+                     color = Muted, fontFamily = Mono, fontSize = 10.sp, maxLines = 1)
+                val l = io.last
+                if (l == null) {
+                    Text(stringResource(if (io.running) R.string.io_waiting else R.string.io_stopped),
+                         color = Muted, fontSize = 12.sp, textAlign = TextAlign.Center,
+                         modifier = Modifier.padding(top = 8.dp))
+                } else {
+                    Spacer(Modifier.height(4.dp))
+                    Text(l.name.substringAfterLast('.'), color = Ink, fontSize = 15.sp, fontWeight = FontWeight.Bold,
+                         maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+                    if (l.address.isNotEmpty()) Text(l.address, color = Accent, fontFamily = Mono, fontSize = 13.sp)
+                    val verdict = when (l.status) { "ok" -> "OK"; "nok" -> "NOT OK"; "skipped" -> "skipped"; else -> "" }
+                    Text(listOf(l.value, verdict).filter { it.isNotEmpty() }.joinToString("  ·  "),
+                         color = when (l.status) { "ok" -> Accent; "nok" -> Rec; else -> Ink },
+                         fontFamily = Mono, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                    if (l.member.isNotEmpty()) {
+                        Text(l.member, color = Muted, fontSize = 10.sp, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                             textAlign = TextAlign.Center)
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = { link.ioMark(l.nodeId, "ok") },
+                               colors = ButtonDefaults.buttonColors(backgroundColor = Accent, contentColor = Bg),
+                               modifier = Modifier.height(44.dp).width(64.dp)) {
+                            Text(stringResource(R.string.io_ok), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        }
+                        Button(onClick = { link.ioMark(l.nodeId, "nok") },
+                               colors = ButtonDefaults.buttonColors(backgroundColor = Rec, contentColor = Ink),
+                               modifier = Modifier.height(44.dp).width(64.dp)) {
+                            Text(stringResource(R.string.io_nok), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -35,12 +35,21 @@ class WearRelayService : WearableListenerService() {
             "/begia/start" -> post("/api/trial/start",
                 JSONObject().put("name", data.ifBlank { "watch " + stamp() }).put("pretrigger_s", 0).toString())
             "/begia/stop" -> post("/api/trial/stop", "{}")
+            // the I/O check's OK / not OK from the wrist: data is
+            // {"node_id", "verdict"} for POST /api/iocheck/mark
+            "/begia/iomark" -> try {
+                val j = JSONObject(data)
+                post("/api/iocheck/mark", JSONObject().put("node_id", j.optString("node_id"))
+                    .put("verdict", j.optString("verdict", "ok")).toString())
+            } catch (e: Exception) { "not a mark" }
             else -> return
         }
         val reply = watchState(lastChosen)
         // which signal this answer is for: the watch shows an answer only for
         // the signal picked now, so a stale question cannot overwrite a pick
         reply.put("asked", lastChosen)
+        // the page's module: the watch follows the phone into the I/O check
+        reply.put("mode", PageState.watchMode())
         if (!error.isNullOrEmpty()) reply.put("error", error)
         // the wrist sees what the phone sees: in second-screen mode, whose
         Source.remote(this)?.let { reply.put("source", Source.host(it)) }

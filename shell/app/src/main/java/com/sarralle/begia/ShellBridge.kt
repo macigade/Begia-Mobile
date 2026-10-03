@@ -42,6 +42,13 @@ class ShellBridge(private val activity: MainActivity) {
         activity.checkLaptop(infoUrl)
     }
 
+    /** The page's module, from markModule: the watch follows the phone into
+     *  the I/O check (PageState). */
+    @JavascriptInterface
+    fun noteModule(m: String) {
+        PageState.module = m
+    }
+
     /** Look for BEGIA on this WiFi (UDP "BEGIA?" on 4858); the answer
      *  arrives as a `begia-found` event on window. */
     @JavascriptInterface

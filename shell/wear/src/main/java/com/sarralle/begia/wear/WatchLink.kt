@@ -22,6 +22,14 @@ import java.util.concurrent.TimeUnit
 data class Sig(val id: String, val name: String, val unit: String, val value: String, val bool: Boolean,
                val text: Boolean = false)   // a STRING tag: its value is words, sent on change
 
+/** The input the I/O check saw move last (GET /api/watch "iocheck.last"). */
+data class IoLast(val nodeId: String, val name: String, val address: String, val value: String,
+                  val status: String, val count: Int, val atMs: Long, val member: String)
+
+/** The I/O check on the phone: its counts and the input that moved last. */
+data class IoState(val running: Boolean, val name: String, val total: Int, val ok: Int, val nok: Int,
+                   val waiting: Int, val changed: Int, val skipped: Int, val last: IoLast?)
+
 /** What the wrist knows about the recorder, as of the last reply. */
 data class WatchState(
     val linked: Boolean = false,      // a phone with BEGIA is reachable over Bluetooth
@@ -44,6 +52,9 @@ data class WatchState(
     // dash then (desktop: readings are dashes while the link is down); so
     // does the wrist, rather than a number minutes old that looks live.
     val stale: Boolean = false,
+    // "iocheck" while the phone's page shows the I/O check: the wrist follows
+    val mode: String = "",
+    val io: IoState? = null,
 )
 
 /**
@@ -110,6 +121,14 @@ class WatchLink private constructor(private val ctx: Context) : MessageClient.On
     fun mark() = act("/begia/mark", "mark (watch)")
     fun startTrial() = act("/begia/start", "")
     fun stopTrial() = act("/begia/stop", "")
+
+    /** The I/O check's verdict on an input, from the wrist: "ok" or "nok". */
+    fun ioMark(nodeId: String, verdict: String) =
+        act("/begia/iomark", JSONObject().put("node_id", nodeId).put("verdict", verdict).toString())
+
+    /** Counts the inputs seen to move since the app opened: the I/O page
+     *  buzzes on each. */
+    val ioMoves = androidx.compose.runtime.mutableIntStateOf(0)
 
     /** Show this signal on the Live page from now on. */
     fun choose(id: String) {
@@ -196,12 +215,34 @@ class WatchLink private constructor(private val ctx: Context) : MessageClient.On
             error = j.optString("error", ""),
             nowMs = j.optLong("now_ms", 0L),
             receivedAt = System.currentTimeMillis(),
+            mode = j.optString("mode", ""),
+            io = parseIo(j.optJSONObject("iocheck")),
         )
+        val wasIoAt = state.value.io?.last?.atMs
         state.value = next
         if (next.recording && next.marks > wasMarks && wasMarks >= 0) {
             justMarked.value = true
             scope?.launch { delay(1500); justMarked.value = false }
         }
+        // an input moved: the I/O page buzzes, as the phone does
+        val ioAt = next.io?.last?.atMs
+        if (ioAt != null && wasIoAt != null && ioAt != wasIoAt) ioMoves.intValue += 1
+    }
+
+    private fun parseIo(o: JSONObject?): IoState? {
+        if (o == null) return null
+        val sm = o.optJSONObject("summary") ?: JSONObject()
+        val l = o.optJSONObject("last")
+        return IoState(
+            running = o.optBoolean("running", false), name = o.optString("name", ""),
+            total = sm.optInt("total", 0), ok = sm.optInt("ok", 0), nok = sm.optInt("nok", 0),
+            waiting = sm.optInt("waiting", 0), changed = sm.optInt("changed", 0), skipped = sm.optInt("skipped", 0),
+            last = l?.let {
+                IoLast(it.optString("node_id"), it.optString("name"), it.optString("address"),
+                       it.optString("value"), it.optString("status"), it.optInt("count", 0),
+                       it.optLong("at_ms", 0L), it.optString("member"))
+            },
+        )
     }
 
     companion object {

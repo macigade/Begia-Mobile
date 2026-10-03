@@ -14,4 +14,12 @@
     <string name="keep">Keep going</string>
     <string name="marks">marks</string>
     <string name="pick_signal">watch which signal</string>
+    <!-- the I/O check page: the phone opened the I/O check -->
+    <string name="io_title">I/O check</string>
+    <string name="io_none">no I/O check on the phone - open it there</string>
+    <string name="io_waiting">waiting for an input to move</string>
+    <string name="io_stopped">the check is stopped</string>
+    <string name="io_ok">OK</string>
+    <string name="io_nok">Not OK</string>
+    <string name="io_to_go">to go</string>
 </resources>
