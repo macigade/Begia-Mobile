@@ -74,7 +74,11 @@ reaches you with the next payload:
   serves any path under the slot's `ui/`, so companion mode draws the new
   page unchanged.
 - **Do:** `tools/boot_test.py` asserts `b"app.js" in page`; make it
-  `b"js/010-core.js"`. Anything else of yours that names `ui/app.js` (a
+  `b"js/010-core.js"`. *Done for you on a branch:* `restructure/desktop-ui-split`
+  (`ff810b9`) in Begia-Mobile has that fix plus the comments in
+  `MainActivity.kt`, `OwnUi.kt`, both `colors.xml` and `design/s23` that
+  named `ui/app.js` / `ui/style.css`; your 27 tests pass on it. Comments and
+  the test only, no Kotlin code - merge it when you next build. Anything else of yours that names `ui/app.js` (a
   grep, a doc, a test) means `ui/js/*.js` now. The desktop JS tests read
   the scripts through `tests/lib/ui.js` (`appSource()` joins them in
   `index.html`'s order) if you want the same.
