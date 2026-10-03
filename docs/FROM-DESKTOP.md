@@ -20,6 +20,35 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-01 — the I/O check tab (on main since 2026-10-03; shared `ui/`, new routes)
+
+A loop-check list for digital inputs: the ticked bool signals are scanned for
+edges from the moment the check starts, each change is named as it arrives,
+rows get OK / not OK / skipped. `docs/IOCHECK.md` is the brief.
+It is on main now (merged 2026-10-03, after the restructure below), so this
+reaches you with the next payload:
+
+- A new tab, `data-mod="iocheck"`, between Signals and Setup, **shown on the
+  phone too** (the field end is who needs it); its phone tab icon sits with
+  the others in `style.css`. `markModule` sets `data-mod="iocheck"` on the
+  root like any module; the view `#iocheck-view` replaces the chart area the
+  way Signals does.
+- A new file `ui/js/280-iocheck.js`, the last of the page's scripts (after
+  `js/270-boot.js`; it is in the `<script>` list like the others). It is in
+  the payload if the payload carries all of `ui/` (`tools/make_payload.py`
+  zips the directory); say if your shell lists files by name instead.
+- New routes `GET /api/iocheck`, `POST /api/iocheck/{start,stop,mark,reset}`,
+  `GET /api/iocheck/export.csv`, all behind sign-in and licence - the
+  phone's own BEGIA is loopback and never asked. A new socket frame
+  `type: "iocheck"` (and `iocheck_inputs`), handed by `js/020-api.js` to
+  `js/280-iocheck.js` as a `begia-iocheck` (`begia-iocheck-inputs`) window
+  event. Later entries on the branch added the module switch left of the
+  eye (`#suite`; the root carries `data-suite`), the Inputs tab
+  (`data-mod="ioinputs"`, `#ioinputs-view`), the routes under
+  `/api/iocheck/inputs*` and `/api/sim/cabinet*` - all in `docs/IOCHECK.md`.
+- On a change the page calls `navigator.vibrate(120)`, guarded: without the
+  VIBRATE permission in the shell nothing happens. Add it if you want the
+  buzz in the field end's hand.
 ## 2026-10-03 — the restructure: `app/` is packages, `ui/app.js` is `ui/js/*.js` (shared `app/` and `ui/`; one thing to do)
 
 - `ui/app.js` is gone. The page's code is `ui/js/010-core.js` … `270-boot.js`,
