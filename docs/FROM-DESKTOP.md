@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-03 — the restructure: `app/` is packages, `ui/app.js` is `ui/js/*.js` (shared `app/` and `ui/`; one thing to do)
+
+- `ui/app.js` is gone. The page's code is `ui/js/010-core.js` … `270-boot.js`,
+  classic scripts `index.html` loads in order (the number is the order; one
+  global scope; the split cuts at the section banners, nothing moved, two
+  spots guarded for the load order). The payload carries the folder as it
+  carries `ui/` (`tools/make_payload.py` walks it), and `OwnUi.response`
+  serves any path under the slot's `ui/`, so companion mode draws the new
+  page unchanged.
+- **Do:** `tools/boot_test.py` asserts `b"app.js" in page`; make it
+  `b"js/010-core.js"`. Anything else of yours that names `ui/app.js` (a
+  grep, a doc, a test) means `ui/js/*.js` now. The desktop JS tests read
+  the scripts through `tests/lib/ui.js` (`appSource()` joins them in
+  `index.html`'s order) if you want the same.
+- `app/` is packages now (phases 1-4 of `docs/RESTRUCTURE-PLAN.md`):
+  `app/recording/`, `app/drivers/` (`opcua.py`, `s7plus/`, `udp.py`),
+  `app/access/`, `app/net/`, `app/sim/`, and `main.py` split into
+  `state.py`, `push.py`, `gates.py`, `serve.py` and `routes/*`. Every old
+  name (`app.recorder`, `app.s7plus`, `app.driver`, `app.licence`,
+  `app.discover`, `app.main.X` …) still imports and forwards reads *and*
+  writes, so the phone's `app.main` boot and anything that patches through
+  an old name keep working. The payload ships the packages as bytecode as
+  before; `app/main.pyc` is still the entry. The map: `docs/ARCHITECTURE.md`.
+
 ## 2026-10-03 — protocol badges and protocol-specific login fields (shared `ui/`; nothing to do)
 
 - `_signals_payload` carries `proto` (`s7plus` | `opcua` | `udp`, from the
