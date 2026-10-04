@@ -51,11 +51,16 @@ object Recorder {
      *  last start - the build, a rollback note, or the error. */
     fun lastBoot(ctx: Context): JSONObject? = readJson(lastBootFile(ctx))
 
-    /** True when a failed start has an earlier build to fall back to. */
+    /** True when the next start will roll a failed one back: its build was
+     *  left "booting" and there is an earlier build to fall back to. A data
+     *  folder that refused clears "booting" (boot.DataError) - restarting
+     *  then would only meet the same folder, in a loop. */
     fun canRollBack(ctx: Context): Boolean {
         val s = slotState(ctx) ?: return false
-        val prev = s.optString("previous", "")
-        return prev.isNotEmpty() && prev != s.optString("active", "")
+        // a JSON null reads as "null" through optString
+        fun str(k: String) = if (s.isNull(k)) "" else s.optString(k, "")
+        val prev = str("previous")
+        return str("booting").isNotEmpty() && prev.isNotEmpty() && prev != str("active")
     }
 
     private fun readJson(f: File): JSONObject? = try {

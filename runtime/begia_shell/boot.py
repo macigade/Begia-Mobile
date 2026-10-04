@@ -35,6 +35,22 @@ HOST = "127.0.0.1"
 PORT = 8080
 
 
+class DataError(Exception):
+    """The payload said its data folder cannot be used: app/config.py's
+    StartupError, raised while app.main is imported - the folder will not
+    take a file, or config.json will not open (a lock, not damage). That is
+    the phone's storage, not the payload: every other build would meet the
+    same folder, so it is not rolled back. The message is the payload's own,
+    written for the operator."""
+
+
+def _is_startup_error(e: BaseException) -> bool:
+    # By name: the class is the payload's, and a failed import of app.config
+    # takes it back out of sys.modules - there is nothing to isinstance
+    # against. An older payload has no StartupError and never matches.
+    return any(c.__name__ == "StartupError" for c in type(e).__mro__)
+
+
 def prepare(slot: Path, data_dir: Path) -> dict:
     """Environment and sys.path for this slot. Must run before app.* is
     imported: app/config.py resolves its paths at import time."""
@@ -94,7 +110,12 @@ def serve(slot: Path, data_dir: Path, host: str = HOST, port: int = PORT,
     m = prepare(slot, data_dir)
     print(f"booting BEGIA {m['version']} ({m['build']}) from {slot}", flush=True)
     print("runtime " + " ".join(f"{k}={v}" for k, v in versions().items()), flush=True)
-    server = make_server(host, port)
+    try:
+        server = make_server(host, port)
+    except Exception as e:
+        if _is_startup_error(e):
+            raise DataError(str(e)) from e
+        raise
     thread = threading.Thread(target=server.run, name="begia-server", daemon=True)
     thread.start()
     try:
@@ -108,19 +129,31 @@ def serve(slot: Path, data_dir: Path, host: str = HOST, port: int = PORT,
     return server, thread, state
 
 
+def _boot(slots: pl.Slots, slot: Path, data_dir: Path, host: str, port: int,
+          health_timeout: float):
+    """serve() the slot with `booting` set around it. A DataError clears it
+    again: not this build's fault, so no rollback on the next start."""
+    build = pl.slot_manifest(slot)["build"]
+    slots.mark_booting(build)
+    try:
+        return serve(slot, data_dir, host, port, health_timeout,
+                     on_healthy=lambda _s: slots.mark_good(build))
+    except DataError:
+        slots.clear_booting(build)
+        raise
+
+
 def start(slots_dir: Path, data_dir: Path, port: int = PORT, host: str = HOST,
           health_timeout: float = 30.0) -> dict:
     """The phone's entry point: choose the slot, boot it, record the outcome.
     Returns the state payload. Raises PayloadError / TimeoutError / ImportError
-    with `booting` left set, so the next process start rolls back."""
+    with `booting` left set, so the next process start rolls back; DataError
+    with it cleared, so the same build boots again once the folder is fixed."""
     slots = pl.Slots(slots_dir)
     slot, note = slots.resolve_for_boot()
     if note:
         print(f"ROLLBACK: {note}", flush=True)
-    build = pl.slot_manifest(slot)["build"]
-    slots.mark_booting(build)
-    _, _, state = serve(slot, data_dir, host, port, health_timeout,
-                        on_healthy=lambda _s: slots.mark_good(build))
+    _, _, state = _boot(slots, slot, data_dir, host, port, health_timeout)
     state["rollback_note"] = note
     return state
 
@@ -147,11 +180,8 @@ def main(argv=None) -> int:
         slot, note = slots.resolve_for_boot()
         if note:
             print(f"ROLLBACK: {note}", flush=True)
-        build = pl.slot_manifest(slot)["build"]
-        slots.mark_booting(build)
-        server, thread, _ = serve(slot, a.data, a.host, a.port, a.health_timeout,
-                                  on_healthy=lambda _s: slots.mark_good(build))
-    except (pl.PayloadError, TimeoutError, ImportError) as e:
+        server, thread, _ = _boot(slots, slot, a.data, a.host, a.port, a.health_timeout)
+    except (pl.PayloadError, DataError, TimeoutError, ImportError) as e:
         print(f"FAILED: {e}", flush=True)
         return 1
     if a.exit_when_healthy:

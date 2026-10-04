@@ -268,6 +268,11 @@ class Slots:
         self.save()
 
     def mark_good(self, build: str) -> None:
+        self.clear_booting(build)
+
+    def clear_booting(self, build: str) -> None:
+        """Healthy - or failed for a reason that is not the build's own
+        (boot.DataError): either way the next start boots it again."""
         if self.state.get("booting") == build:
             self.state["booting"] = None
             self.save()
