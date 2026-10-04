@@ -20,6 +20,65 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-04 — the bug hunt's remaining defects (shared `app/` and `ui/`; one thing done on your side)
+
+All of it reaches the phone with the next payload. What it can see:
+
+- **Configuration**: the stored models keep unknown keys (a `Stored` base,
+  `class Config: extra = "allow"` on v1) - your `keep_unknown_check.py`
+  passed 15/15 on the phone venv. `app.main` can raise
+  `app.config.StartupError` at import when the data folder cannot be made or
+  written, or config.json cannot be opened; your `2662a6f` (boot.py, not yet
+  pushed) treats it as the data folder's problem, not the payload's.
+- **Events**: the recorder writes "recording degraded" / "samples lost" /
+  "recording resumed" itself (resumed after 5 s of landed flushes), and
+  every mark written to a running trial is sent as `{"type": "event"}`;
+  the `init` frame gains `recording_events` (the running trial's marks from
+  its file). The shared page handles both.
+- **Exports**: CSV preamble lines are raw `#` lines; a quote, apostrophe or
+  line break as the separator is a 422; the zone line is reworded.
+- **S7**: more types decode (S5TIME, DATE_AND_TIME, LDT, TIME_OF_DAY,
+  WCHAR, LTOD); a type that cannot is listed in `unsubscribed` and refused
+  by the Start checks.
+- **Routes**: PUT `/api/trigger` drops unknown body keys and merges into the
+  stored trigger; GET `/api/trials` runs off the event loop.
+
+---
+
+## 2026-10-04 — trials start only on evidence they can stand behind (shared `app/` and `ui/`; nothing to do)
+
+The phone runs the same `app/` from the payload, so all of this reaches it
+with the next one. What it can see:
+
+- **The trigger frame** gains `refused` (the reason a fire did not start a
+  trial, `""` when none) and `refused_ms`. The shared page toasts each
+  refusal once and keeps the reason under the chip while armed. A trigger
+  fire now passes the Start button's checks (`start_checks()` in
+  `app/routes/recording.py`): every signal missing, a refused signal, under
+  100 MB free, not connected - including a UDP trigger while the PLC link
+  is down, which used to start a trial of flat PLC columns.
+- **New 409s.** `POST /api/trial/start` while the PLC source is being
+  changed (*the PLC connection is being changed - start the trial when it is
+  done*); the signal adds (`/api/signals`, `/bulk`, `/import`, `/preset`,
+  `/repoint`) and `POST /api/iocheck/inputs` when a switch is under way or
+  the source changed (or a trial started) while they probed - nothing is
+  added, retry. A negative pre-trigger with no PLC now answers 422 before
+  the 409.
+- **423 from a refused copy**: a BEGIA that is the second copy on its data
+  folder answers 423 with a sentence to every non-GET `/api/*` except
+  `/api/login`, `/api/logout`, `/api/path/check` and `/api/welcome/skip`.
+  On the phone that only happens if the shell ever runs two recorders on
+  one `TRIALREC_DATA_DIR`. `config_warnings()` can carry a `LOCK_WARNING`
+  where the folder cannot be locked at all.
+- **The Signals table at 320 px**: under 400 px the pane select gets the
+  width left after the tick, the address and the delete button, and the
+  add-signals row wraps (`ui/css/120-phone.css`) - the overflow you measured.
+- **`/api/watch`** carries the `iocheck` block when a check exists (your
+  `1ab0a7c`), and discovery answers again (your `f672aab`); both are on main
+  under this entry and in the next exe and payload.
+
+---
+
 ## 2026-10-03 — the I/O check finds the DB member by its pattern; the CPU's %I address (shared `ui/`, `app/`; the payload and a config field)
 
 - **The popup is new** (`ui/js/284-iocheck-popup.js`, `ui/css/155-iocheck-popup.css`): an
