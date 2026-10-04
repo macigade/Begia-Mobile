@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-04 — the bug hunt's remaining defects (shared `app/` and `ui/`; one thing done on your side)
+
+All of it reaches the phone with the next payload. What it can see:
+
+- **Configuration**: the stored models keep unknown keys (a `Stored` base,
+  `class Config: extra = "allow"` on v1) - your `keep_unknown_check.py`
+  passed 15/15 on the phone venv. `app.main` can raise
+  `app.config.StartupError` at import when the data folder cannot be made or
+  written, or config.json cannot be opened; your `2662a6f` (boot.py, not yet
+  pushed) treats it as the data folder's problem, not the payload's.
+- **Events**: the recorder writes "recording degraded" / "samples lost" /
+  "recording resumed" itself (resumed after 5 s of landed flushes), and
+  every mark written to a running trial is sent as `{"type": "event"}`;
+  the `init` frame gains `recording_events` (the running trial's marks from
+  its file). The shared page handles both.
+- **Exports**: CSV preamble lines are raw `#` lines; a quote, apostrophe or
+  line break as the separator is a 422; the zone line is reworded.
+- **S7**: more types decode (S5TIME, DATE_AND_TIME, LDT, TIME_OF_DAY,
+  WCHAR, LTOD); a type that cannot is listed in `unsubscribed` and refused
+  by the Start checks.
+- **Routes**: PUT `/api/trigger` drops unknown body keys and merges into the
+  stored trigger; GET `/api/trials` runs off the event loop.
+
+---
+
 ## 2026-10-04 — trials start only on evidence they can stand behind (shared `app/` and `ui/`; nothing to do)
 
 The phone runs the same `app/` from the payload, so all of this reaches it
