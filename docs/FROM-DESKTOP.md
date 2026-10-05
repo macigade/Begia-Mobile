@@ -20,6 +20,29 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-05, later — the S7 / OPC UA tabs switch the connection; a `connections` frame after every switch (shared `app/` and `ui/`; nothing to do)
+
+All of it reaches the phone with the next payload:
+
+- **The S7 / OPC UA tabs** now sit in the picker's search bar, the I/O
+  check's search bar and the Signals toolbar, and they **switch the
+  connection**: `POST /api/connections/connect` to this PLC's saved
+  connection over the other protocol (same host), or `POST /api/connections`
+  with `connect: true` to save one for the same host first. Both after a
+  confirm. The Signals table's protocol *filter* from the entry below is
+  gone - the list is always the active connection's own.
+- **Every switch sends a `connections` frame** (after the source lock is let
+  go): `/api/connections/connect`, `/api/welcome/connect` and
+  save-and-connect. Only a save did before, so a page kept marking the old
+  connection as live. The page that asked also applies the answer at once.
+- **A page event**, `begia-source-changed` on `window`, when the status's
+  protocol or endpoint changes: the picker's search and the I/O check's
+  hits are cleared, as an address found over one protocol is none over the
+  other.
+- The strip over the charts is called **Strings** (the owner's word).
+
+---
+
 ## 2026-10-05 — step texts on the time axis, S7 strings, types, protocol tabs (shared `app/` and `ui/`; run the boot test)
 
 All of it reaches the phone with the next payload. What it can see:
@@ -33,7 +56,7 @@ All of it reaches the phone with the next payload. What it can see:
   20 000 changes across all signals). `data` frames gain `text_log` - every
   change since the last push, same shape - beside `texts` (still the latest
   only). The shared page draws them; nothing else needs to read them.
-- **The page**: a *Steps* strip (lanes, like the digital ones) over the
+- **The page**: a *Strings* strip (lanes, like the digital ones) over the
   charts when there are text signals; on a phone its header is just its
   name and *in charts*, as for a digital strip. Step lines through the
   charts and step rows in their readout. The Signals table has S7 / OPC UA /
