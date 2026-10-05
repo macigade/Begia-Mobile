@@ -20,6 +20,34 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-05 — step texts on the time axis, S7 strings, types, protocol tabs (shared `app/` and `ui/`; run the boot test)
+
+All of it reaches the phone with the next payload. What it can see:
+
+- **A new page script**, `ui/js/185-steps.js`, loaded from `index.html`
+  right after `180-panes.js`. `tools/boot_test.py` reads the list from
+  `index.html`; run it on the payload.
+- **Frames**: `init` gains `text_backfill` - `{node_id: [[t_ms, text, good],
+  ...]}`, what each text signal said over the backfill's look backwards,
+  oldest first, the change in force when it begins included (capped at
+  20 000 changes across all signals). `data` frames gain `text_log` - every
+  change since the last push, same shape - beside `texts` (still the latest
+  only). The shared page draws them; nothing else needs to read them.
+- **The page**: a *Steps* strip (lanes, like the digital ones) over the
+  charts when there are text signals; on a phone its header is just its
+  name and *in charts*, as for a digital strip. Step lines through the
+  charts and step rows in their readout. The Signals table has S7 / OPC UA /
+  All tabs, on their own row on a phone. A trial's digital lanes draw in
+  Review (they were -2 px high).
+- **Routes**: `GET /api/diag/texts` (gated like every other route) - what
+  the S7 CPU last answered for each text tag. The block, import and preset
+  adds store `dtype`; `GET /api/signals` may save the configuration once
+  when the driver reports types it did not have.
+- **S7**: a text tag is read in a request of its own, at most every 100 ms.
+  The hub never stamps a text change earlier than the one before it.
+
+---
+
 ## 2026-10-04 — the bug hunt's remaining defects (shared `app/` and `ui/`; one thing done on your side)
 
 All of it reaches the phone with the next payload. What it can see:
