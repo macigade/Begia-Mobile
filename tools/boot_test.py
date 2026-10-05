@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import signal
 import sqlite3
@@ -204,7 +205,11 @@ def _iocheck(port: int, c: Check) -> None:
         print("  --  no I/O check search in this payload (built before it): skipped", flush=True)
         return
     assert b"css/155-iocheck-popup.css" in page
-    c.ok("serves the I/O check's five scripts and its popup sheet")
+    # the page lists them; five until the Inputs tree (287) made six
+    scripts = re.findall(rb'src="(js/2\d\d-iocheck[^"]*\.js)"', page)
+    for s in scripts:
+        assert api(port, "/" + s.decode())[0] == 200, s
+    c.ok(f"serves the I/O check's {len(scripts)} scripts and its popup sheet")
 
     ids = {}
     for name in ("DI_07", "DI_08", "DI_11"):
