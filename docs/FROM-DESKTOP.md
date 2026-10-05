@@ -40,6 +40,11 @@ All of it reaches the phone with the next payload:
   hits are cleared, as an address found over one protocol is none over the
   other.
 - The strip over the charts is called **Strings** (the owner's word).
+- **A connect to a PLC switches the simulator off** (`/api/connect` to a
+  non-simulator address, and every switch through a saved connection):
+  `sim.enabled` false, `sim.prev_endpoint` empty, its server stopped - a
+  restart comes back on the PLC, not the simulator. `GET /api/sim/cabinet`
+  answers `running: false` unless the driver is reading the simulator.
 
 ---
 
