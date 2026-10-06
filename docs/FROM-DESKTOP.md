@@ -20,6 +20,32 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-06, later — Y axes under a finger, the highlight, the selected-only sidebar, trial panes that move (shared `ui/`; check on a device)
+
+All page-side; it reaches the phone with the next payload:
+
+- **A finger on a Y axis** (Monitor and Analyse): each chart gets two
+  `.u-axis-touch` areas over its Y axis columns (`touch-action: none`,
+  placed by `placeAxisTouch`, re-placed on every `setSize`). A one-finger
+  drag offsets the axis under it, a two-finger pinch zooms it - no hold any
+  more. The old hold-then-drag lost to finger jitter on a real phone (the
+  page's `pan-y` scroll took the move). The page still scrolls from the plot
+  and the headers. **Please check on the S23/S10e**: in Monitor and in
+  Analyse, drag a Y axis up and down, and pinch it.
+- **Monitor's Y gestures** now find the axis column under the pointer
+  (`axisKeyAt: axisColumnAt`, as Analyse) - before, they asked for a scale
+  "y" the per-signal panes do not have, and did nothing.
+- **Axis names**: hovering a Y axis (or a finger on it) shows `.u-axis-name`
+  with the signal(s) it measures.
+- **Highlight**: `.ph-flash` on a pane header readout, `.sig-flash` on a
+  sidebar row (flashTrace / flashLiveSignal). The sidebar's `.sig-act`
+  (●/○ acquire switch) is gone; the sidebar lists only `active` signals.
+- **Review**: Combined gets the Strings strip (`mountCombinedSteps`) and
+  step guides; Panes' charts move by a grip, the order kept in
+  `localStorage` under `trial_order:<file>`.
+
+---
+
 ## 2026-10-06 — a running I/O check keeps its PLC: switches refused while it runs (shared `app/` and `ui/`; show the 409's detail)
 
 - **New 409s while an I/O check runs**, when the switch goes to another PLC
