@@ -20,6 +20,306 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-06 — a running I/O check keeps its PLC: switches refused while it runs (shared `app/` and `ui/`; show the 409's detail)
+
+- **New 409s while an I/O check runs**, when the switch goes to another PLC
+  (another protocol, host or port; a port left out is the protocol's own):
+  `POST /api/connect`, `/api/welcome/connect`, `/api/sim/start`,
+  `/api/sim/stop`, `/api/connections` with `connect: true`, and
+  `/api/connections/connect`. The detail is *stop the I/O check before
+  changing the connection*. `POST /api/profiles/load` answers *stop the I/O
+  check before loading a profile* whatever the address. A reconnect to the
+  same PLC passes, so does a check from before this build, and so does any
+  switch when no check runs.
+- **The session gains `source`** `{connection, endpoint}`: the connection and
+  the address the driver dialled at Start. A file from before resumes with
+  `{}`.
+- **`POST /api/iocheck/start`** answers **409** during a switch. It also
+  answers **409** when the connection changed (*the PLC connection changed
+  while the DBs were listed*) or the link dropped (*the link to the PLC
+  dropped while the DBs were listed - start again*) during the listing.
+- **Over S7**, `/api/iocheck/start` with `search: "area"`,
+  `/api/iocheck/scope`'s `area_error` and `POST /api/iocheck/areas` answer
+  *the PLC's block list is still loading - try again in a moment* until the
+  block list is complete.
+- **The page's S7 / OPC UA tabs** refuse with the same words before asking
+  anything while a check runs.
+- **Do:** if the phone shell switches connections on its own, expect these
+  409s while a check runs and show the detail. The boot test is unaffected:
+  it connects before it starts its check.
+
+---
+
+## 2026-10-06 — the S7 driver's stop no longer hangs on Python 3.11; the slim landscape bar (shared `app/` and `ui/`; nothing to do)
+
+All of it reaches the phone with the next payload:
+
+- **S7, Python 3.11**: every request deadline in `app/drivers/s7plus/driver.py`
+  (each read, the connect, the goodbye) is `asyncio.timeout` now, not
+  `asyncio.wait_for` - on 3.11 the latter drops a cancel that lands in the
+  same loop turn as the answer, so `stop()` waited for ever with the source
+  lock held (every switch and start behind it). Reproduced 5 of 5 on CPython
+  3.11.16 before, cancelled 5 of 5 after; an unanswered request still raises
+  `TimeoutError("no answer from the PLC in ... s")`. `stop()` also cancels
+  until the task is done. The same race as the OPC UA watchdog's (entry
+  below). Test: `tests/py/test_s7_cancel_race.py`.
+- **Phone, landscape**: `#topbar` is 44 px (+ safe area) sideways, as the
+  landscape block in `css/120-phone.css` always meant - the safe-area rule
+  after it set 56 px and won.
+- **Picker rows**: the `.proto` chip has `order: 2`, after the name.
+- `tests/py/test_bug_hunt_config.py` reads the model's fields the pydantic-1
+  way too (`__fields__`), so it passes on the phone stack.
+
+---
+
+## 2026-10-05, night — one name per tag in the CSV and on the watch (shared `app/`; nothing to do)
+
+- **`GET /api/watch`**: the `iocheck` block's `last.name` for an S7 area tag
+  reads `FAT_NH`, not `IArea.FAT_NH`. `last.node_id` (what OK / Not OK post)
+  and `last.address` (`%I12.3`) are unchanged, and no key changed.
+- **The CSV's** *name* and *together with* columns, and the member names in
+  *found in the DB*, drop the `IArea.` / `QArea.` / `MArea.` prefix. The
+  *address* column keeps the full node path. `app/iocheck/rules.py
+  display_name()` does it, as the page's `iocLabel` does.
+
+---
+
+## 2026-10-05, night — the Inputs tab's Left and Right: two browsers, references on the right, one label per tag (shared `app/` and `ui/`; do: ship `js/287-iocheck-tree.js`, drop the old Inputs ids)
+
+**The page:**
+- **New script `ui/js/287-iocheck-tree.js`**, loaded between 286 and 288.
+  **Do:** add it wherever the phone lists the page's files. The boot test's
+  284/155 checks are unchanged.
+- **New `#ioinputs-view` markup.**
+  - Gone: `ioi-q`, `ioi-search`, `ioi-hits`, `ioi-hits-count`, `ioi-add`,
+    `ioi-add-db`, `ioi-to-db`, `ioi-to-io`, `ioi-db-cabinet-set`.
+  - New: `ioi-sides`, `ioi-left`, `ioi-right`, and per side
+    `ioi-{l,r}-{title,show,count,q,clear,view,results,browse,tree,foot,chosen}`,
+    plus `ioi-l-all` and `ioi-r-every`.
+  - Kept: `ioi-cabinet`, `ioi-list`, `ioi-list-title`, `ioi-cabinet-set`,
+    `ioi-remove`, `ioi-dblist`, `ioi-dblist-title`, `ioi-db-remove`.
+  - `data-side="l|r"` sits on the view. The Check toolbar gains
+    `#ioc-start-note`.
+  - **Do:** update anything of yours that reached for the old ids.
+- **The module names `ioinputs` and `iocheck` are unchanged** (markModule),
+  so the shell and the watch follow as before.
+- **The phone shows one side at a time.** The side is remembered in
+  localStorage `ioi-side`; the lists start closed; rows are 40 px with a
+  20 px box; the node-id, type and protocol chips are hidden. Checked at
+  360 px with no sideways scroll.
+- **localStorage:** new keys `ioi-show-l`, `ioi-show-r` and `ioi-side`.
+  `ioc-search` is no longer used.
+- **Labels:** an S7 area tag shows as `FAT_NH` plus `%I12.3`. No key or node
+  id changed.
+- **`080-shortcuts.js`:** outside the analyzer suite only `c`, `o` and `i`
+  act on a hardware keyboard.
+
+**The server:**
+- **`GET /api/iocheck/inputs` and the `iocheck_inputs` frame** gain `rev`
+  (counted up on every change, starting from the boot time in ms; keep the
+  highest), `areas` (the right's references), `area_total`, `area_capped` and
+  `connection` (the active connection's name). `inputs` is the left only.
+  `db_count` is now `len(areas)`, and `db_cabinets` comes from the
+  references' `group`. `cabinets` is unchanged.
+- **`POST /api/iocheck/inputs`** `{items:[{node_id,path,expand}], cabinet,
+  rate_ms, side}`:
+  - `side: "db"` answers **422** *this page is older than the laptop's BEGIA -
+    reload it*.
+  - `expand` rows carry `via` (the container's id).
+  - The list holds at most 1000 rows after expansion; over that, **422** with
+    the advice.
+  - More than one item is read with `describe()`, one with `probe()`. Rows
+    store `area` and `abs_address`; an S7 row is named by its node id.
+  - New skip reasons: *already on the right*, *nothing inside it to check*.
+  - It no longer resubscribes or makes buffers.
+- **`POST /api/iocheck/inputs/remove`** answers **409** *<name> is in the
+  running check - stop it first*. A container's id removes the rows ticked
+  through it.
+- **`/api/iocheck/inputs/side`** answers **410** with the reload sentence, for
+  any method.
+- **New `POST /api/iocheck/areas`** `{items:[{node_id,path}]}` returns
+  `{added, skipped:[{node_id,why}], absorbed:[{node_id,name,into}], total,
+  capped, ...payload}`, or 409 when the source moved or the link dropped.
+- **New `POST /api/iocheck/areas/remove`** `{node_ids}`: the payload, plus
+  `note` while a check runs. **404** when none of them is ticked.
+- **New `POST /api/iocheck/areas/covered`** `{node_ids}` (at most 600):
+  `{covered:{id: ref_id}, rev}`. It reads nothing from the PLC and is open in
+  a read-only copy.
+- **`GET /api/iocheck/scope`**: `area` is `{members, blocks, capped, refs}`
+  from the references, and `area_error` is new. Over S7 there is a `batch:
+  32`. `every` includes %M.
+- **`POST /api/iocheck/start`**: the body is unchanged. `"area"` means the
+  references, with `with_group` filtering them by `group`; over 5000 members
+  it answers **422** *the ticked DBs hold more than 5000 members - untick some
+  on the right*. Left rows are never candidates. A row's `area` is filled in
+  at Start.
+- **`config.json`**: `iocheck_areas: [AreaRef]` is new on the config and on
+  every connection. Old `side: "db"` rows become references (`kind:
+  "member"`, `count: 1`, cabinet kept) at start, on a profile load and as a
+  connection's lists come on. An old file still loads, and unknown keys
+  survive. A connection switch carries the references with the rows.
+- **Do:** nothing for `tools/boot_test.py` (POST /inputs side io, then start
+  every). Its scenario passes in-process on the phone's stack
+  (`tests/py/test_iocheck_sim.py`).
+
+---
+
+## 2026-10-05, late — the OPC UA driver's stop no longer hangs on Python 3.11 (shared `app/`; nothing to do)
+
+- **`OpcUaDriver.stop()` could wait for ever on the phone's Python 3.11.**
+  It hung when a `request_resubscribe()` landed in the same turn of the event
+  loop as the stop's cancel. 3.11's `asyncio.wait_for` returned normally and
+  swallowed the cancel, and the watchdog ran on. The watchdog now waits with
+  `asyncio.timeout`, which is right on 3.11 and later.
+  `tests/py/test_opcua_watch_cancel.py` drives that exact turn, and it fails
+  on 3.11 with the old code. The laptop's 3.14 was never affected.
+- **Still open, in the S7 driver:** it uses `asyncio.wait_for` inside its
+  poll loop (`driver.py`, the request wrapper), so a stop that lands as a
+  read completes could in principle be swallowed the same way on 3.11.
+  Reported to the desktop session; not changed here.
+
+---
+
+## 2026-10-05, late — the I/O check reads a row by where it lives: "value" rows, outputs, "moves on its own", rows read only during a check, a trial mark at Start and Stop (shared `app/` and `ui/`; nothing to do for the boot test)
+
+All of it reaches the phone with the next payload. No route, body or frame key is removed or renamed.
+
+- **Rows** (`session.items[]` in `GET /api/iocheck` and in `iocheck` frames)
+  gain `area` (`in`, `out`, `mem`, `db`, `other`, or `""` for a row from
+  before), `rate_ms`, `lo`, `hi` and `noisy`.
+  - `kind` can be `"value"`: a number that is not a raw input word (a %QW, a
+    %M word, a DB REAL).
+  - A value row's `edges` are `[t, value, up]`, three elements like a DB
+    member's. A bool's are `[t, 0|1]` and an analog row's are
+    `[t, word, connected, up]`, as before.
+  - A file from before resumes with `area: ""`, `noisy: false`, `lo`/`hi`
+    null and `rate_ms: 10`.
+  - **Do:** allow the new keys if anything parses frames strictly.
+- **`config.json`:** `SignalCfg` gains `area` and `via`, both `""` by
+  default. The next step fills them in. An old file loads as before, and an
+  unknown key still survives a save.
+- **The Inputs list is read only while a check runs, and only the rows in
+  it.**
+  - `AppConfig.polled()` is the signal set alone.
+  - `IoCheck.watched()` adds the running check's rows at their own `rate_ms`
+    (10), and its DB members at 100 ms, the DB area's included.
+  - Start empties a row's old buffer, so its baseline is its first good
+    reading after Start. Stop drops the buffers nothing else reads. A check
+    resumed at boot reads its rows again.
+  - **Do:** nothing for the boot test: it waits for `learn_until + 500`
+    before its first press. Its scenario also runs in-process on the
+    simulator, on the phone's stack, in `tests/py/test_iocheck_sim.py`.
+    Anything that presses straight after Start must first wait for a reading
+    (`baseline` not null).
+- **An output's member may move first.** For a row with `area: "out"` the
+  mapping looks either side, ±500 ms. So `lag_ms` and `lags` can be negative
+  (the member moved first), and so can the CSV's *lag ms*.
+- **`noisy` means the row moves on its own.** A row whose area is `mem`,
+  `db` or `other` and that moves in the first 3 s of a check, or of its
+  *Again*, gets `noisy: true`.
+  - It stays in an `iocheck` frame's `rows` but **never appears in its
+    `edges`**, so there is nothing to announce.
+  - It has no entry in `mapping`, never joins `together` and never explains
+    a member.
+  - The CSV's *found in the DB* reads *moves on its own*.
+- **`GET /api/watch`:** the `iocheck` block's keys are unchanged. `last`
+  never picks a noisy row, which would otherwise hold the wrist for good. A
+  value row's `value` is a number written like the pane header (`27648`,
+  `160.4`).
+- **A recording trial gets a mark** when a check's Start or Stop changes what
+  the driver reads: *I/O check started - the PLC subscriptions were rebuilt,
+  a gap of up to N ms*, or *I/O check stopped - ...*.
+  - It also goes to the pages as an `event` frame and counts in the watch's
+    `marks`.
+  - Over OPC UA, N is 1000 plus the slowest recorded interval. Over S7 it is
+    that interval, plus 3000 when a block has to be read first.
+- **`session.aside`** (at most 200 members set aside) is sorted by name, as
+  the ready panel lists them. It now holds the alphabetically first 200.
+- **`ui/` (280, 284, 286):** a value row reads *Input · value*, *the PLC saw
+  it change*, *QW_Speed → 27648*, *went up at …* and *3 changes*. Its
+  was/now cells are wide like an analog row's. The popup's stack of rows
+  still to be marked, and the panel before the first press, ignore noisy
+  rows.
+
+---
+
+## 2026-10-05, night — browse and search take `show`; "every" takes %M; the simulator's Inputs and Outputs folders (shared `app/` and `ui/`; nothing to do yet)
+
+All of it reaches the phone with the next payload. A page that does not ask for the new parameter gets the same answers as before.
+
+- **`GET /api/browse?node=&show=all|io|rest`** and
+  **`GET /api/search?q=&limit=&show=`**.
+  - `all` is the default and unchanged. `io` keeps %I and %Q. `rest` keeps the
+    data blocks, %M, the timers and counters.
+  - Any other value, an empty one included, answers **422** "show must be
+    all, io or rest".
+  - S7 root rows and every search hit carry `area` (`in`, `out`, `mem`, `db`,
+    `other`). S7 tag rows carry `type` and `abs` (`%I12.3`, or `""` for a DB
+    member), and S7 tag hits carry `abs`.
+  - A filtered OPC UA root lists each PLC's own folders (Inputs and Outputs,
+    or Memory, Timers, Counters and the two DB folders). Each row has a
+    `path` (`PLC_1.Inputs`), and with two PLCs it reads `PLC_1 › Inputs`. A
+    server without the SIMATIC folders gives `[]` for `io` and its whole root
+    for `rest`.
+  - A filtered search counts `total` after the filter.
+- **An S7 search that starts with `%` is an address.** `%I12` finds
+  `%I12.0`–`%I12.7`, never `%I120.0`.
+- **"Every DB" includes %M**, after the data blocks, filed under the block
+  `"%M"` (never `MArea`). That holds on S7 and for an OPC UA server's Memory
+  folder. `/api/iocheck/scope`'s `every` counts can grow.
+- **The simulator.** The cabinet's `DI_01..16` and `AI_01..04` now sit in
+  **SIM_EAF > Inputs**, with their node ids unchanged
+  (`ns=3;s="DB_Cabinet"."DI_01"`), so saved lists, the press route and the
+  strip work as before. New: `FB_Cabinet.cmd_01..04` and **SIM_EAF > Outputs >
+  DO_01..04** (`ns=3;s=DO_01`), which follow their command one cycle
+  (100 ms) later; `tools/sim_cabinet.py --command N` sets a command. "Every
+  DB" on the simulator no longer lists the cabinet's inputs, and it gains
+  the four commands. **Do:** the boot test's I/O check scenario is unchanged;
+  only the member count it prints moves.
+- **Driver calls the next I/O check routes will use** (no route uses them
+  yet): `db_members(cap, roots=[...])` with `per_root`,
+  `area_covers(refs, ids)` and `describe(ids)`.
+- **`ui/js/040-picker.js`**: the row functions take an owner object, the
+  analyzer's `PICK` by default, and the analyzer's requests are unchanged.
+  New helpers: `browseUrl`, `searchUrl`, `drawHits`, `searchFootText`.
+- The guards `_probe_source`, `_refuse_mid_switch` and
+  `_refuse_if_source_moved` now live in `app/routes/common.py`, and
+  `routes/signals.py` re-exports them.
+
+---
+
+## 2026-10-05, evening — the I/O check as the canvas draws it: on the phone the popup is the Check screen (shared `ui/`, `app/iocheck/`; look at it on the phone)
+
+All of it reaches the phone with the next payload. There is no new script and no new route.
+
+- **The popup is a sheet on the phone** (`ui/css/155-iocheck-popup.css`). It
+  is fixed between the top bar and the bottom tabs, 56 px each way upright,
+  with the tabs at 40 px on its side, plus `env(safe-area-inset-*)`. On its
+  side the top bar measures 56 px too, because the safe-area rule in
+  `120-phone.css` outranks its 44 px landscape rule. A card holds the input
+  over the member, the search in one line, and the earlier stack. The marks
+  sit under it: the suggested one full width at 56 px, the others at 52 px,
+  held at the foot of the sheet when the card is long. Small mode (−) is a
+  floating card over the table. **Do:** if the shell changes the bar or tab
+  heights, or starts drawing under the status bar, the sheet's insets must
+  follow. Check it once on the phone, upright and on its side.
+- **The I/O module hides `#time-controls`** in the phone's top bar. The
+  Inputs tab's icon is a framed list (`120-phone.css`,
+  `.mod[data-mod="ioinputs"]`).
+- **The module switch** (`#suite`, the AN | I/O pair) is `role="group"`, with
+  `type="button"` and `aria-pressed` on both buttons, and `setSuite` keeps
+  `aria-pressed` current. Nothing to do unless the shell finds it by role.
+  The module names `iocheck` and `ioinputs` are unchanged.
+- **Frames:** the session's `search`, in `iocheck` frames, gains `learn_ms`
+  and `block_names` (the first 24 DB names, sorted). A file from before
+  resumes with `0` and `[]`. **Do:** allow both if anything parses frames
+  with a strict schema.
+- **Marks:** *OK all found*, and *Skip* on two inputs pressed together, post
+  `POST /api/iocheck/mark` once per input, one after another, with the same
+  body as before.
+
+---
+
 ## 2026-10-05, later — the S7 / OPC UA tabs switch the connection; a `connections` frame after every switch (shared `app/` and `ui/`; nothing to do)
 
 All of it reaches the phone with the next payload:
