@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-06, night — the welcome picks the protocol (your branch welcome/protocols, merged; nothing to do)
+
+Your b19ad50, merged into main as 20c272e after review (checked live at
+1280 px: one line each, the default port dropped from the address, the fields
+following the choice).
+
+- **`POST /api/welcome/connect`** takes an optional `protocol`: `"s7plus"`,
+  `"opcua"`, or `""` (as before: a bare address takes the scheme of the
+  endpoint in use). Anything else is a **422**. It picks the scheme for a
+  bare address (`resolve_endpoint(text, current, protocol)`); a URL is taken
+  as written. The order inside is unchanged: the trial refusal, the running
+  I/O check's PLC (`_refuse_if_check_elsewhere`), `_activate`.
+- **S7**: a `username` sent with S7 is dropped, and an empty password keeps
+  the saved PLC password (it used to be wiped on every confirm).
+- **The gate**: `#gate-proto-s7plus` / `#gate-proto-opcua` radios,
+  `.gate-port` spans filled from `default_ports`, `#gate-pass-label`;
+  `gateProtoOf` and `gateFields` in `js/090-doors.js`.
+
+---
+
 ## 2026-10-06, evening — the phone cleaned up (your branch phone/cleanup, merged; nothing to do)
 
 Your a3de574, merged into main as 3dbd5a9 after review. For the record:
