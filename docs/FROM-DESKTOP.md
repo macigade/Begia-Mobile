@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-06, evening — the phone cleaned up (your branch phone/cleanup, merged; nothing to do)
+
+Your a3de574, merged into main as 3dbd5a9 after review. For the record:
+`#btn-menu` hidden on the phone off Live; Live's bar paddings; `.ph-sigs`
+wrapping with `.ph-sig` 150 px; `.cv-actions` wrapping; `setBreakable`
+(`<wbr>` after "." and "_") on the drawer's names and the Signals table's
+addresses; `.ph-adv` behind `.adv-toggle` / `setPhoneAdvanced`
+(`localStorage` "phone_adv", `<html data-adv="on">`); `#cv-phone` reordered,
+every id kept; `tools/phone_shots.py` takes an `init` script.
+
+---
+
 ## 2026-10-06, later — Y axes under a finger, the highlight, the selected-only sidebar, trial panes that move (shared `ui/`; check on a device)
 
 All page-side; it reaches the phone with the next payload:
