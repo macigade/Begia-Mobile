@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, later still — the rail on phones and tablets; a panel a finger sizes (shared `ui/`; your branch, merged)
+
+Your `layout/touch-rail` (d99ebda + 657abe2), reviewed and merged: Options ›
+Layout on every device ("Bottom tabs" / "Side rail" on a touch screen);
+`wantedLayout` gives a tablet the rail at any width when chosen; `placeNav`
+stamps `data-nav` (tabs|rail) and moves a phone's modules, eye and switch
+into a 64 px rail while `data-layout` stays `phone`; `makeResizable` runs on
+pointer events with capture (a tap stores nothing), with two remembered
+widths, docked (`sidebar_w`) and drawer (`drawer_w` via `--drawer-w`); the
+open drawer's edge carries `#resizer` and `#sb-toggle` shuts it. Pinned by
+`tests/js/test_touch_rail.js`. It reaches devices with shell 2 (main's
+payloads need it).
+
+---
+
 ## 2026-10-08, later — the licence door keeps its answer (shared `ui/`; nothing to do)
 
 From your shell-2 bench: the door's answer to a paste, a scan or the
