@@ -20,6 +20,36 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-07, later — the simulator keeps its own signal list (shared `app/`; nothing to do but look)
+
+The owner: "give the simulator its own signal list".
+
+- **Config**: `SimCfg` gains `signals`, `groups`, `iocheck_inputs`,
+  `iocheck_areas` - the same four lists a `ConnectionCfg` keeps (pydantic
+  1.10-safe: plain fields, `Field(default_factory=list)`).
+- **Where the lists on screen live**: `common._list_home()` - `cfg.sim`
+  while `cfg.sim.enabled`, else the active connection's entry (None: no
+  home). Both mirrors use it: `save_config` (signals, groups) and
+  `ioinputs._inputs_changed` (the I/O check's two lists).
+- **The switches**: `_stash_live_lists(home)` copies the four lists into
+  their home before any change of source. `POST /api/sim/start`, joining,
+  stashes the PLC's and installs the simulator's (`_restore_signals_for(cfg.sim,
+  orphaned=no home)`: its own; else adopts an orphan list; else clears) and
+  now answers `{"ok", "endpoint", "signals": {...}}` and owes `signals`,
+  `trigger`, `iocheck_inputs` as well as `status`. Leaving it -
+  `_activate` (Setup, the welcome, the S7 / OPC UA tabs), `/api/sim/stop`,
+  `/api/connect` - stashes the simulator's and brings the PLC's back, even
+  when the PLC is the active name already (`_lists_back_from_sim`; an
+  address typed without a name gets an empty list).
+- **Boot**: when the simulator was the connection and does not come back
+  (welcome on, or it fails to start), `connections._sim_lists_off_at_boot()`
+  puts the active PLC's lists on screen before the hub's buffers are made.
+  A config from before keeps what the old mirror wrote (the PLC's copy);
+  with no PLC at all the simulator keeps the only copy.
+- `tests/py/test_sim_own_lists.py` pins it (12 cases).
+
+---
+
 ## 2026-10-07 — nothing cut off: the overflow sweep (shared `ui/css/`; look on a device)
 
 The owner: "check all views for overflowing buttons, pc, android and all".
