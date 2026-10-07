@@ -67,12 +67,13 @@ def ensure_embedded(files_dir: str, embedded_zip: str, licence_required: bool = 
 
 def start(files_dir: str, embedded_zip: Optional[str], port: int = 8080,
           restart=None, debug: bool = False, device_id: str = "", device_name: str = "",
-          licence_required: bool = False) -> str:
+          licence_required: bool = False, shell_apk: str = "") -> str:
     """Boot the active slot; returns the report as JSON. Raises after writing
     the same report with the error, so the screen can show it. `restart` is a
     java.lang.Runnable the dev server calls after installing a pushed payload.
     `device_id` ("and:<ANDROID_ID>") and `device_name` reach a licensable
-    payload (boot.prepare); `licence_required` is the shell's own rule, for
+    payload (boot.prepare), with `shell_apk` (the APK's version, for the
+    signed usage report); `licence_required` is the shell's own rule, for
     ensure_embedded's takeover."""
     slots, data = _dirs(files_dir)
     report = {"ok": False, "port": port, "at": _now()}
@@ -84,7 +85,8 @@ def start(files_dir: str, embedded_zip: Optional[str], port: int = 8080,
                 # a broken embedded payload is not fatal while a slot is active
                 report["embedded_error"] = str(e)
                 print(f"embedded payload refused: {e}", flush=True)
-        state = boot.start(slots, data, port, device_id=device_id or "", device_name=device_name or "")
+        state = boot.start(slots, data, port, device_id=device_id or "", device_name=device_name or "",
+                           shell_apk=shell_apk or "")
         s = pl.Slots(slots)
         m = pl.slot_manifest(s.slot_path(s.active))
         report.update(ok=True, version=m["version"], build=m["build"],

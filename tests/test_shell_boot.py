@@ -108,8 +108,10 @@ def clean_env(monkeypatch):
 
 
 def test_a_licensable_payload_is_told_the_phones_identity(tmp_path, clean_env):
-    boot.prepare(_slot(tmp_path, licence=2), tmp_path / "data", "and:0123456789abcdef", "samsung SM-X406B")
+    boot.prepare(_slot(tmp_path, licence=2), tmp_path / "data", "and:0123456789abcdef", "samsung SM-X406B",
+                 "shell 2")
     assert os.environ["BEGIA_DEVICE_ID"] == "and:0123456789abcdef"
+    assert os.environ["BEGIA_SHELL_APK"] == "shell 2"
     assert os.environ["BEGIA_DEVICE_NAME"] == "samsung SM-X406B"
     assert os.environ["BEGIA_LICENCE_REQUIRED"] == "1"
 

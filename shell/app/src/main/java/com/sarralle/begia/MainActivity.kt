@@ -749,13 +749,17 @@ class MainActivity : AppCompatActivity() {
                 val (rc, request) = getLocal("/api/licence/request")
                 if (rc != 200) throw Installer.Refused(getString(R.string.licence_predates))
                 val mine = Licence.code(this)
-                val posted = Installer.postText("$laptop/api/licence/box/requests",
+                val (posted, postBody) = Installer.postText("$laptop/api/licence/box/requests",
                     JSONObject().put("text", request).toString())
                 // a laptop whose BEGIA predates the box: no such route (404),
                 // a static mount that takes only GET (405), or its sign-in
                 // gate, which the box routes are open past from Phase 1 (401)
                 if (posted == 404 || posted == 405 || posted == 401)
                     throw Installer.Refused(getString(R.string.licence_box_old))
+                // any other refusal is the laptop's to word: the box is full
+                // (507), the file too big (413), not a request (400), the box
+                // off (403), another copy holds the folder (423)
+                if (posted !in 200..299) throw Installer.Refused(Installer.said(posted, postBody))
                 val (gc, lic) = Installer.getText("$laptop/api/licence/box/licences/$mine")
                 when (gc) {
                     200 -> {
@@ -768,7 +772,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     404 -> JSONObject().put("ok", false).put("why", getString(R.string.licence_box_none))
-                    else -> JSONObject().put("ok", false).put("why", "the laptop answered $gc")
+                    else -> JSONObject().put("ok", false).put("why", Installer.said(gc, lic))
                 }
             } catch (e: Exception) {
                 JSONObject().put("ok", false).put("why", e.message ?: e.toString())

@@ -51,7 +51,7 @@ def _is_startup_error(e: BaseException) -> bool:
     return any(c.__name__ == "StartupError" for c in type(e).__mro__)
 
 
-LICENCE_ENV = ("BEGIA_DEVICE_ID", "BEGIA_DEVICE_NAME", "BEGIA_LICENCE_REQUIRED")
+LICENCE_ENV = ("BEGIA_DEVICE_ID", "BEGIA_DEVICE_NAME", "BEGIA_LICENCE_REQUIRED", "BEGIA_SHELL_APK")
 
 
 def licensable(m: dict) -> bool:
@@ -63,16 +63,18 @@ def licensable(m: dict) -> bool:
         return False
 
 
-def prepare(slot: Path, data_dir: Path, device_id: str = "", device_name: str = "") -> dict:
+def prepare(slot: Path, data_dir: Path, device_id: str = "", device_name: str = "",
+            shell_apk: str = "") -> dict:
     """Environment and sys.path for this slot. Must run before app.* is
     imported: app/config.py resolves its paths at import time.
 
     The licence (IBA-CODE docs/LICENSING-DESIGN.md 2.3, 4.4): a payload
     whose manifest declares "licence": 2 is told this phone's identity -
     BEGIA_DEVICE_ID "and:<ANDROID_ID>", BEGIA_DEVICE_NAME, and
-    BEGIA_LICENCE_REQUIRED=1 - and gates itself on it. An older payload is
-    told nothing: it would honour the requirement but compute a code no
-    licence can match."""
+    BEGIA_LICENCE_REQUIRED=1 - and gates itself on it, plus BEGIA_SHELL_APK
+    (this APK's version, which its signed usage report carries). An older
+    payload is told nothing: it would honour the requirement but compute a
+    code no licence can match."""
     slot, data_dir = Path(slot), Path(data_dir)
     m = pl.slot_manifest(slot)
     data_dir.mkdir(parents=True, exist_ok=True)
@@ -84,6 +86,7 @@ def prepare(slot: Path, data_dir: Path, device_id: str = "", device_name: str = 
         os.environ["BEGIA_DEVICE_ID"] = device_id
         os.environ["BEGIA_DEVICE_NAME"] = device_name or ""
         os.environ["BEGIA_LICENCE_REQUIRED"] = "1"
+        os.environ["BEGIA_SHELL_APK"] = shell_apk or ""
     for rel in reversed(m["sys_path"]):
         p = str((slot / rel).resolve())
         if p not in sys.path:
@@ -129,10 +132,10 @@ def wait_healthy(port: int, timeout: float = 30.0, host: str = HOST) -> dict:
 
 def serve(slot: Path, data_dir: Path, host: str = HOST, port: int = PORT,
           health_timeout: float = 30.0, on_healthy: Optional[Callable[[dict], None]] = None,
-          device: tuple = ("", "")):
+          device: tuple = ("", "", "")):
     """Start the service on a daemon thread and wait for it. Returns
     (server, thread, state). Raises if it never becomes healthy; the server
-    is asked to stop in that case. `device` is (id, name), for prepare()."""
+    is asked to stop in that case. `device` is (id, name, apk), for prepare()."""
     m = prepare(slot, data_dir, *device)
     print(f"booting BEGIA {m['version']} ({m['build']}) from {slot}", flush=True)
     print("runtime " + " ".join(f"{k}={v}" for k, v in versions().items()), flush=True)
@@ -156,7 +159,7 @@ def serve(slot: Path, data_dir: Path, host: str = HOST, port: int = PORT,
 
 
 def _boot(slots: pl.Slots, slot: Path, data_dir: Path, host: str, port: int,
-          health_timeout: float, device: tuple = ("", "")):
+          health_timeout: float, device: tuple = ("", "", "")):
     """serve() the slot with `booting` set around it. A DataError clears it
     again: not this build's fault, so no rollback on the next start."""
     build = pl.slot_manifest(slot)["build"]
@@ -170,7 +173,8 @@ def _boot(slots: pl.Slots, slot: Path, data_dir: Path, host: str, port: int,
 
 
 def start(slots_dir: Path, data_dir: Path, port: int = PORT, host: str = HOST,
-          health_timeout: float = 30.0, device_id: str = "", device_name: str = "") -> dict:
+          health_timeout: float = 30.0, device_id: str = "", device_name: str = "",
+          shell_apk: str = "") -> dict:
     """The phone's entry point: choose the slot, boot it, record the outcome.
     Returns the state payload. Raises PayloadError / TimeoutError / ImportError
     with `booting` left set, so the next process start rolls back; DataError
@@ -181,7 +185,7 @@ def start(slots_dir: Path, data_dir: Path, port: int = PORT, host: str = HOST,
     if note:
         print(f"ROLLBACK: {note}", flush=True)
     _, _, state = _boot(slots, slot, data_dir, host, port, health_timeout,
-                        device=(device_id, device_name))
+                        device=(device_id, device_name, shell_apk))
     state["rollback_note"] = note
     return state
 

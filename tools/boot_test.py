@@ -37,6 +37,9 @@ from begia_shell import payload as pl                              # noqa: E402
 from begia_shell.boot import wait_healthy                          # noqa: E402
 
 DEFAULT_PAYLOAD = Path.home() / "Desktop" / "IBA-CODE" / "dist" / "begia-payload.begia"
+# From licensing Phase 1 the payload asks a PC for a licence too (it runs as
+# sourceless bytecode), so the bench runs under its own: the one beside the exe
+BENCH_LICENCE = DEFAULT_PAYLOAD.parent / "licence.json"
 
 
 class Check:
@@ -84,6 +87,13 @@ def run(payload: Path, port: int, keep: bool) -> int:
     m = pl.read_manifest(payload)
     print(f"payload {payload.name}: BEGIA {m['version']} build {m['build']}, {m['file_count']} files")
     print(f"python  {sys.executable}")
+    data.mkdir(exist_ok=True)
+    if BENCH_LICENCE.is_file():
+        shutil.copyfile(BENCH_LICENCE, data / "licence.json")
+        print(f"licence {BENCH_LICENCE} (this bench's own)")
+    else:
+        print(f"licence NONE - there is no {BENCH_LICENCE}. A payload from licensing Phase 1 on asks\n"
+              f"        this PC for one: expect the door, and a stop at the first gated route (402)")
 
     env = dict(os.environ, PYTHONPATH=str(RUNTIME), PYTHONUNBUFFERED="1")
     flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
@@ -179,6 +189,9 @@ def run(payload: Path, port: int, keep: bool) -> int:
         c.ok("S7comm-plus driver and the trimmed snap7 import on this stack")
     except Exception as e:
         print(f"\nFAIL after {c.n} checks: {type(e).__name__}: {e}")
+        if isinstance(e, urllib.error.HTTPError) and e.code == 402:
+            print("  402 is the licence door: the payload holds no licence for this PC"
+                  + ("" if BENCH_LICENCE.is_file() else f" - put this PC's beside the exe, {BENCH_LICENCE}"))
         _stop(proc)
         log.close()
         print("--- service.log (tail) ---")

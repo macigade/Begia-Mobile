@@ -123,15 +123,22 @@ object Installer {
         return c
     }
 
-    /** POST a JSON body to a laptop; its status code (no throw on 4xx). */
-    fun postText(url: String, json: String): Int {
+    /** POST a JSON body to a laptop: (status, body) - no throw on 4xx/5xx. */
+    fun postText(url: String, json: String): Pair<Int, String> {
         val c = open(url, 10000)
         c.requestMethod = "POST"
         c.doOutput = true
         c.setRequestProperty("Content-Type", "application/json")
         c.outputStream.use { it.write(json.toByteArray()) }
-        return c.responseCode
+        val code = c.responseCode
+        val body = (if (code < 400) c.inputStream else c.errorStream)?.bufferedReader()?.use { it.readText() } ?: ""
+        return code to body
     }
+
+    /** What a laptop said when it refused: its {"detail"}, else the status. */
+    fun said(code: Int, body: String): String =
+        (try { JSONObject(body).optString("detail", "") } catch (e: Exception) { "" })
+            .ifBlank { "the laptop answered $code" }
 
     /** GET a small document from a laptop: (status, body). */
     fun getText(url: String): Pair<Int, String> {

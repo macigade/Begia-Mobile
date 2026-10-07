@@ -63,7 +63,8 @@ class RecorderService : Service() {
             // embedded licensable build takes over from an ungated one.
             val report = Python.getInstance().getModule("begia_shell.android")
                 .callAttr("start", filesDir.path, embedded?.path, Recorder.PORT, restart, debug,
-                          Licence.deviceId(this), Licence.deviceName(), LICENCE_REQUIRED)
+                          Licence.deviceId(this), Licence.deviceName(), LICENCE_REQUIRED,
+                          BuildConfig.VERSION_NAME)
                 .toString()
             Log.i(Recorder.TAG, "healthy: $report")
             val version = JSONObject(report).optString("version", "")
