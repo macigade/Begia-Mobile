@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-07, late night — a finger's size for a signal's small controls (shared `ui/`; nothing to do but install)
+
+The owner: "the buttons to modify and highlight and move left, right are too
+small for a tablet and for the phone ... in the signals list or panes
+header". They were a mouse's size (9-20 px).
+
+- Under `:root:not([data-device="desktop"])` (a tablet and a phone; the
+  laptop unchanged), `130-tablet.css`: the signal list's colour square
+  (`.sig .dot.swatch`) 32 px in a 32 px column; `.sig-flash` (◎), each
+  `.sig-side button` (L, R), `.pt-del` (a pane's ✕) 36 px; `.rate-odd`
+  32 px tall; a pane header's `.ph-flash`, `.ph-side`, `.ph-link` 36 px,
+  their `.ph-row2` centred. A phone shows no second header line, so the
+  header part is the tablet's.
+- Measured in a browser: 1587x992 `?layout=tablet` and 375x812
+  `?layout=phone` at 32/36 px, the laptop still 9-20 px.
+
+Pinned by `tests/js/test_touch_controls.js`.
+
+---
+
 ## 2026-10-07, night — two rows of readouts at most, then sideways (shared `ui/`; nothing to do but install)
 
 The owner, from the Tab S10 Lite with 46 signals in one pane: "only allow
