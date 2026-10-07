@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-07, late night — a tablet has the phone's bars (shared `ui/`; nothing to do but install)
+
+The owner, on the Tab S10 Lite: "the top header of the app on tablet has too
+small buttons, i think it should follow more phone-like design".
+
+- **The modules are tabs along the bottom** on a tablet, as on a phone:
+  `placeNav` (`js/100-theme.js`) moves `#modules` into `#phone-tabs` when the
+  layout is classic and `deviceKind` says tablet. An icon over each name,
+  64px upright, a 52px row of icon and name sideways. The phone's six icons
+  carry the tablet in their selectors (`120-phone.css`); Analyse and Options,
+  which a phone has no tab for, have their own (`130-tablet.css`).
+- **The top bar is 62px of 44px controls**: ☰ (only where the module has a
+  sidebar to slide in), Analyzer / I/O check with their names, the eye, the
+  connection chip with its word and address (it takes the room the tabs
+  left), the acquiring chip sideways, the window and LIVE. The gear goes:
+  Options is a tab. The acquiring chip's 12px clip at 1408 wide is gone.
+- **The layout itself is unchanged**: the drawer upright, the docked sidebar
+  sideways, Analyse, the Record card. A tablet no longer offers the rail.
+- The laptop's bar and the phone's are as they were (shots at 1280 and 360).
+
+Pinned by `tests/js/test_tablet_bars.js`.
+
+---
+
 ## 2026-10-07, late night — a finger's size for a signal's small controls (shared `ui/`; nothing to do but install)
 
 The owner: "the buttons to modify and highlight and move left, right are too
