@@ -20,6 +20,33 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-07, evening — the Tab S10 Lite (shared `ui/`; nothing to do but install)
+
+The owner: "prepare a version for tab S10 lite". The shell APK runs on it as
+it is (arm64, no orientation lock); what a 10.9" tablet gets is the tablet
+layout, checked at its sizes - 880x1336 upright, 1408x808 sideways (2112x1320
+at density 1.5) - with `tools/phone_shots.py` and the shell standing in.
+The layout itself was already right: the drawer upright, the docked sidebar
+and the laptop's bar sideways, `data-device="tablet"` both ways. Fixed:
+
+- **Two traces in one chart**: the second readout was cut ("DB_SlagDo") and
+  the strip had to be dragged sideways to read it; on a tablet the readouts
+  wrap, as on a phone (`130-tablet.css`, `.ph-sigs`).
+- **Analyse's palette handle** sat over the tree/list toggles: half over
+  them sideways, right on the list toggle upright (any tablet under 900 px,
+  not only this one). The header keeps that end clear (`.an-pal-head`
+  padding, 22 px wide and 46 px narrow).
+- **The A/B status line** under the Analyse chart said "(click)" and
+  "(shift+click)" to a finger; it now carries both wordings
+  (`.an-hint-mouse` / `.an-hint-touch`, `220-analysis-chart.js`), and the
+  stylesheet shows one.
+
+Pinned by `tests/js/test_tablet_s10.js`. Left as they are: the connection
+chip's address ellipsis in the bar, and the sidebar's fold handle astride
+its resizer - both the laptop's, by design.
+
+---
+
 ## 2026-10-07, later — the simulator keeps its own signal list (shared `app/`; nothing to do but look)
 
 The owner: "give the simulator its own signal list".
