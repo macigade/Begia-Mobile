@@ -40,7 +40,12 @@ def _post_licence(service_port: int, text: str):
         return 502, {"error": f"the service is not answering: {e}"}
 
 
-def serve(files_dir: str, port: int, restart=None, service_port: int = 0) -> ThreadingHTTPServer:
+def serve(files_dir: str, port: int, restart=None, service_port: int = 0,
+          device_id: str = "") -> ThreadingHTTPServer:
+    """`device_id` is the identity the shell hands android.start
+    ("and:<ANDROID_ID>"): /info and /licence answer with its code, as the
+    Setup card does - whatever the active payload is, since the shell's own
+    licence check does not depend on it."""
     files = Path(files_dir)
     slots = files / "slots"
     service_port = service_port or port - 1
@@ -60,19 +65,18 @@ def serve(files_dir: str, port: int, restart=None, service_port: int = 0) -> Thr
         def do_GET(self):
             if self.path == "/info":
                 from .android import info_dict
-                self._send(200, info_dict(files_dir))
+                self._send(200, info_dict(files_dir, device_id))
             elif self.path == "/config":
                 # the recorder's config.json as it is on disk, for a test
                 # harness to read, change and PUT back
                 p = files / "data" / "config.json"
                 self._send(200, json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {})
             elif self.path == "/licence":
-                # this phone's licence as the shell judges it; the device id is
-                # the one boot.prepare handed a licensable payload
+                # this phone's licence as the shell judges it: the code, never
+                # the id it is made from
                 from . import licence
-                dev = os.environ.get("BEGIA_DEVICE_ID", "")
-                self._send(200, licence.status(files_dir, dev) if dev else
-                           {"error": "no device id: the active payload is not licensable"})
+                self._send(200, licence.status(files_dir, device_id) if device_id else
+                           {"error": "no device id: the shell handed none over"})
             else:
                 self._send(404, {"error": "GET /info, GET /config, GET /licence, PUT /payload, "
                                           "PUT /config, PUT /licence, POST /restart"})

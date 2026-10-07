@@ -93,7 +93,7 @@ def start(files_dir: str, embedded_zip: Optional[str], port: int = 8080,
                       rollback_note=state.get("rollback_note"))
         if debug and restart is not None:
             from . import devserver
-            devserver.serve(files_dir, port + 1, restart)
+            devserver.serve(files_dir, port + 1, restart, device_id=device_id or "")
     except Exception as e:
         report.update(error=f"{type(e).__name__}: {e}", trace=traceback.format_exc()[-3000:])
         _write(files_dir, report)

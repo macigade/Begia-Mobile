@@ -244,8 +244,29 @@ def test_an_offered_licence_is_judged_for_this_phone(tmp_path):
     assert o["code"] == __import__("begia_shell.licence", fromlist=["code_of"]).code_of(raw)
 
 
-def test_dev_server_says_when_no_payload_was_handed_an_identity(tmp_path, monkeypatch):
+def test_dev_server_answers_with_the_code_the_shell_handed_over(tmp_path, monkeypatch):
+    # whatever the active payload is: the shell's own check needs no payload
     monkeypatch.delenv("BEGIA_DEVICE_ID", raising=False)
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9-210")          # not licensable
+    android.ensure_embedded(str(tmp_path), str(emb))
+    raw = "and:0123456789abcdef"
+    srv = devserver.serve(str(tmp_path), 0, None, service_port=1, device_id=raw)
+    port = srv.server_address[1]
+    try:
+        from begia_shell import licence
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/info", timeout=5) as r:
+            info = r.read()
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/licence", timeout=5) as r:
+            lic = r.read()
+        assert json.loads(info)["device_id"] == licence.code_of(raw)
+        assert json.loads(lic)["code"] == licence.code_of(raw) and json.loads(lic)["present"] is False
+        assert b"0123456789abcdef" not in info + lic
+    finally:
+        srv.shutdown()
+
+
+def test_dev_server_says_when_the_shell_handed_no_identity(tmp_path, monkeypatch):
+    monkeypatch.setenv("BEGIA_DEVICE_ID", "and:fedcba9876543210")   # a payload's, not the shell's
     srv = devserver.serve(str(tmp_path), 0, None, service_port=1)
     port = srv.server_address[1]
     try:
