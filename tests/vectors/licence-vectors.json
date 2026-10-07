@@ -1,0 +1,702 @@
+{
+ "begia_licence_vectors": 1,
+ "cases": [
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "expires": null,
+     "issued": "2026-09-28",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "product": "BEGIA"
+    },
+    "sig": "2f3a5fa222b8e87562fc4bcf58da0b2b0ec086fad745cc1d3aa2709bd7489916ba78853e158df3cadf0b2b3734b98d27024f5c109cd6e39c8b94b5d25d939603"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "v1-pc-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": null,
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "expires": null,
+     "issued": "2026-09-28",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "product": "BEGIA"
+    },
+    "sig": "2f3a5fa222b8e87562fc4bcf58da0b2b0ec086fad745cc1d3aa2709bd7489916ba78853e158df3cadf0b2b3734b98d27024f5c109cd6e39c8b94b5d25d939603"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "v1-unchecked-kind-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "phone",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "expires": null,
+     "issued": "2026-09-28",
+     "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+     "product": "BEGIA"
+    },
+    "sig": "1ccc5bb47f5d306aaa361e721c6bc1e6448c3ccc296cdef5039e4d71727a8626108720f6e65edb580025c2a643669dbb78eac0b786466a01162c9d8260fc7c01"
+   },
+   "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+   "name": "v1-on-phone",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "for a computer, not this phone"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "v2-pc-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "phone",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "phone",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "a779797113c364e7f7a95644f1cc4240d03515c1a1a0a29c9363aa70283158c459a740badcca868956fe104e4195468ecad520a91bf5da9c756482ab1026b20e"
+   },
+   "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+   "name": "v2-phone-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "phone",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "273a23fb9df4124fbc777632454a6cbf409ac88bf5425d575ae2099aa11c8fde776c236cf0fffec27c5aa60835db4b117ab919b154e615e139a3799360d63a04"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "phone-on-pc",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "for a phone, not this computer"
+  },
+  {
+   "clock_max": null,
+   "device": "phone",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "ae739682b99d386efdc3eaff48c2c9879858f7890eed4de25ed520eaab63ba31ac1953ba7761bbdea5f7785bd870b8bd15e3d43ac82eb1a69aa00698721ad600"
+   },
+   "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+   "name": "pc-on-phone",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "for a computer, not this phone"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Someone else",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "altered-sig",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "altered since it was issued"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "74HU-XCKW-FNUW-SQIC-RHSP",
+   "name": "other-machine",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "issued for another device"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "kqu33n2nu26d7hbgfhvo",
+   "name": "typed-code-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "165d5a3df3691f8b",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "73b9568aaa9d288a58f7b3446c5de34991fc7d3cdca2dde6a40fc67fbbf64e81e0b65260357db11008328c1a7b8bf6895a159596406baafdc76529f469a0e604"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "unknown-key",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "signed by a key this build does not know"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "expired-day-13-ok",
+   "ok": true,
+   "today": "2027-04-19",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "expired-day-14-ok",
+   "ok": true,
+   "today": "2027-04-20",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "expired-day-15-refused",
+   "ok": false,
+   "today": "2027-04-21",
+   "why_has": "grace period"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": null,
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "note": "demo",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "3131e9a412ec6b4907e909f99fc5bc08e86abddf31f08f6b4e1efdbf94fc72941a7eecf1959cabbd9cb1e05d4012ff7661edb33befabf84a07dc3b207f610e0a"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "no-expiry-ok",
+   "ok": true,
+   "today": "2040-01-01",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 3
+    },
+    "sig": "da010866731a03b29f41c8fb51f3e6fedcfb17d17136d94f9205fb779705cc29a069aea34ea93ce4d2169ceaaf98e7e2a1e726c81e080f278fe397c125cd8601"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "future-v3",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "newer Licence Manager"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-09",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "3b9d63484d8c83803d21b9ddeae39c55c64a59f5805fc124d8819f6fe4cac150a1c715b54af1ac0fe043c87729a5c12b3643d32c47f32ea2fe6fa9015808460c"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "issued-tomorrow-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-10",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "b64947ad2a4b5a0641ee8f59eaac08e195617afa10b16c1f713ff3175cb8dc7d618d0c4d88e579f382b40766acbcb745bb071c0c621a1da49a7691bcb0a2e90a"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "issued-in-future",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "dated in the future"
+  },
+  {
+   "clock_max": "2027-05-06",
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "anchor-later-than-today",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "grace period"
+  },
+  {
+   "clock_max": "2026-09-08",
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "anchor-before-today-ok",
+   "ok": true,
+   "today": "2026-10-08",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "4bb7ca0e479043a8",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "OTHER",
+     "v": 2
+    },
+    "sig": "6a571b8c51ba7124b3d8ec87efb3b90eae2382a82e790c15f17b7fcaaa88994b390cacc9f4eae8502688ef4993cdea5c41efec01b256fd28ba67a911aa956008"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "other-product",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "not BEGIA"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "hello": "world"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "not-a-licence",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "not a BEGIA licence file"
+  }
+ ],
+ "grace_days": 14,
+ "key_id": "4bb7ca0e479043a8",
+ "made": "2026-10-08",
+ "note": "signed by a throwaway key; its private half was never written. No build may list this key.",
+ "packs": [
+  {
+   "device": "pc",
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "pack-picks-mine",
+   "pack": {
+    "begia_licence_pack": 1,
+    "licences": [
+     {
+      "alg": "ed25519",
+      "key_id": "4bb7ca0e479043a8",
+      "licence": {
+       "customer": "Vector Customer",
+       "device": "phone",
+       "expires": "2027-04-06",
+       "holder": "Test",
+       "id": "L-2026-T-0001",
+       "issued": "2026-10-08",
+       "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+       "name": "vector",
+       "product": "BEGIA",
+       "v": 2
+      },
+      "sig": "a779797113c364e7f7a95644f1cc4240d03515c1a1a0a29c9363aa70283158c459a740badcca868956fe104e4195468ecad520a91bf5da9c756482ab1026b20e"
+     },
+     {
+      "alg": "ed25519",
+      "key_id": "4bb7ca0e479043a8",
+      "licence": {
+       "customer": "Vector Customer",
+       "device": "pc",
+       "expires": "2027-04-06",
+       "holder": "Test",
+       "id": "L-2026-T-0001",
+       "issued": "2026-10-08",
+       "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+       "name": "vector",
+       "product": "BEGIA",
+       "v": 2
+      },
+      "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+     }
+    ],
+    "made": "2026-10-08",
+    "site": "Vector site"
+   },
+   "picks": "L-2026-T-0001"
+  },
+  {
+   "error_has": "none of the 2 licences in this pack is for this device",
+   "machine": "EYHC-6YQM-MFIO-W24Y-TZVL",
+   "name": "pack-none-mine",
+   "pack": {
+    "begia_licence_pack": 1,
+    "licences": [
+     {
+      "alg": "ed25519",
+      "key_id": "4bb7ca0e479043a8",
+      "licence": {
+       "customer": "Vector Customer",
+       "device": "phone",
+       "expires": "2027-04-06",
+       "holder": "Test",
+       "id": "L-2026-T-0001",
+       "issued": "2026-10-08",
+       "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+       "name": "vector",
+       "product": "BEGIA",
+       "v": 2
+      },
+      "sig": "a779797113c364e7f7a95644f1cc4240d03515c1a1a0a29c9363aa70283158c459a740badcca868956fe104e4195468ecad520a91bf5da9c756482ab1026b20e"
+     },
+     {
+      "alg": "ed25519",
+      "key_id": "4bb7ca0e479043a8",
+      "licence": {
+       "customer": "Vector Customer",
+       "device": "pc",
+       "expires": "2027-04-06",
+       "holder": "Test",
+       "id": "L-2026-T-0001",
+       "issued": "2026-10-08",
+       "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+       "name": "vector",
+       "product": "BEGIA",
+       "v": 2
+      },
+      "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+     }
+    ],
+    "made": "2026-10-08",
+    "site": "Vector site"
+   }
+  }
+ ],
+ "public": "0b6e349eac56d7cbf21f4c50ab7b75694dedb966068b8165a7af5e480e47f72d",
+ "record_v": 2,
+ "requests": [
+  {
+   "doc": {
+    "begia_licence_request": 1,
+    "build": "BEGIA 0.9 (v0.9-204-g8a2af15)",
+    "customer": "",
+    "hostname": "FAT-LAPTOP-3",
+    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+    "product": "BEGIA",
+    "requested": "2026-10-08"
+   },
+   "expect": {
+    "device": "pc",
+    "hostname": "FAT-LAPTOP-3",
+    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+    "v": 1
+   },
+   "name": "request-v1"
+  },
+  {
+   "doc": {
+    "begia_licence_request": 2,
+    "build": "x",
+    "current": null,
+    "customer": "",
+    "device": "phone",
+    "hostname": "Samsung SM-S911B",
+    "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+    "product": "BEGIA",
+    "report_pub": "abababababababababababababababababababababababababababababababab",
+    "requested": "2026-10-08",
+    "usage": {
+     "runs": 3
+    }
+   },
+   "expect": {
+    "device": "phone",
+    "hostname": "Samsung SM-S911B",
+    "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
+    "v": 2
+   },
+   "name": "request-v2"
+  },
+  {
+   "doc": {
+    "begia_licence_request": 2,
+    "machine": "XXXX"
+   },
+   "error_has": "no valid device code",
+   "name": "request-bad-code"
+  }
+ ]
+}

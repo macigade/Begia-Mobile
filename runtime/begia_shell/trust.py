@@ -14,6 +14,15 @@ for it - but a payload that IS signed is always checked, and one signed by
 a key not listed here is reported as untrusted whatever the policy.
 """
 
+# The keys a LICENCE may be signed with (runtime/begia_shell/licence.py):
+# key id -> raw Ed25519 public key, hex. The Licence Manager's issuing key
+# (IBA-LICENCE-CODE; IBA-CODE docs/LICENSING-DESIGN.md); a second office's
+# key is a second line here, and a new APK. The vectors' throwaway key
+# (4bb7ca0e479043a8) is never listed - tests/test_shell_licence.py checks.
+LICENCE_KEYS = {
+    "43fb53eea16a0945": "f470837787fcc13c49b72888ee2a921ca82e24f64ceede67112f1dfb80555124",
+}
+
 TRUSTED_KEYS = {
     # the development key on the build VM (2026-09-11); a site's release key
     # is a second line here, from tools/payload_keys.py in the desktop repo.
