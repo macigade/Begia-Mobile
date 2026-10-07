@@ -57,8 +57,13 @@ class RecorderService : Service() {
                 Log.i(Recorder.TAG, "restart asked for by the dev server")
                 exitProcess(0)
             }
+            // The phone's identity, for a payload that checks its own licence
+            // (boot.prepare tells only one whose manifest says "licence": 2),
+            // and this shell's rule: shell 2 requires a licence, so its
+            // embedded licensable build takes over from an ungated one.
             val report = Python.getInstance().getModule("begia_shell.android")
-                .callAttr("start", filesDir.path, embedded?.path, Recorder.PORT, restart, debug)
+                .callAttr("start", filesDir.path, embedded?.path, Recorder.PORT, restart, debug,
+                          Licence.deviceId(this), Licence.deviceName(), LICENCE_REQUIRED)
                 .toString()
             Log.i(Recorder.TAG, "healthy: $report")
             val version = JSONObject(report).optString("version", "")
@@ -109,5 +114,8 @@ class RecorderService : Service() {
         private const val CHANNEL = "recorder"
         private const val NOTIFICATION_ID = 1
         @Volatile private var booted = false
+        /** Shell 2 and later: every session on this phone needs its licence
+         *  (IBA-CODE docs/LICENSING-DESIGN.md 4.4). */
+        const val LICENCE_REQUIRED = true
     }
 }

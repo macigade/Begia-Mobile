@@ -24,4 +24,23 @@
     <string name="second_none">No BEGIA answered at %1$s</string>
     <string name="second_self">That is this phone\'s own address. Type the laptop\'s, the one on the WiFi.</string>
     <string name="second_recording">This phone is recording a trial. Stop it before showing another BEGIA here.</string>
+    <!-- the licence (IBA-CODE docs/LICENSING-DESIGN.md 4.2): companion mode needs one as much as recording does -->
+    <string name="second_unlicensed">This phone has no licence. Showing a laptop\'s BEGIA here needs one as much as recording does — scan the licence QR from the BEGIA Licence Manager, or open the licence file (Setup › This phone).</string>
+    <string name="second_dropped">This phone\'s licence is missing or has run out, so it shows its own BEGIA again, not the laptop\'s.</string>
+    <!-- a licence offered by a file, a scan or a laptop's box -->
+    <string name="licence_title">Install this licence?</string>
+    <string name="licence_body">%1$s\nthis phone, %2$s\n%3$s</string>
+    <string name="licence_until">valid until %1$s</string>
+    <string name="licence_no_expiry">no expiry date</string>
+    <string name="licence_do">Install</string>
+    <string name="licence_refused">This licence cannot be installed</string>
+    <string name="licence_installed">Licensed to %1$s</string>
+    <string name="licence_not_licence">This is not a BEGIA licence — scan the licence QR the Licence Manager shows, not the request QR.</string>
+    <string name="licence_predates">This phone\'s BEGIA predates licences — install the newer BEGIA first, then the licence.</string>
+    <string name="licence_line">Device code %1$s — %2$s</string>
+    <string name="licence_scan_prompt">Scan the licence QR the BEGIA Licence Manager shows</string>
+    <string name="licence_share_request">Send a licence request</string>
+    <string name="licence_share_usage">Send a usage report</string>
+    <string name="licence_box_none">The laptop has this phone\'s request now, but no licence for it yet. Ask for one, then tap again.</string>
+    <string name="licence_box_old">That laptop\'s BEGIA predates the licence box — update it, or use a file or the QR.</string>
 </resources>

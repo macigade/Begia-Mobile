@@ -25,8 +25,12 @@ import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
@@ -70,6 +74,23 @@ class MainActivity : AppCompatActivity() {
         uri?.let { offerInstall(it) }
     }
     private val notifPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    // the licence (IBA-CODE docs/LICENSING-DESIGN.md 3, flows 3 and 5): the
+    // QR the Licence Manager shows, and a licence file - which goes through
+    // the same first-byte sniff as anything else opened here
+    private val scanner = registerForActivityResult(ScanContract()) { r ->
+        val text = r.contents
+        val detail = when {
+            text != null -> JSONObject().put("ok", true).put("text", text)
+            r.originalIntent?.hasExtra("MISSING_CAMERA_PERMISSION") == true ->
+                JSONObject().put("ok", false).put("error", "the camera was not allowed - open the licence file, or paste it")
+            else -> JSONObject().put("ok", false).put("error", "cancelled")
+        }
+        dispatch("begia-scan", detail)
+    }
+    private val licencePicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let { offerInstall(it) }
+    }
+    private var licenceCheckedDay = ""      // onResume: companion mode re-checked once a day
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +109,17 @@ class MainActivity : AppCompatActivity() {
         second = findViewById(R.id.second)
         secondText = findViewById(R.id.second_text)
         findViewById<Button>(R.id.second_back).setOnClickListener { watchThisPhone() }
-        remote = Source.remote(this)
+        // a remembered laptop only for a licensed phone (LICENSING-DESIGN 4.2,
+        // check 2): one whose licence lapsed comes up on its own page, which
+        // shows the door, and the strip never shows
+        remote = Source.remote(this)?.let { r ->
+            if (Licence.ok(this)) r else {
+                Source.set(this, null)
+                Toast.makeText(this, R.string.second_dropped, Toast.LENGTH_LONG).show()
+                null
+            }
+        }
+        licenceCheckedDay = today()
         updateBanner()
 
         web.settings.apply {
@@ -191,6 +222,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Companion mode re-checked once a day and after any licence install
+     *  (LICENSING-DESIGN 4.2, check 4): an expiry past its grace drops the
+     *  laptop at the next resume, not the next restart. */
+    override fun onResume() {
+        super.onResume()
+        val day = today()
+        if (remote == null || (day == licenceCheckedDay && !Licence.changed)) return
+        licenceCheckedDay = day
+        Licence.changed = false
+        io.execute {
+            val ok = Licence.status(this, fresh = true).optBoolean("ok", false)
+            if (!ok) ui.post {
+                watchThisPhone()
+                tell(getString(R.string.app_name), getString(R.string.second_dropped))
+            }
+        }
+    }
+
+    private fun today(): String =
+        java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT).format(java.util.Date())
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
@@ -288,6 +340,12 @@ class MainActivity : AppCompatActivity() {
             return
         }
         io.execute {
+            // no licence, no laptop (LICENSING-DESIGN 4.2, check 1): nothing
+            // loads from it, and the laptop never learns the phone tried
+            if (!Licence.status(this, fresh = true).optBoolean("ok", false)) {
+                ui.post { tell(getString(R.string.app_name), getString(R.string.second_unlicensed)) }
+                return@execute
+            }
             val local = probeAt(Recorder.BASE_URL)
             if (local != null && local.optBoolean("recording", false)) {
                 ui.post { tell(getString(R.string.app_name), getString(R.string.second_recording)) }
@@ -313,6 +371,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchSource() {
+        // the same guard on every way into a laptop (LICENSING-DESIGN 4.2,
+        // check 3) - "Try again" on an unreachable laptop comes through here
+        if (remote != null && !Licence.ok(this)) {
+            Source.set(this, null)
+            remote = null
+            tell(getString(R.string.app_name), getString(R.string.second_unlicensed))
+        }
         web.stopLoading()
         pageLoaded = false
         loading = false
@@ -424,6 +489,14 @@ class MainActivity : AppCompatActivity() {
         val err = Recorder.lastBoot(this)?.optString("error", "") ?: ""
         showBoot(getString(R.string.boot_failed), err.ifEmpty { "no answer on /api/state" })
         bootProgress.visibility = View.GONE
+        // no page, no door: the device code and the licence state are said
+        // here, natively, so a phone can always be read and licensed
+        // (LICENSING-DESIGN 4.4). Rewritten with the same text by each probe.
+        val lic = Licence.status(this)
+        bootNote.text = getString(R.string.licence_line, lic.optString("code", "?"),
+            if (lic.optBoolean("ok", false)) getString(R.string.licence_installed, lic.optString("customer"))
+            else lic.optString("why", ""))
+        bootNote.visibility = View.VISIBLE
         bootAction.text = getString(R.string.boot_try_again)
         bootAction.visibility = View.VISIBLE
         bootAction.setOnClickListener {
@@ -451,11 +524,19 @@ class MainActivity : AppCompatActivity() {
     fun pickPayload() = picker.launch(arrayOf("*/*"))
 
     /** Stage, verify and extract the file, then ask. Activation and the
-     *  recorder restart happen only on Install. */
+     *  recorder restart happen only on Install. A licence arrives by the
+     *  same doors (mail, Drive, a picker), so the first byte decides: "{" a
+     *  licence, anything else the payload installer as before. */
     private fun offerInstall(uri: Uri) {
         io.execute {
             try {
                 val staged = Installer.stage(this, uri)
+                val head = staged.inputStream().use { s -> ByteArray(64).let { b -> b.copyOf(s.read(b).coerceAtLeast(0)) } }
+                if (head.firstOrNull { it.toInt().toChar() !in " \t\r\n﻿" }?.toInt()?.toChar() == '{' ||
+                    (head.size >= 3 && head[0] == 0xEF.toByte() && head[1] == 0xBB.toByte() && head[2] == 0xBF.toByte())) {
+                    offerLicence(staged.readText(Charsets.UTF_8).removePrefix("﻿"))
+                    return@execute
+                }
                 val m = Installer.install(this, staged)
                 ui.post { askToActivate(m) }
             } catch (e: Exception) {
@@ -509,6 +590,186 @@ class MainActivity : AppCompatActivity() {
                 web.evaluateJavascript(
                     "window.dispatchEvent(new CustomEvent('begia-laptop', {detail: $payload}))", null)
             }
+        }
+    }
+
+    // ---------------------------------------------------------- licence ----
+    // IBA-CODE docs/LICENSING-DESIGN.md 3 and 4. The shell judges a licence
+    // for this phone before offering it (licence.py, the APK's keys), and the
+    // phone's own service installs it - POST /api/licence on the loopback,
+    // which verifies again and writes data/licence.json. The shell never
+    // writes that file.
+
+    private fun dispatch(event: String, detail: JSONObject) {
+        ui.post {
+            web.evaluateJavascript("window.dispatchEvent(new CustomEvent('$event', {detail: $detail}))", null)
+        }
+    }
+
+    /** The licence QR (flow 3): the decoded text comes back to the page as a
+     *  `begia-scan` event {ok, text | error}; the page installs it. */
+    fun scanLicence() {
+        ui.post {
+            scanner.launch(ScanOptions()
+                .setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                .setPrompt(getString(R.string.licence_scan_prompt))
+                .setBeepEnabled(false)
+                .setOrientationLocked(false))
+        }
+    }
+
+    /** "Open a licence file..." (flow 5): the page's file input is dead in a
+     *  WebView without a chooser, so the system picker, then the sniff. */
+    fun pickLicence() {
+        ui.post { licencePicker.launch(arrayOf("application/json", "*/*")) }
+    }
+
+    /** Judge a licence (or a pack) for this phone, and offer it. Off the UI thread. */
+    private fun offerLicence(text: String) {
+        val v = try {
+            JSONObject(Installer.py(this).callAttr("licence_offer", filesDir.path,
+                Licence.deviceId(this), text).toString())
+        } catch (e: Exception) {
+            JSONObject().put("ok", false).put("why", e.message ?: "unreadable")
+        }
+        ui.post {
+            if (!v.optBoolean("ok", false)) {
+                val why = v.optString("why")
+                tell(getString(R.string.licence_refused),
+                     if (why.startsWith("this is not a licence") || why.startsWith("this is not a BEGIA licence"))
+                         getString(R.string.licence_not_licence) else why)
+                return@post
+            }
+            val until = if (v.isNull("expires") || v.optString("expires").isEmpty()) getString(R.string.licence_no_expiry)
+                        else getString(R.string.licence_until, v.optString("expires"))
+            AlertDialog.Builder(this)
+                .setTitle(R.string.licence_title)
+                .setMessage(getString(R.string.licence_body, v.optString("customer"), v.optString("code"), until))
+                .setPositiveButton(R.string.licence_do) { _, _ -> io.execute { installLicence(v.optString("text")) } }
+                .setNegativeButton(R.string.install_cancel, null)
+                .show()
+        }
+    }
+
+    /** POST the licence to this phone's own service. Off the UI thread. */
+    private fun installLicence(text: String) {
+        val (code, answer) = postLocal("/api/licence", JSONObject().put("text", text).toString())
+        Licence.invalidate()
+        ui.post {
+            if (code in 200..299) {
+                Toast.makeText(this, getString(R.string.licence_installed,
+                    answer.optString("customer").ifEmpty { "this phone" }), Toast.LENGTH_LONG).show()
+                // the page asks again: the door gives way to the app
+                if (remote == null) { pageLoaded = false; web.reload() }
+            } else if (code == 404) {
+                tell(getString(R.string.licence_refused), getString(R.string.licence_predates))
+            } else {
+                tell(getString(R.string.licence_refused),
+                     answer.optString("detail").ifEmpty { answer.optString("error", "the service answered $code") })
+            }
+        }
+    }
+
+    /** POST JSON to this phone's own recorder (never the laptop's): (status, body). */
+    private fun postLocal(path: String, json: String): Pair<Int, JSONObject> = try {
+        val c = Net.connect(Recorder.BASE_URL + path, 2000, 10000)
+        c.requestMethod = "POST"
+        c.doOutput = true
+        c.setRequestProperty("Content-Type", "application/json")
+        c.outputStream.use { it.write(json.toByteArray()) }
+        val code = c.responseCode
+        val body = (if (code < 400) c.inputStream else c.errorStream)?.bufferedReader()?.use { it.readText() } ?: ""
+        code to (try { JSONObject(body) } catch (e: Exception) { JSONObject() })
+    } catch (e: Exception) {
+        0 to JSONObject().put("error", "this phone's recorder is not answering ($e)")
+    }
+
+    /** GET text from this phone's own recorder: (status, body). */
+    private fun getLocal(path: String): Pair<Int, String> = try {
+        val c = Net.connect(Recorder.BASE_URL + path, 2000, 10000)
+        val code = c.responseCode
+        code to ((if (code < 400) c.inputStream else c.errorStream)?.bufferedReader()?.use { it.readText() } ?: "")
+    } catch (e: Exception) {
+        0 to ""
+    }
+
+    /** "Send a licence request..." (flow 5): this phone's request document,
+     *  from its own service, through the share sheet - Bluetooth to the
+     *  owner's laptop needs no network at all. */
+    fun shareRequest() {
+        io.execute {
+            val (code, text) = getLocal("/api/licence/request")
+            val doc = try { JSONObject(text) } catch (e: Exception) { null }
+            val mine = Licence.code(this)
+            // a payload that predates licences answers with a code of its own
+            // making, which no licence for this phone can match
+            if (code != 200 || doc == null || doc.optString("machine").replace("-", "") != mine.replace("-", "")) {
+                ui.post { tell(getString(R.string.licence_share_request), getString(R.string.licence_predates)) }
+                return@execute
+            }
+            share("licence-request-$mine.json", text, getString(R.string.licence_share_request))
+        }
+    }
+
+    /** "Send a usage report..." (LICENSING-DESIGN 5.3 c): the service's
+     *  report, through the share sheet. */
+    fun shareUsage() {
+        io.execute {
+            val (code, text) = getLocal("/api/licence/usage")
+            if (code != 200) {
+                ui.post { tell(getString(R.string.licence_share_usage), getString(R.string.licence_predates)) }
+                return@execute
+            }
+            val day = today().replace("-", "")
+            share("usage-report-${Licence.code(this)}-$day.json", text, getString(R.string.licence_share_usage))
+        }
+    }
+
+    private fun share(name: String, text: String, title: String) {
+        val dir = File(cacheDir, "share").apply { mkdirs() }
+        val f = File(dir, name)
+        f.writeText(text)
+        val uri = FileProvider.getUriForFile(this, "$packageName.files", f)
+        val send = Intent(Intent.ACTION_SEND)
+            .setType("application/json")
+            .putExtra(Intent.EXTRA_STREAM, uri)
+            .putExtra(Intent.EXTRA_SUBJECT, name)
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        ui.post { startActivity(Intent.createChooser(send, title)) }
+    }
+
+    /** "Get it from the laptop" (flow 4): leave this phone's request in the
+     *  laptop's box and take its licence if one is waiting. The answer goes
+     *  to the page as a `begia-box` event {ok, licence | why}; a licence
+     *  found is offered at once. */
+    fun getLicenceFromLaptop(base: String) {
+        val laptop = base.trim().trimEnd('/')
+        io.execute {
+            val detail = try {
+                val (rc, request) = getLocal("/api/licence/request")
+                if (rc != 200) throw Installer.Refused(getString(R.string.licence_predates))
+                val mine = Licence.code(this)
+                val posted = Installer.postText("$laptop/api/licence/box/requests",
+                    JSONObject().put("text", request).toString())
+                if (posted == 404) throw Installer.Refused(getString(R.string.licence_box_old))
+                val (gc, lic) = Installer.getText("$laptop/api/licence/box/licences/$mine")
+                when (gc) {
+                    200 -> {
+                        val doc = try { JSONObject(lic) } catch (e: Exception) { JSONObject() }
+                        if (doc.has("begia_licence_refusal")) {
+                            JSONObject().put("ok", false).put("why", doc.optString("why"))
+                        } else {
+                            offerLicence(lic)
+                            JSONObject().put("ok", true).put("licence", true)
+                        }
+                    }
+                    404 -> JSONObject().put("ok", false).put("why", getString(R.string.licence_box_none))
+                    else -> JSONObject().put("ok", false).put("why", "the laptop answered $gc")
+                }
+            } catch (e: Exception) {
+                JSONObject().put("ok", false).put("why", e.message ?: e.toString())
+            }
+            dispatch("begia-box", detail)
         }
     }
 

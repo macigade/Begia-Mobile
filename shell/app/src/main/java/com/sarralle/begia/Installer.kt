@@ -17,7 +17,7 @@ import java.io.File
 object Installer {
     class Refused(message: String) : Exception(message)
 
-    private fun py(ctx: Context): PyObject {
+    internal fun py(ctx: Context): PyObject {
         if (!Python.isStarted()) Python.start(AndroidPlatform(ctx.applicationContext))
         return Python.getInstance().getModule("begia_shell.android")
     }
@@ -102,6 +102,45 @@ object Installer {
         return c.inputStream.bufferedReader().use { it.readText() }
     }
 
+    /** A laptop connection that accepts the laptop's own CA, as download()
+     *  and fetchText() do - the box (IBA-CODE docs/LICENSING-DESIGN.md
+     *  flow 4) carries only what verifies under the APK's keys anyway. */
+    private fun open(url: String, readMs: Int): java.net.HttpURLConnection {
+        val c = java.net.URL(url).openConnection() as java.net.HttpURLConnection
+        if (c is javax.net.ssl.HttpsURLConnection) {
+            val trustAll = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+                override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+            })
+            val ssl = javax.net.ssl.SSLContext.getInstance("TLS")
+            ssl.init(null, trustAll, java.security.SecureRandom())
+            c.sslSocketFactory = ssl.socketFactory
+            c.hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+        }
+        c.connectTimeout = 5000
+        c.readTimeout = readMs
+        return c
+    }
+
+    /** POST a JSON body to a laptop; its status code (no throw on 4xx). */
+    fun postText(url: String, json: String): Int {
+        val c = open(url, 10000)
+        c.requestMethod = "POST"
+        c.doOutput = true
+        c.setRequestProperty("Content-Type", "application/json")
+        c.outputStream.use { it.write(json.toByteArray()) }
+        return c.responseCode
+    }
+
+    /** GET a small document from a laptop: (status, body). */
+    fun getText(url: String): Pair<Int, String> {
+        val c = open(url, 10000)
+        val code = c.responseCode
+        val body = (if (code < 400) c.inputStream else c.errorStream)?.bufferedReader()?.use { it.readText() } ?: ""
+        return code to body
+    }
+
     /** Verify and extract into a slot. Nothing is activated yet. */
     fun install(ctx: Context, zip: File): JSONObject = guarded {
         JSONObject(py(ctx).callAttr("install", zip.path, ctx.filesDir.path).toString())
@@ -112,7 +151,8 @@ object Installer {
         guarded { py(ctx).callAttr("activate", build, ctx.filesDir.path) }
     }
 
-    fun info(ctx: Context): String = guarded { py(ctx).callAttr("info", ctx.filesDir.path).toString() }
+    fun info(ctx: Context): String =
+        guarded { py(ctx).callAttr("info", ctx.filesDir.path, Licence.deviceId(ctx)).toString() }
 
     /** Whether an unsigned payload is refused from now on (policy.json). */
     fun setRequireSigned(ctx: Context, on: Boolean): String =

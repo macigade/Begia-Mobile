@@ -83,10 +83,50 @@ class ShellBridge(private val activity: MainActivity) {
 
     /** Second-screen mode: show a laptop's BEGIA on this phone (and to the
      *  watch) instead of this phone's own. The address is the same one the
-     *  update check takes. */
+     *  update check takes. On the UI thread: its refusals are dialogs. */
     @JavascriptInterface
     fun watchLaptop(baseUrl: String) {
-        activity.watchLaptop(baseUrl)
+        activity.runOnUiThread { activity.watchLaptop(baseUrl) }
+    }
+
+    // --- the licence (IBA-CODE docs/LICENSING-DESIGN.md 3 and 4) -----------
+
+    /** This phone's device code - the code only, never the ANDROID_ID it is
+     *  made from. What the door shows and the Licence Manager is given. */
+    @JavascriptInterface
+    fun deviceId(): String = Licence.code(activity)
+
+    /** The licence QR, with the camera; the text comes back as a
+     *  `begia-scan` event on window: {ok, text | error}. */
+    @JavascriptInterface
+    fun scanLicence() {
+        activity.scanLicence()
+    }
+
+    /** The system file picker for a licence file; the shell judges it for
+     *  this phone and offers to install it. */
+    @JavascriptInterface
+    fun pickLicence() {
+        activity.pickLicence()
+    }
+
+    /** This phone's licence request through the share sheet. */
+    @JavascriptInterface
+    fun shareRequest() {
+        activity.shareRequest()
+    }
+
+    /** This phone's usage report through the share sheet. */
+    @JavascriptInterface
+    fun shareUsage() {
+        activity.shareUsage()
+    }
+
+    /** Leave this phone's request in a laptop's box and take its licence if
+     *  one is waiting; the answer is a `begia-box` event: {ok, licence | why}. */
+    @JavascriptInterface
+    fun getLicenceFromLaptop(baseUrl: String) {
+        activity.getLicenceFromLaptop(baseUrl)
     }
 
     @JavascriptInterface

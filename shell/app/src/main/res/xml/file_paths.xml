@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the share sheet may read (Licence: a request or a usage report the
+     shell wrote to cache/share/ a moment before). Nothing else of the app's
+     files is reachable through the FileProvider. -->
+<paths>
+    <cache-path name="share" path="share/" />
+</paths>
