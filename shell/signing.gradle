@@ -1,0 +1,38 @@
+// The release signing key, shared by the phone app and the watch app.
+//
+// One key for both: the Wearable Data Layer routes messages only between two
+// APKs of one package signed with the same key. And it must never change: a
+// phone's licence is bound to its device code, made from ANDROID_ID, which
+// Android scopes to the app's signing key - a new key gives every device a
+// new code, and every licence issued for the old one stops matching.
+//
+// The keystore lives outside the repo (~/.begia/begia-release.jks, backed up
+// with the owner's other keys in ~/.begia); local.properties, git-ignored,
+// names it and holds its password:
+//
+//   begia.release.storeFile=C:/Users/<you>/.begia/begia-release.jks
+//   begia.release.storePassword=...
+//   begia.release.keyAlias=begia
+//
+// Without those lines a release build is left unsigned, as it always was,
+// and debug builds are never affected.
+def signingProps = new Properties()
+def signingFile = rootProject.file("local.properties")
+if (signingFile.exists()) signingFile.withInputStream { signingProps.load(it) }
+
+android {
+    def store = signingProps.getProperty("begia.release.storeFile")
+    if (store) {
+        signingConfigs {
+            release {
+                storeFile file(store)
+                storePassword signingProps.getProperty("begia.release.storePassword")
+                keyAlias signingProps.getProperty("begia.release.keyAlias", "begia")
+                // a PKCS12 store has one password for the store and its key
+                keyPassword signingProps.getProperty("begia.release.keyPassword",
+                        signingProps.getProperty("begia.release.storePassword"))
+            }
+        }
+        buildTypes.release.signingConfig signingConfigs.release
+    }
+}

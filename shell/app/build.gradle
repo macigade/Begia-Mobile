@@ -102,3 +102,6 @@ tasks.configureEach { t ->
         t.dependsOn(copyPayload)
     }
 }
+
+// the release key (shell/signing.gradle): the same one for the phone and the watch
+apply from: rootProject.file("signing.gradle")

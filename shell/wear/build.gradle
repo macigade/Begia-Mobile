@@ -52,3 +52,6 @@ dependencies {
     implementation "com.google.android.gms:play-services-wearable:18.2.0"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0"
 }
+
+// the release key (shell/signing.gradle): the same one for the phone and the watch
+apply from: rootProject.file("signing.gradle")
