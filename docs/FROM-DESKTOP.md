@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, later — the licence door keeps its answer (shared `ui/`; nothing to do)
+
+From your shell-2 bench: the door's answer to a paste, a scan or the
+laptop was wiped by the next licence frame (the socket retries every 6 s
+while unlicensed), 1-5 s after it appeared. `showLicenceDoor()` now says the
+opening sentence only when the door opens or the licence says something new
+(ok, why, code or kind changed), and focuses the paste box only then. The
+door's buttons are 44 px on a touch screen (`#lic-copy`, `#lic-share` were
+`.btn.small`'s 40). Pinned in `tests/js/test_licence_door.js`.
+
+---
+
 ## 2026-10-08 — licensing Phase 1: the payload asks every phone for its licence (shared `app/` and `ui/`; ACTION: shell 2 only)
 
 docs/LICENSING-DESIGN.md Phase 1, built against the shell side on
