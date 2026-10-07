@@ -20,6 +20,27 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-07, night — two rows of readouts at most, then sideways (shared `ui/`; nothing to do but install)
+
+The owner, from the Tab S10 Lite with 46 signals in one pane: "only allow
+two rows of text in pane header, later just let it scroll sideways". The
+readouts' wrap (the tablet's, from the entry below, and the phone's) had no
+end: they ran down over the whole chart.
+
+- `fitReadouts(strip)` (`180-panes.js`) counts the rows a header's readouts
+  wrap into; past `READOUT_ROWS = 2` it sets `.ph-2rows` on the `.ph-sigs`
+  strip: a grid of two rows, filled down then across, scrolling sideways
+  (`130-tablet.css`, after both wrap rules). One or two rows wrap as before.
+- `buildCharts` fits every strip before `fitPanes`; a `ResizeObserver` refits
+  a strip whose size changes (turned, a value a digit longer) after the
+  frame, and fits the panes again when its rows changed.
+- The phone gets it too (its readouts wrap the same way); the laptop's
+  single scrolling row never wraps, so never changes.
+
+Pinned by `tests/js/test_readout_rows.js`.
+
+---
+
 ## 2026-10-07, evening — the Tab S10 Lite (shared `ui/`; nothing to do but install)
 
 The owner: "prepare a version for tab S10 lite". The shell APK runs on it as
