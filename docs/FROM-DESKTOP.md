@@ -20,6 +20,69 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-07 — nothing cut off: the overflow sweep (shared `ui/css/`; look on a device)
+
+The owner: "check all views for overflowing buttons, pc, android and all".
+`tools/phone_shots.py` now audits buttons as well (text clipped, a word
+wider than its button, cut by or sticking out of its card, a strip scrolled
+sideways, two on top of each other - judged as drawn, after the clipping
+ancestors), and a shot may carry `"views"` (one load, a JS per view). All
+views at 360x780 and 384x832 (100/115/130%), 780x360, and the laptop sizes.
+Fixed, in the "overflow sweep (2026-10-07)" section of `css/120-phone.css`:
+
+- `@container topbar (max-width: 21em)`: `.wsel-short` for `.wsel-full` -
+  Live's bar at 130% (LIVE was past the edge).
+- portrait, `[data-mod="review"][data-trial="open"] #chip-conn #conn-text`
+  hidden - the open trial's chip ran 52px off the screen at 130%.
+- `@container topbar (max-width: 26em)`: Live's / the open trial's chip is
+  its lamp (`.sc-label` hidden) - 384px phones cut "Connected".
+- `.text-panel` on a phone: two columns, `grid-auto-flow: row dense`,
+  `.tp-val` on its own row - values were broken per letter.
+- `@media (max-height: 500px)`: `#signals-view` scrolls as one,
+  `#sig-table-wrap { flex: 0 0 auto }` - sideways, Save was under the tabs.
+- `.pane-tools .steps-guides { padding: 0 8px }` after the 36px glyph
+  buttons' `padding: 0`; `[data-device="phone"] .an-bar { max-height:
+  none }` - the Combined A/B hint was cut in half.
+
+And in `css/130-tablet.css` (an 800px tablet, whose bar ran LIVE past the
+edge while recording): `@container topbar` 52em -> `.wsel-short`, 46em ->
+`.brand` hidden, 40em -> `#btn-settings` hidden and `.mod { padding: 0 4px }`;
+`.pane-tools .steps-guides { padding: 0 8px }` there too.
+
+Checked by scrolling: content that starts under the bottom tabs scrolls
+clear of them on every page. `tests/js/test_overflow_sweep.js` pins these.
+
+---
+
+## 2026-10-07 — the simulator is one connection in Setup; Not now starts nothing (shared `app/` and `ui/`; nothing to do but look)
+
+The owner: "the not now button on login shouldnt turn on the simulator, the
+sim should only be mentioned as one connection in the setup, run/connect and
+that's it. Not now should not connect to anything new. both pc and android".
+
+- **Boot** (`app/main.py` lifespan): with `startup_gate` on, a
+  `cfg.sim.enabled` left from the last run is switched off in memory
+  (`enabled = False`, `prev_endpoint = ""`) and nothing is started or
+  dialled. With the gate off the simulator comes back as before.
+  `POST /api/welcome/skip` was and is only the flag; it connects nothing.
+- **Status**: the `sim` block now carries `enabled` -
+  `{**S.sim.stats(), "enabled": cfg.sim.enabled}` - "the simulator is the
+  chosen connection", which stays true through a Disconnect.
+- **The page**: `#sim-block` / `#btn-sim` / `#sim-state` / `#sim-detail`,
+  `updateSimStats` and the fault strip's "Start simulator" are gone. Setup's
+  list ends with a Simulator row (`.cv-item.cv-item-sim`, tag SIM);
+  picked (`cvPickSim`), `#cv-sim` replaces the form (`#cv-edit`) with
+  `#cv-sim-url` and `#cv-sim-connect` -> `POST /api/sim/start`
+  (`simConnect`). `onSimulator(st)` in `js/140-connections.js` is the one
+  test (enabled, or the driver on the simulator's address); `connHere`,
+  `updateConnCard` and `reconnect()` (Reconnect, `js/040-picker.js`) use it.
+  The welcome's `gateWanted` no longer makes an exception for the
+  simulator, and the door says nothing about it.
+- The phone's drawer and Setup take it as they are (shared markup);
+  `tests/js/test_sim_connection.js` pins it.
+
+---
+
 ## 2026-10-06, night — the welcome picks the protocol (your branch welcome/protocols, merged; nothing to do)
 
 Your b19ad50, merged into main as 20c272e after review (checked live at
