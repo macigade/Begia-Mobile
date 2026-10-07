@@ -20,6 +20,77 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08 — licensing Phase 1: the payload asks every phone for its licence (shared `app/` and `ui/`; ACTION: shell 2 only)
+
+docs/LICENSING-DESIGN.md Phase 1, built against the shell side on
+`licence/phone`. **From this build on a payload needs shell 2**
+(`payload.json`: `"min_shell": 2`, `"licence": 2`): shell 1 refuses it, and
+under shell 2 the program asks for a licence. The last payload for the
+shell-1 phones is v0.9-210.
+
+- **What the payload expects from the shell** (as built on `licence/phone`):
+  `BEGIA_DEVICE_ID = "and:<ANDROID_ID>"`, `BEGIA_DEVICE_NAME`, and
+  `BEGIA_LICENCE_REQUIRED=1`, all set before `app.main` is imported, for a
+  manifest with `licence >= 2`. Under Chaquopy `required()` is true anyway;
+  with no `BEGIA_DEVICE_ID` the status is the refusal
+  *"this phone's BEGIA app predates licences - install the newer BEGIA app,
+  then the licence"* with no code (`machine_code()` is `""`).
+- **The licence**: `<filesDir>/data/licence.json` (`config.LICENCE_PATH`).
+  `verify()` is v2 (the shared vectors; refusals in `begialic/format.py`'s
+  words, e.g. *"it was issued for another device"*), with the device check
+  (`device` = `"phone"` on a phone) and the clock anchor (`clock_max` from
+  the usage ledger). A pack is accepted wherever a licence is.
+- **Routes, as the shell side assumes**: `POST /api/licence {text}` → 2xx the
+  brief (now also `device`, `id`, `name`, `holder`, `start_allowed`) or 4xx
+  `{"detail"}` (400 refused, 423 another copy holds the folder; a non-loopback
+  caller cannot replace a newer licence with an older one); `GET
+  /api/licence/request` → the v2 request (`machine` = this phone's code,
+  `device`, `current`, `report_pub`, `usage`); `GET /api/licence/usage` → the
+  signed usage report (in `LICENCE_OPEN`; signed in from the network,
+  loopback free); `POST /api/licence/usage {screen_s, companion_s}`; the
+  laptop's box `/api/licence/box/*` (open, prefix-matched; table in section 3).
+- **Unlicensed means idle**: the service dials no PLC and starts no UDP while
+  unlicensed (the lifespan's dial is `connections.dial_configured()`, run by
+  the install route once a licence is in), and `start_checks()` refuses a
+  trial - the trigger's `pre_start` too. Once the grace has ended while the
+  process stays up (an hourly re-read), a running trial finishes and no new
+  one starts.
+- **Usage**: `<filesDir>/data/usage-<CODE>.json` and `usage-key-<CODE>.json`
+  beside the licence; counted only where a licence is required; the page
+  posts its visible seconds every 5 min; the shell posts `companion_s`.
+- **The page** uses the bridge as specified: `deviceId()`, `info().licence`,
+  `scanLicence()` + `begia-scan`, `pickLicence()`, `shareRequest()`,
+  `shareUsage()`, `getLicenceFromLaptop(base)` + `begia-box`; the door is
+  worded by `data-kind`, the LICENCE block sits in `#cv-phone` above SECOND
+  SCREEN, the tablet's Options card is `#ov-licence`.
+- Trials name their seat: `licence_id` and `licence_device` in provenance.
+- **The page also uses** `BegiaShell.source()` and the `begia-found` event
+  (as before, for the laptop field in the door), and the door offers *Send a
+  licence request…* (`shareRequest()`) itself, since Setup is unreachable
+  behind it. QR-A is not drawn yet: no QR library is vendored in `ui/vendor`
+  (the hook takes qrcode-generator's `qrcode()` or qrcodejs's `QRCode`); the
+  code shows as text. Nothing reads QR-A before Phase 3's webcam scan.
+- **The spec** is `docs/LICENCE-FORMAT.md` (the usage report and the signed
+  refusal of the box included). The vectors: `python <IBA-CODE>\tools\sync_vectors.py
+  --to <phone repo>` copies them; that repo needs `tests/vectors/* text eol=lf`.
+- **For `licence/phone`**, from the review of the box: `getLicenceFromLaptop`
+  should show the answer's `detail` on any non-2xx (today a 507, 413, 400,
+  403 box-off or 423 on the POST is ignored and the GET then says "no
+  licence yet"). And a phone report's signed `shell` block carries `apk`
+  from `BEGIA_SHELL_APK` if the shell sets it at boot (empty otherwise) -
+  nothing can be added to a report after its signature.
+- **The laptop boot test** (`tools/boot_test.py`, yours): a patch that copies
+  the bench's `dist\licence.json` into the data folder and names a 402 as
+  the licence door is prepared at the desktop session's scratchpad
+  (`boot\boot_test-bench-licence.patch`, `git apply --check` passes on
+  `licence/phone`).
+
+ACTION: boot_test this payload under shell 2 with a bench identity and run
+the door end to end in a debug build (scan, file, paste, the laptop's box),
+then report. Nothing goes on a device before the owner says migrate.
+
+---
+
 ## 2026-10-07, late night — a tablet has the phone's bars (shared `ui/`; nothing to do but install)
 
 The owner, on the Tab S10 Lite: "the top header of the app on tablet has too
