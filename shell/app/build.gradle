@@ -84,6 +84,8 @@ dependencies {
     // offline, no Play services, CAMERA asked at the first scan
     implementation("com.journeyapps:zxing-android-embedded:4.3.0") { transitive = false }
     implementation "com.google.zxing:core:3.5.3"
+    // JVM unit tests (app/src/test): the device code against the manager's
+    testImplementation "junit:junit:4.13.2"
 }
 
 // The embedded payload goes into the APK's assets from wherever the payload
