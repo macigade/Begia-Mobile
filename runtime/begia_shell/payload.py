@@ -35,7 +35,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 FORMAT = 1
-SHELL_VERSION = 1
+SHELL_VERSION = 2
 MANIFEST = "payload.json"
 SIGNATURE = "payload.sig"        # Ed25519 over the manifest bytes, by a key in trust.py
 REQUIRED = ("format", "version", "build", "min_shell", "files", "ui_dir", "sys_path", "entry")

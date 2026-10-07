@@ -19,9 +19,31 @@ from pathlib import Path
 from . import payload as pl
 
 
-def serve(files_dir: str, port: int, restart=None) -> ThreadingHTTPServer:
+def _post_licence(service_port: int, text: str):
+    """POST the licence to the phone's own service, which verifies it for this
+    phone and writes it (the shell never writes data/licence.json itself).
+    Returns (status, answer)."""
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(f"http://127.0.0.1:{service_port}/api/licence",
+                                 data=json.dumps({"text": text}).encode("utf-8"), method="POST",
+                                 headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.status, json.loads(r.read() or b"{}")
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read() or b"{}")
+        except ValueError:
+            return e.code, {"error": f"the service answered {e.code}"}
+    except OSError as e:
+        return 502, {"error": f"the service is not answering: {e}"}
+
+
+def serve(files_dir: str, port: int, restart=None, service_port: int = 0) -> ThreadingHTTPServer:
     files = Path(files_dir)
     slots = files / "slots"
+    service_port = service_port or port - 1
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, fmt, *args):      # logcat gets python.stdout
@@ -44,8 +66,16 @@ def serve(files_dir: str, port: int, restart=None) -> ThreadingHTTPServer:
                 # harness to read, change and PUT back
                 p = files / "data" / "config.json"
                 self._send(200, json.loads(p.read_text(encoding="utf-8")) if p.is_file() else {})
+            elif self.path == "/licence":
+                # this phone's licence as the shell judges it; the device id is
+                # the one boot.prepare handed a licensable payload
+                from . import licence
+                dev = os.environ.get("BEGIA_DEVICE_ID", "")
+                self._send(200, licence.status(files_dir, dev) if dev else
+                           {"error": "no device id: the active payload is not licensable"})
             else:
-                self._send(404, {"error": "GET /info, GET /config, PUT /payload, PUT /config, POST /restart"})
+                self._send(404, {"error": "GET /info, GET /config, GET /licence, PUT /payload, "
+                                          "PUT /config, PUT /licence, POST /restart"})
 
         def do_POST(self):
             if self.path != "/restart":
@@ -65,6 +95,12 @@ def serve(files_dir: str, port: int, restart=None) -> ThreadingHTTPServer:
             return bytes(out)
 
         def do_PUT(self):
+            if self.path == "/licence":
+                # a licence file's text, handed to the service's own install
+                # route (IBA-CODE docs/LICENSING-DESIGN.md, flow 10)
+                body = self._read_body()
+                code, answer = _post_licence(service_port, body.decode("utf-8", "replace"))
+                return self._send(code, answer)
             if self.path == "/config":
                 # what the UI cannot set (the UDP channel's signal list lives
                 # only in config.json): written whole, applied on restart

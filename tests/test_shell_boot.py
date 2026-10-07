@@ -9,6 +9,7 @@ and a good update must not be thrown away for it.
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -87,3 +88,53 @@ def test_the_boot_test_says_failed_rather_than_a_traceback(tmp_path, own_app, ca
                       "--health-timeout", "2", "--exit-when-healthy"]) == 1
     assert "FAILED: BEGIA cannot write to the data folder" in capsys.readouterr().out
     assert pl.Slots(slots_dir).state["booting"] is None
+
+
+# --- the licence: who is told the phone's identity (IBA-CODE LICENSING-DESIGN 2.3, 4.4)
+
+def _slot(tmp_path, licence: int):
+    slots_dir = tmp_path / "slots"
+    _slot, m = pl.install(make_payload(tmp_path / "p.begia", build="v0.20", licence=licence), slots_dir)
+    return pl.Slots(slots_dir).slot_path(m["build"])
+
+
+@pytest.fixture
+def clean_env(monkeypatch):
+    for k in boot.LICENCE_ENV:
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setenv("TRIALREC_DATA_DIR", "")
+    monkeypatch.setenv("TRIALREC_UI_DIR", "")
+    monkeypatch.setattr(sys, "path", list(sys.path))
+
+
+def test_a_licensable_payload_is_told_the_phones_identity(tmp_path, clean_env):
+    boot.prepare(_slot(tmp_path, licence=2), tmp_path / "data", "and:0123456789abcdef", "samsung SM-X406B")
+    assert os.environ["BEGIA_DEVICE_ID"] == "and:0123456789abcdef"
+    assert os.environ["BEGIA_DEVICE_NAME"] == "samsung SM-X406B"
+    assert os.environ["BEGIA_LICENCE_REQUIRED"] == "1"
+
+
+def test_an_older_payload_is_told_nothing(tmp_path, clean_env):
+    # it would honour the requirement and compute a code no licence matches
+    os.environ["BEGIA_LICENCE_REQUIRED"] = "1"         # left over from an earlier boot
+    boot.prepare(_slot(tmp_path, licence=0), tmp_path / "data", "and:0123456789abcdef", "samsung SM-X406B")
+    assert not any(k in os.environ for k in boot.LICENCE_ENV)
+
+
+def test_no_identity_no_requirement(tmp_path, clean_env):
+    boot.prepare(_slot(tmp_path, licence=2), tmp_path / "data", "", "")
+    assert not any(k in os.environ for k in boot.LICENCE_ENV)
+
+
+def test_licensable_reads_the_manifest_field():
+    assert [boot.licensable(m) for m in ({}, {"licence": 1}, {"licence": 2}, {"licence": "2"},
+                                         {"licence": 3}, {"licence": "x"}, {"licence": None})] == \
+        [False, False, True, True, True, False, False]
+
+
+def test_a_payload_for_shell_2_is_refused_by_shell_1(tmp_path):
+    m = pl.read_manifest(make_payload(tmp_path / "p.begia", build="v0.21", min_shell=2))
+    with pytest.raises(pl.PayloadError, match="needs app shell 2"):
+        pl.check_compatible(m, shell_version=1)
+    pl.check_compatible(m, shell_version=pl.SHELL_VERSION)
+    assert pl.SHELL_VERSION == 2

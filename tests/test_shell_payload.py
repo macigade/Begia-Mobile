@@ -23,7 +23,8 @@ from begia_shell import payload as pl                              # noqa: E402
 
 
 def make_payload(path: Path, build: str = "v0.9-8-gabcdef0", min_shell: int = 1,
-                 tamper: bool = False, extra: bool = False, more: dict = None) -> Path:
+                 tamper: bool = False, extra: bool = False, more: dict = None,
+                 licence: int = 0) -> Path:
     files = {
         "app/__init__.py": b"",
         "app/main.py": b"app = object()\n",
@@ -39,6 +40,8 @@ def make_payload(path: Path, build: str = "v0.9-8-gabcdef0", min_shell: int = 1,
         "entry": "app.main:app",
         "files": {k: {"sha256": hashlib.sha256(v).hexdigest(), "size": len(v)} for k, v in files.items()},
     }
+    if licence:                                # a payload that gates itself declares it
+        manifest["licence"] = licence
     with zipfile.ZipFile(path, "w") as z:
         z.writestr(pl.MANIFEST, json.dumps(manifest))
         for k, v in files.items():

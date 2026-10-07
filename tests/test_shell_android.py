@@ -34,6 +34,7 @@ def test_embedded_first_run_becomes_the_active_slot(tmp_path):
 
 
 def test_embedded_never_takes_over_a_hot_update(tmp_path):
+    android.set_policy(str(tmp_path), False)      # these test payloads are unsigned
     emb = make_payload(tmp_path / "embedded.begia", build="v0.9")
     android.ensure_embedded(str(tmp_path), str(emb))
     # the phone was updated over WiFi to v0.10 since the APK shipped
@@ -67,6 +68,7 @@ def test_embedded_same_build_with_new_files_replaces_the_slot(tmp_path):
 
 
 def test_install_is_not_activation(tmp_path):
+    android.set_policy(str(tmp_path), False)      # these test payloads are unsigned
     emb = make_payload(tmp_path / "embedded.begia", build="v0.9")
     android.ensure_embedded(str(tmp_path), str(emb))
     r = json.loads(android.install(str(make_payload(tmp_path / "n.begia", build="v0.10")), str(tmp_path)))
@@ -95,14 +97,19 @@ def test_info_reports_what_the_screen_needs(tmp_path):
     assert [x["build"] for x in i["installed"]] == ["v0.9"]
     assert i["installed"][0]["signature"]["signed"] is False
     assert i["last_boot"]["build"] == "v0.9"
-    # the policy is off until a site asks, and the keys the APK trusts are named
-    assert i["policy"] == {"require_signed": False}
+    # signed payloads only, on a fresh phone (IBA-CODE docs/LICENSING-DESIGN.md
+    # 4.4: an unsigned payload with the licence gate edited out must not
+    # install), and the keys the APK trusts are named
+    assert i["policy"] == {"require_signed": True}
     assert isinstance(i["trusted_keys"], dict)
-    android.set_policy(str(tmp_path), True)
-    assert json.loads(android.info(str(tmp_path)))["policy"] == {"require_signed": True}
-    # ...and with it on, the dev server's next push of an unsigned payload is refused
     with pytest.raises(pl.PayloadError, match="only installs signed"):
         android.install(str(make_payload(tmp_path / "pushed.begia", build="v0.9-1-gaaaaaaa")), str(tmp_path))
+    # a site that turned it off from the card keeps its choice
+    android.set_policy(str(tmp_path), False)
+    assert json.loads(android.info(str(tmp_path)))["policy"] == {"require_signed": False}
+    json.loads(android.install(str(tmp_path / "pushed.begia"), str(tmp_path)))
+    # no identity handed over: no licence and no code in the card's data
+    assert (i["licence"], i["device_id"]) == (None, "")
 
 
 class FakeRestart:
@@ -170,3 +177,84 @@ def test_dev_server_installs_activates_and_asks_for_a_restart(tmp_path):
     finally:
         srv.shutdown()
         srv.server_close()
+
+
+# --- the licence (IBA-CODE docs/LICENSING-DESIGN.md 4.4, Phase 2) -----------
+
+def _active(tmp_path, build, licence=0):
+    android.set_policy(str(tmp_path), False)      # unsigned test payloads
+    p = make_payload(tmp_path / f"{build}.begia", build=build, licence=licence)
+    android.install(str(p), str(tmp_path))
+    android.activate(build, str(tmp_path))
+
+
+def test_a_licensing_shell_puts_its_embedded_build_over_an_ungated_one(tmp_path):
+    _active(tmp_path, "v0.9-204")                                   # predates licences
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9-220", licence=2)
+    android.ensure_embedded(str(tmp_path), str(emb), licence_required=True)
+    assert pl.Slots(tmp_path / "slots").active == "v0.9-220"
+
+
+def test_left_alone_by_a_shell_that_does_not_ask(tmp_path):
+    _active(tmp_path, "v0.9-204")
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9-220", licence=2)
+    android.ensure_embedded(str(tmp_path), str(emb), licence_required=False)
+    assert pl.Slots(tmp_path / "slots").active == "v0.9-204"
+
+
+def test_an_embedded_build_that_is_not_licensable_takes_nothing_over(tmp_path):
+    _active(tmp_path, "v0.9-204")
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9-210")
+    android.ensure_embedded(str(tmp_path), str(emb), licence_required=True)
+    assert pl.Slots(tmp_path / "slots").active == "v0.9-204"
+
+
+def test_a_licensable_hot_update_keeps_its_place(tmp_path):
+    # the phone was updated to a newer licensable build: the rule is about
+    # ungated payloads, not about going back to the APK's own
+    _active(tmp_path, "v0.9-230", licence=2)
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9-220", licence=2)
+    android.ensure_embedded(str(tmp_path), str(emb), licence_required=True)
+    assert pl.Slots(tmp_path / "slots").active == "v0.9-230"
+
+
+def test_info_carries_the_licence_and_the_code_never_the_id(tmp_path):
+    emb = make_payload(tmp_path / "embedded.begia", build="v0.9")
+    android.ensure_embedded(str(tmp_path), str(emb))
+    raw = "and:0123456789abcdef"
+    i = json.loads(android.info(str(tmp_path), raw))
+    from begia_shell import licence
+    assert i["device_id"] == licence.code_of(raw)
+    assert i["licence"]["code"] == i["device_id"] and i["licence"]["ok"] is False
+    assert i["licence"]["why"] == "no licence on this phone yet"
+    assert "0123456789abcdef" not in json.dumps(i)
+    s = json.loads(android.licence_status(str(tmp_path), raw))
+    assert s["code"] == i["device_id"] and s["present"] is False
+
+
+def test_an_offered_licence_is_judged_for_this_phone(tmp_path):
+    raw = "and:0123456789abcdef"
+    o = json.loads(android.licence_offer(str(tmp_path), raw, "not json"))
+    assert o["ok"] is False and "not a licence" in o["why"]
+    # a well-formed licence for another device, signed by a key this APK does not trust
+    vec = json.loads((Path(__file__).parent / "vectors" / "licence-vectors.json").read_text(encoding="utf-8"))
+    doc = next(c for c in vec["cases"] if c["name"] == "v2-phone-ok")["doc"]
+    o = json.loads(android.licence_offer(str(tmp_path), raw, json.dumps(doc)))
+    assert o["ok"] is False and "does not know" in o["why"]
+    assert o["code"] == __import__("begia_shell.licence", fromlist=["code_of"]).code_of(raw)
+
+
+def test_dev_server_says_when_no_payload_was_handed_an_identity(tmp_path, monkeypatch):
+    monkeypatch.delenv("BEGIA_DEVICE_ID", raising=False)
+    srv = devserver.serve(str(tmp_path), 0, None, service_port=1)
+    port = srv.server_address[1]
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/licence", timeout=5) as r:
+            assert "no device id" in json.loads(r.read())["error"]
+        # PUT /licence goes to the service; with none on port 1 it says so
+        req = urllib.request.Request(f"http://127.0.0.1:{port}/licence", data=b"{}", method="PUT")
+        with pytest.raises(urllib.error.HTTPError) as e:
+            urllib.request.urlopen(req, timeout=10)
+        assert e.value.code == 502
+    finally:
+        srv.shutdown()
