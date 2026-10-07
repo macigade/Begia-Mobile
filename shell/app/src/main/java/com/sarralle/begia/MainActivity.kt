@@ -751,7 +751,11 @@ class MainActivity : AppCompatActivity() {
                 val mine = Licence.code(this)
                 val posted = Installer.postText("$laptop/api/licence/box/requests",
                     JSONObject().put("text", request).toString())
-                if (posted == 404) throw Installer.Refused(getString(R.string.licence_box_old))
+                // a laptop whose BEGIA predates the box: no such route (404),
+                // a static mount that takes only GET (405), or its sign-in
+                // gate, which the box routes are open past from Phase 1 (401)
+                if (posted == 404 || posted == 405 || posted == 401)
+                    throw Installer.Refused(getString(R.string.licence_box_old))
                 val (gc, lic) = Installer.getText("$laptop/api/licence/box/licences/$mine")
                 when (gc) {
                     200 -> {
