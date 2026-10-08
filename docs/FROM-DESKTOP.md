@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night — licences asked for online (shared `app/` and `ui/`; THE SHELL GAINS `openUrl`)
+
+The owner: *"the request would come by signing up with email or google"*,
+Google only for now, the same Supabase project as the usage inbox.
+- The door's `#lic-online` (**Request online…**) opens `ui/request.html`
+  (served by the device's own BEGIA) in a real browser: Google refuses to
+  sign anyone in inside a WebView. On a phone that is
+  `BegiaShell.openUrl(url)` - **new in the shell** (ShellBridge.kt +
+  MainActivity.openUrl: ACTION_VIEW, https anywhere, http only to
+  127.0.0.1/localhost), on branch `migration/app-id` in the phone repo,
+  built but not installed yet. Without it the door says to update the app.
+- The page signs in at `config.BACKEND` (Supabase Auth, Google; token in
+  the #fragment, kept in sessionStorage) and inserts into
+  `licence_requests` with the person's own token (RLS: their own rows).
+- `GET /api/licence/online` (what to send), `POST /api/licence/online/check`
+  (asks `config.LICENCE_PICKUP` by code; an issued licence is installed
+  through the same path as `POST /api/licence`). Both in `LICENCE_OPEN`,
+  not in `auth.OPEN`. `licence.online: false` switches both off.
+- The door checks once as it opens and every 20 s while it waits.
+
+---
+
 ## 2026-10-08, late night — three more usage counts (shared `app/` and `ui/`; nothing to do but install)
 
 The owner: *"make the apps count how many times it has been opened and how
