@@ -20,6 +20,33 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, afternoon, later still — a WORD in hex or binary (shared `app/` and `ui/`; nothing to do but install)
+
+The owner: *"data types of byte, word, double word should be possible to
+visualize as decimal, hex and binary formats"*.
+- `SignalCfg.fmt`: "" (decimal), "hex", "bin" - set by `PATCH
+  /api/signals {fmt}` and `PATCH /api/signals/bulk {fmt}` ("dec" is ""; 422
+  otherwise; not refused mid-trial, display only). A config key: a phone on
+  an older payload keeps it untouched (Stored).
+- js/070-signals.js: `BIT_WIDTHS` (BYTE/USINT 8, WORD/UINT/UInt16 16,
+  DWORD/UDINT/UInt32 32, LWORD/ULINT/UInt64 64), `bitWidth`, `bitsText`
+  (`16#1234`, `2#0001_0010_0011_0100`, zero-padded, `_` in fours; null for a
+  non-whole, negative or too-large value - a scaled one), `numText` (a whole
+  number of such a type without `.00`), `fmtSource` (a trial's signal takes
+  today's by node). `readingText`, `fmtSigVal`/`fmtVOf` (js/170-plugins.js),
+  the axis tag (hex for bin) and Analyse's A/B/extremes use them. No BigInt:
+  `Number.toString(16|2)`.
+- The choice: a `select.fmt-sel` in the Signals table's Type cell (and
+  `BULK_FIELDS` offers it to the selected rows that can take it), and a
+  "Shown as" field in `openSignalDetail` - `ask()` fields now take
+  `options: [[value, label], ...]` for a select.
+- The sidebar: `.sig-row1.bits-row` wraps the value onto its own line when
+  it does not fit beside the name (140-late.css).
+
+Pinned by tests/js/test_number_formats.js and tests/py/test_signal_formats.py.
+
+---
+
 ## 2026-10-08, afternoon, later — a log file beside the exe (shared `app/state.py`; nothing to do)
 
 `state.log_beside()` adds a rotating `begia.log` (5 MB, three kept) to the
