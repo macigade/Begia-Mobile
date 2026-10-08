@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, afternoon, later — a log file beside the exe (shared `app/state.py`; nothing to do)
+
+`state.log_beside()` adds a rotating `begia.log` (5 MB, three kept) to the
+root logger - called only when `sys.frozen`, i.e. the PyInstaller exe. The
+phone's backend is not frozen and writes no file; logcat stays its log.
+`state.LOG_FORMAT` now names the format `basicConfig` already used.
+
+---
+
 ## 2026-10-08, afternoon — your tablet diagnosis, fixed; BOOL for BBOOL (shared `app/` and `ui/`; nothing to do but install)
 
 The four causes you replayed on the tablet's own set, and two found on the
