@@ -20,6 +20,43 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, midday, later — a text row keeps its name (shared `ui/`; nothing to do but install)
+
+Found while checking the entry below on the phone layout: in the sidebar's
+Text tile, a long step text ("WAIT TO START AUTOMATIC SLAG DOOR PUSHING
+CYCLE") took the whole row - `.sig-val` is `flex-shrink: 0`, a number's
+reserved width - and the name went to 0 px; let wrap, the row grew and
+shrank with every step under the finger. `.sig.sig-text .sig-val` is now
+`flex: 0 0 60%`, one line, `text-overflow: ellipsis` (140-late.css); the
+text panel above the charts still shows the whole value. Pinned in
+`tests/js/test_text_signals.js`.
+
+---
+
+## 2026-10-08, midday — a signal off Live, still in its pane (shared `ui/`; nothing to do but install)
+
+The owner, of the sidebar's Signals list: *"i need a way to deselect the
+signals from this panel (not remove from pane, just hide the graph and it's
+axis from live)"*.
+- Each row has a box before its colour square (`.sig-show`; 26 px on a touch
+  screen). The row's grid is `auto 10px 1fr` (touch `auto 32px 1fr`, a text
+  row `auto 1fr`). Unticked, the trace and its Y axis leave Live - a digital
+  signal's whole lane, a text signal's lane in the live Strings strip - while
+  the signal stays in its pane, its readout stays in the header, dimmed, and
+  it is recorded as before.
+- `setTraceHidden(nodeId, hide)` (js/180-panes.js) is the one way in: the
+  box, a pane header's readout (which used to hide only the trace and leave
+  the axis) and the live strip's readout all go through it. It draws the
+  charts again (`laneScalesFor`, `lanesShown`; `stepsPlugin`'s `drop`) and
+  the list.
+- `hiddenSigs` is kept in `localStorage.hidden_traces`: a reload or a restart
+  comes back as it was left, per device. A trial's strip is unchanged: a
+  hidden lane stays there, empty.
+
+Pinned by `tests/js/test_hide_traces.js`.
+
+---
+
 ## 2026-10-08, morning — the picker: a block once, and a parent's tick reaches its children (shared `ui/`; nothing to do)
 
 The owner, in the Add signals picker:
