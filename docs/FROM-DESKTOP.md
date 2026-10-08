@@ -46,6 +46,12 @@ start a drag; a held chart header opens the chart's menu; a held plot still
 shows the readout; a held trial still selects. The WebView may or may not
 send `contextmenu` on a long press - either way it opens once.
 
+Later the same evening, from your touch-lab pre-check (a phone's pane
+header is nearly all readouts, the chart menu only on the 30 px #1 chip):
+`signalMenu(sig, {paneNo, x, y})` from a `.ph-sig` readout ends with the
+chart's name ("Chart #1…" / its own name), which opens `paneMenu(paneNo)`
+at the same place.
+
 ---
 
 ## 2026-10-08, afternoon, later still — a WORD in hex or binary (shared `app/` and `ui/`; nothing to do but install)
