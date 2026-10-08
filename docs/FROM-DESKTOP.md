@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, late night — three more usage counts (shared `app/` and `ui/`; nothing to do but install)
+
+The owner: *"make the apps count how many times it has been opened and how
+long time it spent recording, how many different plcs etc. i want to see this
+data in license manager, not in the app"*. The ledger (`app/access/usage.py`,
+`usage-<CODE>.json`) gains:
+- `opens`: the page POSTs `/api/licence/usage {"open": 1}` once per session
+  (`countOpen()`, js/095-licence.js, `sessionStorage.begia_opened`, marked
+  only after a 2xx) - so in the BEGIA app, once per WebView session.
+  `UsageBody.open`.
+- `plcs`: `on_link(address)` - `S._plc_address()` gives the driver
+  endpoint's host, "" for loopback (the simulator); the ledger keeps 16 hex
+  of HMAC-SHA256 under sha256(PLC_TAG + report key), never the address; a
+  link before the report key exists waits in memory (`plcs_waiting`).
+- `iochecks`: `iocheck_start` calls `on_iocheck()`.
+- `totals()` (a request's `usage`) gains `opens`, `iochecks`, `plcs_seen`.
+
+A ledger written before reads them as 0 and []. The report format and its
+signature are unchanged (the new fields are inside the ledger). The shell
+needs nothing: its `shareUsage()` still fetches the report from loopback.
+The Licence Manager imports the report files and shows them per device
+(IBA-LICENCE-CODE).
+
+---
+
 ## 2026-10-08, night — the Licence card, on every device (shared `app/` and `ui/`; nothing to do but install - the phone shows it in Setup and Options)
 
 The owner: *"in the apps (pc and android), make a clearer section for
