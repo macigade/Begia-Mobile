@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, morning — the picker: a block once, and a parent's tick reaches its children (shared `ui/`; nothing to do)
+
+The owner, in the Add signals picker:
+- *"what is the difference between the 2 yvh134.a.b? ... i like the second
+  one better"*: a block whose own name matches a search is shown once, as its
+  own row (opened, the PLC's Input / Output / InOut / Static) - `blockOnce()`
+  drops the flat group of the tags inside it, which matched only by carrying
+  its name. Matches in other blocks still group under their blocks.
+- *"selecting a parent should select all children"*: `treeTick()` - a ticked
+  structure ticks every box drawn inside it ("covered": shown ticked, one
+  entry in the selection, expanded by the server at Add); unticking one of
+  them splits the structure into everything else; ticking the last box of a
+  level takes the structure whole again; partly ticked shows indeterminate.
+  A variable with members drawn under it (OPC UA's DataHMI) is ticked as the
+  structure it shows. Pinned by `tests/js/test_tree_ticks.js`.
+
+---
+
 ## 2026-10-08, later still — the rail on phones and tablets; a panel a finger sizes (shared `ui/`; your branch, merged)
 
 Your `layout/touch-rail` (d99ebda + 657abe2), reviewed and merged: Options ›
