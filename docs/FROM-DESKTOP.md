@@ -20,6 +20,34 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, evening — right-click, and a long press on Android (shared `ui/`; nothing to do but install - and try it on a device)
+
+The owner: *"we're not using right click at all, let's find some use for
+it. same for hold down finger/pen on android versions"*. New script
+js/055-ctxmenu.js (index.html, after 050-dialog.js):
+- `onCtxMenu(el, fn, {mouseOnly})`: `contextmenu` (a mouse), or a pointer
+  held 450 ms (`pointerType` touch/pen, 10 px slop) - the innermost bound
+  element answers (`e.ctxTaken`); a field keeps the browser's menu; after a
+  hold the lift's click is swallowed, `dragstart` is prevented (a Signals
+  list row is `draggable`), and the `contextmenu` Android sends as well is
+  ignored. `navigator.vibrate(12)` on the hold.
+- `openCtxMenu(x, y, items)`: `.ctx-menu`, fixed, placed at the pointer
+  (above it if it does not fit below); 44 px rows on a touch device
+  (140-late.css). Items: `{head}`, `"-"`, `{label, act}`, `{label, choices}`.
+- Menus: `signalMenu(sig)` on .sig rows, Signals table rows (130-tree.js) and
+  `.ph-sig` readouts; `paneMenu(paneNo, t)` on `.pane-head`, and on the plot
+  through a new `wheelZoomPlugin` option `contextMenu(u, e)` - installed in
+  `installTouchGestures`, which ignores a touch-made `contextmenu` (the hold
+  is the readout, unchanged); `analysisMenu(t)` on the Analyse plot; the
+  trial row with `mouseOnly` (a finger's long press there still selects).
+
+On a device please check: a held signal row opens its menu and does not
+start a drag; a held chart header opens the chart's menu; a held plot still
+shows the readout; a held trial still selects. The WebView may or may not
+send `contextmenu` on a long press - either way it opens once.
+
+---
+
 ## 2026-10-08, afternoon, later still — a WORD in hex or binary (shared `app/` and `ui/`; nothing to do but install)
 
 The owner: *"data types of byte, word, double word should be possible to
