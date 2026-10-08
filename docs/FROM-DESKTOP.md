@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, evening, later still — the Signals table's kinds (shared `ui/`; nothing to do but install)
+
+The owner: *"make the filter selectors bigger and in order ALL, DIGITAL,
+ANALOG, STRING, OTHER"*. `#sig-kind` (index.html) now holds `data-kind` all /
+digital / analog / string / other, labelled in capitals, `all` active and
+`sigKind = "all"` at start (js/120-sigtable.js). `signalKind(sig)` decides:
+`is_bool` digital, `is_text` string, `OTHER_TYPES` (BYTE WORD DWORD LWORD,
+CHAR WCHAR, the time and date types) other, else analog. `"text"` is no
+longer a kind - nothing stored it. Larger: `#sig-kind .skind` 13 px bold,
+36 px; on a phone (120-phone.css) the nav takes a row and the five share it
+(69 px each at 375 px).
+
+---
+
 ## 2026-10-08, evening, later — Refresh in Add signals (shared `app/` and `ui/`; nothing to do but install)
 
 The owner: *"i want a button to refresh the search PLC view, i know for a
