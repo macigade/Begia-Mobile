@@ -20,6 +20,45 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, afternoon — your tablet diagnosis, fixed; BOOL for BBOOL (shared `app/` and `ui/`; nothing to do but install)
+
+The four causes you replayed on the tablet's own set, and two found on the
+way (the owner said "execute"):
+- **Constants and a lagging CPU clock.** `push_tick` (app/push.py) keeps a
+  cursor per signal on its ring buffer, `SignalBuffer.pushed`, instead of
+  the global `S.last_push_ms` (gone); with no page open each cursor moves up
+  to its newest sample. The init frame's backfill starts with the sample in
+  force at the look-back's start (`SignalHub.history`), kept out of
+  `_thin`. `state.page_points` shows any sample older than the look-back at
+  its start, so a day-old gain does not stretch the page's history (the
+  scrub bar). The recorder and the ring are untouched.
+- **Readings on OPC UA.** `readingAge()` (js/070-signals.js): with
+  `status.protocol === "opcua"` a non-UDP signal not in `unsubscribed` has
+  age 0 - a value that holds no longer reads "—" three seconds in. S7 and
+  UDP keep the arrival rule. This was the dash on DI_01..03 and on a steady
+  Out_PV.
+- **Ramps.** `holdAcrossGaps()` in `displaySeries` (js/190-scrub.js) puts a
+  point 1 ms before a sample that came after a gap of more than
+  max(0.25 s, 3 x rate): drawing only, not bools, not the stepped line.
+- **Axes in a small window.** `axisBudget()` (js/180-panes.js, from
+  `chartsEl.offsetWidth`, which a scrollbar does not move) is stored on each
+  pane's record; `resizeCharts` rebuilds when it changes, carrying `yZoom`.
+- **Zoom past now.** `notPastNow()` clamps a held pane, the live Strings
+  strip and live Analyse, keeping the span.
+- **BOOL.** `config.tia_type()`: the S7 driver reports BOOL for BBOOL and
+  TIME_OF_DAY for TIMEOFDAY (search hits, tree rows, probes, `dtype_for`),
+  and `SignalCfg` maps a stored one on load (pydantic 1 and 2 both;
+  tests/py/test_tia_types.py runs it on pydantic.v1).
+
+Checked on a throwaway server on the simulator: steady values read as
+numbers, 8 axis columns at 1587 px and 3 at the 560 px pop-up (the plot
+271 px, was 40), a zoom-out at a held pane's edge ends at now. Pinned by
+tests/py/test_push_cursor.py, test_tia_types.py, tests/js/test_readings.js,
+test_display_slice.js, test_tablet_live_fixes.js. Reaches devices with
+shell 2 (main's payloads), or a backport if the owner asks for one.
+
+---
+
 ## 2026-10-08, midday, later — a text row keeps its name (shared `ui/`; nothing to do but install)
 
 Found while checking the entry below on the phone layout: in the sidebar's
