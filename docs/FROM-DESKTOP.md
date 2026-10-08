@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, evening, later — Refresh in Add signals (shared `app/` and `ui/`; nothing to do but install)
+
+The owner: *"i want a button to refresh the search PLC view, i know for a
+fact my colleague added a member to a db but it doesnt appear"*.
+- `POST /api/plc/refresh` (routes/signals.py): 409 while recording, the
+  trigger armed, an I/O check running, a source switch, or not connected;
+  then `S.driver.reload()` and it answers once the driver is connected with
+  its index ready (90 s at most): `{ok, state, index, count, unit}`.
+- `S7PlusDriver.reload()`: `start()` again with the same endpoint and login
+  (the block list and the type information are read per session).
+  `OpcUaDriver.reload()`: `build_index()` again under `_index_lock` (a
+  browse is live already).
+- The picker: `#btn-plc-refresh` in `.pk-bar`; `refreshPlc()` re-reads the
+  tree (`loadTreeRoot` when browsing) and re-runs a search on screen; the
+  ticks (`picked`) stay.
+
+Pinned by tests/py/test_plc_refresh.py and tests/js/test_plc_refresh.js. On
+a phone the bar wraps already (`:root[data-layout="phone"] .pk-bar`), so the
+button takes the next place on its line.
+
+---
+
 ## 2026-10-08, evening — right-click, and a long press on Android (shared `ui/`; nothing to do but install - and try it on a device)
 
 The owner: *"we're not using right click at all, let's find some use for
