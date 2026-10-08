@@ -134,6 +134,13 @@ class ShellBridge(private val activity: MainActivity) {
         activity.runOnUiThread { activity.watchThisPhone() }
     }
 
+    /** A page in the phone's own browser: the licence request page, where
+     *  Google signs the person in (never inside this web view). */
+    @JavascriptInterface
+    fun openUrl(url: String) {
+        activity.runOnUiThread { activity.openUrl(url) }
+    }
+
     /** Only install payloads signed by a key this app trusts, from now on
      *  (or not). The APK's own embedded payload is never subject to it. */
     @JavascriptInterface

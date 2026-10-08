@@ -711,6 +711,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** The bridge's openUrl: a page in the phone's own browser - the licence
+     *  request page this phone's BEGIA serves, where Google signs the person
+     *  in (it refuses inside an app's web view; IBA-CODE ui/request.html).
+     *  https anywhere; http only to this phone itself. */
+    fun openUrl(url: String) {
+        val uri = Uri.parse(url)
+        val local = uri.host == "127.0.0.1" || uri.host == "localhost"
+        if (uri.scheme != "https" && !(uri.scheme == "http" && local)) return
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        } catch (e: android.content.ActivityNotFoundException) {
+            Toast.makeText(this, "No browser on this phone to open $url", Toast.LENGTH_LONG).show()
+        }
+    }
+
     /** "Send a usage report..." (LICENSING-DESIGN 5.3 c): the service's
      *  report, through the share sheet. */
     fun shareUsage() {
