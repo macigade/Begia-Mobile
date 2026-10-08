@@ -20,6 +20,41 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-08, night — the Licence card, on every device (shared `app/` and `ui/`; nothing to do but install - the phone shows it in Setup and Options)
+
+The owner: *"in the apps (pc and android), make a clearer section for
+license stuff and show the validity and expiry date/'no end date'"*.
+- **`#ov-licence` is now on every device**, the first card after Display
+  (before Access); the laptop's `#lic-row` in the Access card is gone with
+  `#lic-says`, `#btn-lic-door` and `#lic-report`, and so is the CSS that hid
+  the card on a laptop. Its lines are `#licdev-state` (a chip, `data-state`
+  ok / soon / late / bad: green valid, amber ending in 14 days or in its
+  grace period, red not licensed or the grace over), `#licdev-note` (hidden
+  when empty) and `#licdev-facts`, a `<dl>`: Valid until (or *Ended*) with
+  the day and "in 183 days", or **No end date**; Licensed to; Used by;
+  Device; Licence (id · made <day>); Device code with a Copy button
+  (`.lic-copy`, `copyText`). `#licdev-says` is gone.
+- **Setup › This phone's LICENCE block** says the same: `#cvp-lic-state`,
+  `#cvp-lic-note`, `#cvp-lic-facts` in place of `#cvp-lic-says`.
+- The door button in both reads **Install a licence…** (was *Licence…*).
+- js/095-licence.js: `licenceFacts(li)` -> `{state, head, note, rows}` from
+  ok, why, start_allowed, days_left, expires, issued, id, name, holder,
+  machine, clock_note - the licence's own `days_left`, never the browser's
+  clock; `LICENCE_GRACE_DAYS` / `LICENCE_SOON_DAYS` = 14, pinned against
+  app/access/licence.py. `deviceLicence()` returns `lic` (the licence)
+  instead of `line`. `paintDeviceLicence()` paints the card on a laptop too
+  (from the brief, no shell asked); `paintLicence()` (every licence frame)
+  now only repaints a laptop's card - a phone's is still painted with
+  Options and Setup, from the one `BegiaShell.info()` reading.
+- The brief (`GET /api/licence`, the 402 body, the socket's frames) gains
+  `issued` and `clock_note`. The shell's own `info().licence` already has
+  `issued`; it has no `clock_note`, and the card says none then.
+
+Pinned by tests/js/test_device_licence.js (rewritten), test_licence_door.js,
+test_options_layout.js, test_phone_layout.js and tests/py/test_licence_v2.py.
+
+---
+
 ## 2026-10-08, evening, later still — the Signals table's kinds (shared `ui/`; nothing to do but install)
 
 The owner: *"make the filter selectors bigger and in order ALL, DIGITAL,
