@@ -43,6 +43,18 @@ needs nothing: its `shareUsage()` still fetches the report from loopback.
 The Licence Manager imports the report files and shows them per device
 (IBA-LICENCE-CODE).
 
+**Then, the same night: the report goes to the internet by itself** (the
+owner chose "Automatic upload to MG Victus"). `usage._maybe_send()` from the
+heartbeat: at the first one after a start, then every six hours at most, an
+hour on after a failure, in a thread `usage-send`; it POSTs `report()` to
+`config.USAGE_INBOX` (a Supabase function, `begia-usage`, EU) with a TLS
+context that on a phone loads Android's roots (`/apex/com.android.conscrypt/
+cacerts`, then `/system/etc/security/cacerts` - Python on the phone has
+none). Needs the INTERNET permission the app has. `licence.report_url ""`
+stops it, `BEGIA_USAGE_SEND=off` too: **set that in boot_test and any long
+test run on the phone stack**, or its heartbeat sends a test device's report
+to the real inbox.
+
 ---
 
 ## 2026-10-08, night — the Licence card, on every device (shared `app/` and `ui/`; nothing to do but install - the phone shows it in Setup and Options)
