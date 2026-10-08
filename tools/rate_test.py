@@ -38,7 +38,7 @@ from trial_gaps import analyze                                      # noqa: E402
 ADB = Path(os.environ.get("LOCALAPPDATA", "")) / "Android" / "sdk" / "platform-tools" / "adb.exe"
 DEV = "http://127.0.0.1:8081"
 API = "http://127.0.0.1:18080"
-PKG = "com.sarralle.begia"
+PKG = "com.mgvictus.begia"
 
 
 def adb(serial: str, *args: str, timeout: int = 60) -> str:

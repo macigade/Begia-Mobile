@@ -17,7 +17,7 @@ set -u
 ADB="$LOCALAPPDATA/Android/sdk/platform-tools/adb.exe"
 SERIAL="${SERIAL:?set SERIAL to the phone's adb serial (ip:port)}"
 MIN="${1:-5}"
-PKG=com.sarralle.begia
+PKG=com.mgvictus.begia
 OUT="$(dirname "$0")/../boot-test-data/screenoff"
 mkdir -p "$OUT"
 log() { echo "$(date +%H:%M:%S) $*"; }

@@ -20,7 +20,8 @@ android {
     buildToolsVersion "34.0.0"
 
     defaultConfig {
-        applicationId "com.sarralle.begia"
+        // the phone app's, to the letter (see the top of this file)
+        applicationId "com.mgvictus.begia"
         minSdk 30           // Wear OS 3; a Galaxy Watch 7 runs Wear OS 5 (API 34)
         targetSdk 34
         versionCode 1

@@ -25,7 +25,11 @@ android {
     buildToolsVersion "34.0.0"
 
     defaultConfig {
-        applicationId "com.sarralle.begia"
+        // The installed app's identity, MG Victus's: set at the move onto the
+        // release key (2026-10-08), when every device installs it new anyway.
+        // The code's own package (namespace, above) is a name in the source
+        // only and changes nothing on a device.
+        applicationId "com.mgvictus.begia"
         minSdk 26
         targetSdk 34
         // The SHELL version. A payload declares the min_shell it needs and the

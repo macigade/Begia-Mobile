@@ -72,10 +72,15 @@ A release APK is not debuggable. So, on a phone running it:
   debugging, so the recorder's API can still be reached from the laptop,
   e.g. `POST /api/signals/import`.
 
-## Migration plan (not run yet)
+## Migration plan (started 2026-10-08 on the owner's "Migrate now", S23 and watch first)
 
-`PKG` below is the app's applicationId, as `shell/app/build.gradle` sets it:
-`PKG=$(grep -m1 applicationId shell/app/build.gradle | cut -d'"' -f2)`.
+The release app has a new applicationId, MG Victus's (set 2026-10-08, the
+owner: "Yes, com.mgvictus.begia"), so the debug app it replaces is another
+package. `NEW` and `OLD` below are the two:
+`NEW=$(grep -m1 applicationId shell/app/build.gradle | cut -d'"' -f2)`, and
+`OLD=$(adb shell pm list packages begia | grep -v mgvictus | cut -d: -f2 | tr -d '\r')`,
+read off each device rather than written down. The device code does not
+change with the id - Android scopes `ANDROID_ID` to the signing key.
 
 **Before starting:**
 
@@ -97,7 +102,7 @@ A release APK is not debuggable. So, on a phone running it:
 **For each phone or tablet**, with the old debug app still installed:
 
 1. **Back up the data.**
-   - `adb exec-out run-as $PKG tar cf - files/data > <device>-data-<date>.tar`
+   - `adb exec-out run-as $OLD tar cf - files/data > <device>-data-<date>.tar`
    - Keep the tar in a folder on this laptop, outside every repo. It holds
      `config.json`, which has the PLC passwords in clear text.
    - Copy the trial files (`files/data/trials/*.db`) into the laptop
@@ -106,8 +111,9 @@ A release APK is not debuggable. So, on a phone running it:
    `curl http://127.0.0.1:18080/api/signals/export.csv > <device>-signals.csv`.
    Note the saved connections (Setup) by name and address; their passwords
    are in the tar.
-3. **Uninstall** with `adb uninstall $PKG`. This deletes the
-   app's data, so only do it after 1 and 2.
+3. **Uninstall** the debug app with `adb uninstall $OLD`. This deletes its
+   data, so only do it after 1 and 2. (Two packages could sit side by side,
+   but both recorders would want the phone's port 8080.)
 4. **Install the release app.**
    - `adb push app-release.apk /data/local/tmp/begia.apk` (in Git Bash,
      prefix `MSYS_NO_PATHCONV=1`).
@@ -129,13 +135,14 @@ A release APK is not debuggable. So, on a phone running it:
    - The S23: the watch shows the value and Mark works.
 
 **The watch:**
-- `adb -s <watch> uninstall $PKG`.
+- `adb -s <watch> uninstall $OLD` (the watch's own debug app, the same old id).
 - Install `wear-release.apk` the same way (push, then `pm install`).
 - Open it once on the wrist.
 
 **Rollback**, if the release app misbehaves on a device:
-- Uninstall it and install the last debug APK (built from `2662a6f`).
-- `adb exec-in run-as $PKG tar xf - < <device>-data-<date>.tar`
+- Uninstall it (`$NEW`) and install the last debug APK (built from
+  `2662a6f`, the old id).
+- `adb exec-in run-as $OLD tar xf - < <device>-data-<date>.tar`
   restores the data on the debug app.
 - That device then needs no licence until the release app is fixed.
 
