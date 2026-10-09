@@ -20,6 +20,29 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night — updates over the internet: the server side, and PCs (shared `app/` and `ui/`; nothing to do but install)
+
+The owner: *"we can start the updates on supabase"*.
+- Supabase (begia-usage): table `releases` (a row per update file: build,
+  kind `pc|phone`, channel `stable|test`, path, size, sha256, `manifest`,
+  `sig`), public bucket `releases`, function `updates` (`GET ?kind=&channel=`
+  -> the newest, with its public `url`, or `{none: true}`); `manage` gained
+  `release_url` / `release`. `tools/publish_release.py` signs each file's
+  manifest - canonical JSON `{build, kind, channel, file, size, sha256}`,
+  sorted keys, no spaces - with the PAYLOAD key (Ed25519, key id
+  41f1f2855a0c4667, the one the shell trusts) and uploads it. v0.9-240 is
+  on the **test** channel for both kinds; **stable** is empty.
+- PCs: `/api/update/check`, `/api/update/install` (`app/routes/update.py`),
+  `config.UPDATES`, `config.UPDATE_KEYS`; Options card `#ov-update`
+  (`ov-desktop`, so hidden on a phone), `js/096-update.js`.
+- **For the phone (next):** the same `updates?kind=phone` offers the
+  `.begia`; the shell already checks a payload's own signature, so the
+  question is only how the app gets the downloaded file to the shell's
+  installer (a `BegiaShell` method taking a URL, or the VIEW route) - say
+  which you would rather.
+
+---
+
 ## 2026-10-09, evening, later — Compare DBs picks its protocol (shared `app/` and `ui/`; nothing to do but install)
 
 The owner: *"let me pick protocol for comparing the dbs. I prefer S7"*.
