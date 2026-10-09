@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night, closing — plant-neutral examples (shared `ui/`; nothing to do but install)
+
+The owner: *"i want it to be a generic product for any plant"*. In
+`index.html`: `#gate-host` placeholder `192.168.0.1` (was the plant's PLC),
+`#lic-box-addr` `e.g. 192.168.0.10`, `#cv-name` `Line 1 PLC` (was "EAF
+furnace 1"), the simulator note "A simulated PLC" (was "A slag door PLC"),
+the signal-set tooltip "from one machine" (was "furnace").
+
+---
+
 ## 2026-10-09, night, very last — no company name on screen (shared `ui/`; nothing to do but install)
 
 As on the request page: the licence door's `.lic-pc` / `.lic-phone` lines say
