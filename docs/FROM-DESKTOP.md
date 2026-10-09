@@ -33,13 +33,17 @@ The owner: *"we can start the updates on supabase"*.
   41f1f2855a0c4667, the one the shell trusts) and uploads it. v0.9-240 is
   on the **test** channel for both kinds; **stable** is empty.
 - PCs: `/api/update/check`, `/api/update/install` (`app/routes/update.py`),
-  `config.UPDATES`, `config.UPDATE_KEYS`; Options card `#ov-update`
-  (`ov-desktop`, so hidden on a phone), `js/096-update.js`.
-- **For the phone (next):** the same `updates?kind=phone` offers the
-  `.begia`; the shell already checks a payload's own signature, so the
-  question is only how the app gets the downloaded file to the shell's
-  installer (a `BegiaShell` method taking a URL, or the VIEW route) - say
-  which you would rather.
+  `config.UPDATES`, `config.UPDATE_KEYS`; Options card `#ov-update`,
+  `js/096-update.js`.
+- Phones, your route (no new APK): on Android `update.py` asks
+  `kind=phone`; `POST /api/update/fetch` downloads the offer over Python's
+  verified TLS (`usage._tls()`), checks size and sha256 against the signed
+  manifest and keeps it in `<data>/update/`; `GET /api/update/payload`
+  serves it; the card then calls
+  `BegiaShell.installFromUrl(location.origin + "/api/update/payload")`
+  (feature-tested), so the shell checks the payload signature again and
+  asks. The card is on every device now; without `installFromUrl` a phone
+  is told to open BEGIA's app.
 
 ---
 
