@@ -20,6 +20,29 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, evening — Compare DBs; Request online on the Licence card (shared `app/` and `ui/`; nothing to do but install)
+
+The owner: *"compare 2 dbs (2 vertical tables) marking with colors what has
+the same value what doesnt"* and *"put request online on the licence card
+too"*.
+- New `GET /api/dbcompare?a=<node>&b=<node>` (`app/routes/dbcompare.py`):
+  every member of both nodes (`members_of`, at most 2000 a side), read once -
+  the S7 driver in batches (`read_values`, new), any other driver a probe a
+  member - and lined up by the path below the node. The answer: `rows` of
+  `{rel, a, b, st}` (`st` same / diff / a / b / err; a side is null where the
+  member is missing, `{error}` where it could not be read), `counts`, `a` and
+  `b` as `{node, members, capped}`, `read_s`. One compare at a time: 409
+  while one reads; 409 `not connected` without a PLC.
+- `ui/`: `#btn-dbcompare` in the Signals toolbar opens `#dbc-overlay`
+  (`js/265-dbcompare.js`, `css/157-dbcompare.css`); under 700 px wide the
+  Type columns are hidden. Nothing in it needs the shell.
+- The Licence card (`#ov-licence`) and the phone's LICENCE block
+  (`#cvp-lic`) have **Request online…** (`#btn-licdev-online`,
+  `#cvp-lic-online`) where the request page can be opened: a browser, or
+  shell 2 with `BegiaShell.openUrl` (`deviceLicence().online`).
+
+---
+
 ## 2026-10-09, day — a shorter Options page, no paste box (shared `ui/`; nothing to do but install)
 
 The owner: *"remove the typeface selections from options, compact theme to a
