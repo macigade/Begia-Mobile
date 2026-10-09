@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, evening, later — Compare DBs picks its protocol (shared `app/` and `ui/`; nothing to do but install)
+
+The owner: *"let me pick protocol for comparing the dbs. I prefer S7"*.
+- `#dbc-proto` in the compare window: S7 / OPC UA (`.skind` buttons), S7
+  unless picked, kept in `localStorage` `begia_dbc_proto`.
+- New `GET /api/dbcompare/blocks?proto=` (what A and B are picked from) and
+  `POST /api/dbcompare/close`; `GET /api/dbcompare` takes `proto` and
+  answers `proto` (what it read over) and `note`. Over the active
+  connection's protocol it reads through `S.driver`; over the other it opens
+  its own driver instance to the same host (the saved connection over that
+  protocol gives the login; none saved: the protocol's default port, no
+  login), polling nothing, closed by `close` or after 5 minutes unused. The
+  simulator is read as it is (`note` says so). A failed first connect is a
+  502 naming the host and the protocol.
+- A phone's compare would open its own S7 session from the phone - the
+  shell needs nothing new.
+
+---
+
 ## 2026-10-09, evening — Compare DBs; Request online on the Licence card (shared `app/` and `ui/`; nothing to do but install)
 
 The owner: *"compare 2 dbs (2 vertical tables) marking with colors what has
