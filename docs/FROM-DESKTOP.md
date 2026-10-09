@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, day — a shorter Options page, no paste box (shared `ui/`; nothing to do but install)
+
+The owner: *"remove the typeface selections from options, compact theme to a
+dropdown"* and *"remove the paste field for the license"*.
+- Options: the Theme and Typeface cards are gone; Display's first row is
+  `#ov-theme-now` (the theme in force, its card) over `#ov-themes`, now a
+  dropdown list (`.ov-theme-menu`, `toggleThemes()`, shut by an outside
+  click or Escape). `#ov-sans`, `#ov-mono`, `.ov-font*` are gone; the faces
+  stay applied (`applyFonts`). The only `.ov-card.ph-adv` is gone with them.
+- The licence door: `#lic-text` and `#lic-go` are hidden, not removed - a
+  scan (`takeLicenceScan`) and a picked file still go through them.
+- The request page (`ui/request.html`) has its own sheet now and a larger,
+  centred logo.
+
+---
+
 ## 2026-10-09, night — licences asked for online (shared `app/` and `ui/`; THE SHELL GAINS `openUrl`)
 
 The owner: *"the request would come by signing up with email or google"*,
