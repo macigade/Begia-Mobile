@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night, later — an update without a licence (shared `app/` and `ui/`; nothing to do but install)
+
+Your design point, taken: `/api/update/check|install|fetch|payload` are in
+`gates.LICENCE_OPEN`, and the licence door has `#lic-update` "Check for an
+update" (after `#lic-file`), which checks and - asked - installs in one go
+(`updFromDoor()` in `js/096-update.js`, words through `licenceSay`). An
+unlicensed or lapsed phone then updates over the internet like the S10e
+needed to; the update gives no use without a licence.
+
+---
+
 ## 2026-10-09, night — updates over the internet: the server side, and PCs (shared `app/` and `ui/`; nothing to do but install)
 
 The owner: *"we can start the updates on supabase"*.
