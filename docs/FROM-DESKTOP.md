@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night, latest — the page compressed and revalidated (shared `app/`; nothing to do but install)
+
+The owner: *"let's do general optimization of the app"*. `app/main.py`:
+non-`/api` responses carry `Cache-Control: no-cache` (was `no-store`) - kept,
+revalidated by ETag, 304 when unchanged - and `PageGzip` (Starlette's
+GZipMiddleware, min 1 KB) compresses them for a client that asks with
+`Accept-Encoding: gzip`. `/api/*` is untouched (payloads, updates, trial
+files go out as before). Measured on the dev server: 59 files, 1.21 MB
+-> 0.40 MB first visit, 0 bytes on the next (all 304). The WebView on a
+phone revalidates the same way; nothing to change in the shell.
+
+---
+
 ## 2026-10-09, night, later — an update without a licence (shared `app/` and `ui/`; nothing to do but install)
 
 Your design point, taken: `/api/update/check|install|fetch|payload` are in
