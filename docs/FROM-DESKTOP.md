@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night, very last — no company name on screen (shared `ui/`; nothing to do but install)
+
+As on the request page: the licence door's `.lic-pc` / `.lic-phone` lines say
+"your licence provider"; the Request online tooltips (`#lic-online`,
+`#btn-licdev-online`, `#cvp-lic-online`) and `#licdev-report`'s no longer
+name MG Victus; the trial report's footer (`js/250-report.js`) is
+"... · BEGIA". `test_licence_door.js` pins the new door lines.
+
+---
+
 ## 2026-10-09, night, last — the I/O check page redesigned (shared `ui/`; nothing to do but install)
 
 The owner: *"add some setup panel on the left, without it it looks awkward.
