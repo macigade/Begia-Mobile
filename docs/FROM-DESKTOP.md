@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-09, night, last — the I/O check page redesigned (shared `ui/`; nothing to do but install)
+
+The owner: *"add some setup panel on the left, without it it looks awkward.
+redesign the IO page"*. `#iocheck-view` holds `.ioc-layout` (grid): an
+`aside.ioc-side` with the numbered steps (`#ioc-pick`, `#ioc-search`,
+`#ioc-name`), `.ioc-actions` (`#ioc-start`, `#ioc-stop`, `#ioc-csv`),
+`#ioc-count`, `#ioc-start-note` and the cabinet `#ioc-cabinet`; and
+`.ioc-main` with `#ioc-last`, `#ioc-ready`, `#ioc-popup`, `#ioc-empty` (now a
+card with the four steps) and `#ioc-table-wrap`. Every id is the same, so no
+script changed. `:root[data-layout="phone"]` (and windows under 760 px)
+stack the setup over the results - checked at 375 px: no sideways scroll.
+
+---
+
 ## 2026-10-09, night, latest — the page compressed and revalidated (shared `app/`; nothing to do but install)
 
 The owner: *"let's do general optimization of the app"*. `app/main.py`:
