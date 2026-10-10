@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-10, evening — the licence screen: three ways in, no request file (shared `ui/`; nothing to do but install)
+
+The owner, on the tablet: "send licence request file shouldnt be an option,
+remove it ... copy code-scan qr as one option, open licence file the other,
+and online as the main one" (and: keep "Get it from the laptop").
+
+- The door (`#lic-door`): `#lic-online` first; then a `.lic-way` with the
+  code, Copy, the QR, `#lic-scan` and `#lic-box-row`; then a `.lic-way` with
+  `#lic-open`; `#lic-update` last.
+- Gone: `#lic-share`, `#lic-request`, `#btn-licdev-request`,
+  `#cvp-lic-request` and `licenceViewModel().request`. The page no longer
+  calls `BegiaShell.shareRequest`; the shell may keep the method (nothing
+  breaks), but no screen offers it any more.
+- Tests: `test_licence_door.js`, `test_device_licence.js`,
+  `test_phone_layout.js` pin the new order and the absence.
+
+---
+
 ## 2026-10-10 — shell 3 wanted: native Google sign-in (plan only; NOTHING to install yet)
 
 Online licence requests work end to end (the owner fixed the Google client
