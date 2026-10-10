@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-10 — shell 3 wanted: native Google sign-in (plan only; NOTHING to install yet)
+
+Online licence requests work end to end (the owner fixed the Google client
+secret; the S10e's request was issued from the Licence Manager). The owner
+now wants the request **inside the app**, and chose **native Google sign-in
+in the phone app**. Plan: `docs/IN-APP-SIGNIN.md`. Your part:
+- Credential Manager *Sign in with Google* (`androidx.credentials` +
+  `googleid`): an ID token with
+  `serverClientId = 118369397450-ohlnklbd4j5ls2pjr7l0c1e4l5q7qo7f.apps.googleusercontent.com`
+  (the Web client ID Supabase uses - public) and the page's nonce.
+- `BegiaShell.googleIdToken(nonce)` returns at once; the shell then calls
+  `window.begiaGoogleIdToken({token, error})` (`error: "cancelled"` on back).
+- The owner adds an Android OAuth client in Google Cloud (package
+  `com.mgvictus.begia` + the release cert's **SHA-1**): please read that
+  SHA-1 from the release keystore (`keytool -list`, never printing a
+  password) and give it to the owner with the steps.
+The desktop side (the licence screen exchanging the token with Supabase and
+sending the request itself; a pop-up on PC) follows after the owner's usage
+reset (13 Oct). Shell-2 phones keep the browser route.
+
+---
+
 ## 2026-10-09, night, closing — plant-neutral examples (shared `ui/`; nothing to do but install)
 
 The owner: *"i want it to be a generic product for any plant"*. In
