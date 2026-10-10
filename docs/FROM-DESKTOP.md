@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-10, late — "built-in simulator", not "built-in slag door" (shared `ui/`; nothing to do but install)
+
+The owner, on the tablet: the app "still shows simulator as built in slag
+door, not generic". `js/140-connections.js` (the Setup list's sub-line) and
+`js/150-sidebar.js` (the connection card's meta line) now say "built-in
+simulator"; the Graphite & Amber theme's note is "warm light".
+`test_sim_connection.js` pins the new words. The simulator's tags are
+unchanged until the new generic one (docs/SIMULATOR-DESIGN.md).
+
+---
+
 ## 2026-10-10, evening — the licence screen: three ways in, no request file (shared `ui/`; nothing to do but install)
 
 The owner, on the tablet: "send licence request file shouldnt be an option,
