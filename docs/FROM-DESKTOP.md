@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-10, later — the bars under the header on light themes (shared `ui/`; nothing to do but install)
+
+The owner: "the errors that show below the header should be a different
+color ... dark themes is ok, light theme is wrong". `css/110-themes.css`:
+on `data-theme="daylight"` and `"hmi"`, `.banner` is #fff4dc / #7a4f00 and
+`.banner.fault` (`#linkbar`, `#faultbar`) #fdecea / #a1231b.
+
+---
+
 ## 2026-10-10, late — "built-in simulator", not "built-in slag door" (shared `ui/`; nothing to do but install)
 
 The owner, on the tablet: the app "still shows simulator as built in slag
