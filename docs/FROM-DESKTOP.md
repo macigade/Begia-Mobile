@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, last — no text cursor outside fields (shared `ui/`; nothing to do but install)
+
+`css/010-base.css`: `body { caret-color: transparent }`, back to `auto` in
+input/textarea/select/[contenteditable]; buttons, tabs and switches are
+`user-select: none`. The owner saw a blinking bar on clicking beside a
+button on the PC (caret browsing).
+
+---
+
 ## 2026-10-11, evening — icons, the folding rail, the rocker, DB names (shared `ui/`; nothing to do but install)
 
 The owner: symbols beside the names (rail, top bar, "android too"), a rail
