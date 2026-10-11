@@ -24,10 +24,14 @@ as the change. Entries say what to *do*, not just what happened.
 
 The owner: "The live graph, compare db and view a DB should be submenus of
 LIVE tab, dont put them in the signals tab. do for pc and android".
-`#live-sub` (nav, `.skind.lsub`, data-sub graph / dbcompare / dbview) at the
-top of `#chart-scroll`, shown on the monitor module alone (markModule);
+Then: "they should be in an expandable Live tab button for left rail view,
+expandable or dropdown in other views". The Live `.mod` holds an arrow
+(`#live-caret`); `#live-subs` (`.mod-sub`, data-sub graph / dbcompare /
+dbview) follows it in `#modules`: under Live in the rail, absolutely placed
+below Live in the top bar and ABOVE it in `#phone-tabs` (liveMenu in
+`js/266-dbview.js`); Live tapped while active opens it too.
 `#btn-dbcompare` and `#btn-dbview` are gone from the Signals toolbar.
-Checked at 375 px (phone layout): one row, no sideways scroll.
+Checked on the PC tabs, the rail and at 375 px in the phone's bottom bar.
 
 ---
 
