@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, evening — icons, the folding rail, the rocker, DB names (shared `ui/`; nothing to do but install)
+
+The owner: symbols beside the names (rail, top bar, "android too"), a rail
+that folds to symbols, a prettier Analyzer / I/O check switch with icons,
+no Live leftovers in the I/O check, and DB names instead of codes.
+- The `--tab-icon` rules in 120-phone.css / 130-tablet.css are now plain
+  `.mod[data-mod="..."]` (every device); the desktop draws them in
+  020-nav.css; `.mod-sub` has `--sub-icon`. Each `.mod`'s name is in a
+  `span.mod-label` (tests pin it).
+- `#rail-fold` (desktop/tablet rail only) sets `data-rail="slim"` on
+  <html> (localStorage `rail_slim`, applied in 100-theme.js).
+- `#suite` is a grid with a sliding `::before` pill (across; down in the
+  rail); `.suite-btn::before` has `--suite-icon`.
+- `#live-subs` is hidden in the I/O check suite.
+- The block fields keep the node in `data-node` and show `dbcNice(node)`.
+
+---
+
 ## 2026-10-11, later still — the PLC panel on Live's pages (shared `ui/` + a route; nothing to do but install)
 
 The owner: "in the view db and compare i dont need the second left panel as
