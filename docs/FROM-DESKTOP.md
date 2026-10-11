@@ -35,6 +35,8 @@ no Live leftovers in the I/O check, and DB names instead of codes.
   rail); `.suite-btn::before` has `--suite-icon`.
 - `#live-subs` is hidden in the I/O check suite.
 - The block fields keep the node in `data-node` and show `dbcNice(node)`.
+- (caead56) The page open in Live's menu (`.mod-sub.active`) has the accent fill
+  and an inset bar on every device; the PC rail is 152px (phone/tablet rails keep theirs).
 
 ---
 
