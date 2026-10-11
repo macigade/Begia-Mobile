@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, later — "BEGIA?" says what answers (shared `ui/` + the answer; install with the next payload)
+
+The owner: "find laptop finds only the phone. Make sure running BEGIA
+instances on the network are recognized correctly (android/PC)". The UDP
+4858 answer (`app/routes/hosting.py` `_discovery_answer`) gains
+`"device": "pc" | "phone"` (`licence.device_kind()`) and, on a phone, the
+licence's device name as `name`. `laptopsOnly()` (js/160-phone-card.js):
+PCs first, an answer without `device` (an older build) after them, phones
+never; `noLaptopSaid()` names the phones that did answer. Discovery.kt
+passes the answer's fields through unchanged - nothing to do in the shell.
+
+---
+
 ## 2026-10-11, after the end — the page side of shell 3 (shared `ui/`; install with shell 3)
 
 From the Android session's shell 3 (branch shell3/quit-and-chooser,
