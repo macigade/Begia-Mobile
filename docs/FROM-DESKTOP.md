@@ -28,7 +28,8 @@ off in options)" - then "slightly more beautiful/modern maybe some shades
 or gradient". `#rail .mod` is a tile with a gradient and shadows in the
 theme's own colours, lifting on hover (020-nav.css); `.mod-subs` folds
 with max-height/opacity (`.mod-subs.hidden` stays laid out); in the rail
-`.mod-sub` wraps. `#motion-on` in Options sets `data-motion` on <html>
+`.mod-sub` wraps, and in the PHONE rail it shows its `.short` name (Graph,
+Compare, View DB - the A17 cropped the long ones; 140ef11, checked there). `#motion-on` in Options sets `data-motion` on <html>
 (localStorage `motion`, default on - NOT the system's reduce-motion, which a
 VM sets); `:root[data-motion="off"]` stills every transition/animation.
 
