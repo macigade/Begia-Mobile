@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, the end — the I/O check imports a tag table (shared `ui/` + a route; nothing to do but install)
+
+`#ioi-import` + `#ioi-import-file` on the Inputs page; `ioiImport` (js/288)
+posts the file as base64 to `POST /api/iocheck/import` (`dry` first, then
+the cabinet from a prompt) and hands the answer to the
+`begia-iocheck-inputs` event. Server: `app/iocheck/taglist.py` (TIA's
+.xlsx via the standard library - its first sheet part is `sheet.xml` - or
+a CSV), tags found as `<I|Q>Area.<name>` over S7 or by the last step of
+their path over OPC UA, then the same add as a tick. A phone can import a
+file from its storage too.
+
+---
+
 ## 2026-10-11, very last — Shift-click ticks a run (shared `ui/`; nothing to do but install)
 
 `shiftTicks(box)` (js/040-picker.js): Shift + click ticks every box between
