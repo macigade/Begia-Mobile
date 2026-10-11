@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The boot screen's wordmark, as the boot page sets it (.splash-word):
+     Chakra Petch 700 at the brand's .02em, BEG in #169dd8 and IA in #eaf1f7,
+     38dp to the em. Drawn from the font's own outlines (ui/vendor/fonts,
+     SIL OFL) rather than set in type, so the shell carries no font. The
+     viewport is font units, the cap line at 0 and the baseline at 700. Written
+     by a script from the woff2. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="109.6dp"
+    android:height="26.6dp"
+    android:viewportWidth="2884"
+    android:viewportHeight="700">
+    <group android:translateX="-65">
+        <path
+            android:fillColor="#169DD8"
+            android:pathData="M65 0 L504 0 L604 100 L604 296 L564 337 L635 409 L635 592 L527 700 L65 700 Z M434 293 L470 257 L470 149 L435 114 L198 114 L198 293 Z M458 586 L501 543 L501 445 L458 402 L198 402 L198 586 Z M755 0 L1261 0 L1261 115 L891 115 L891 292 L1232 292 L1232 405 L891 405 L891 585 L1261 585 L1261 700 L755 700 Z M1371 585 L1371 115 L1486 0 L1834 0 L1947 113 L1947 220 L1811 220 L1811 163 L1764 116 L1558 116 L1507 167 L1507 533 L1558 584 L1766 584 L1815 535 L1815 426 L1665 426 L1665 310 L1947 310 L1947 585 L1832 700 L1486 700 Z" />
+        <path
+            android:fillColor="#EAF1F7"
+            android:pathData="M2082 0 L2218 0 L2218 700 L2082 700 Z M2569 0 L2693 0 L2949 700 L2811 700 L2754 545 L2508 545 L2451 700 L2313 700 Z M2724 433 L2631 167 L2629 167 L2539 433 Z" />
+    </group>
+</vector>
