@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ServiceInfo
+import android.graphics.drawable.Icon
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
@@ -97,12 +98,20 @@ class RecorderService : Service() {
         val open = PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        // Stop BEGIA: a clear way out of the background (the owner: "closing
+        // the app keeps it in the background"). The screen does it, so a
+        // recording trial is stopped and sealed before anything ends.
+        val stop = PendingIntent.getActivity(
+            this, 1, Intent(this, MainActivity::class.java).setAction(Recorder.ACTION_QUIT)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = Notification.Builder(this, CHANNEL)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(open)
             .setOngoing(true)
+            .addAction(Notification.Action.Builder(null as Icon?, getString(R.string.notif_stop), stop).build())
             .build()
         if (Build.VERSION.SDK_INT >= 29) {
             startForeground(NOTIFICATION_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)

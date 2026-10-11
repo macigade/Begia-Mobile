@@ -139,4 +139,4 @@ def test_a_payload_for_shell_2_is_refused_by_shell_1(tmp_path):
     with pytest.raises(pl.PayloadError, match="needs app shell 2"):
         pl.check_compatible(m, shell_version=1)
     pl.check_compatible(m, shell_version=pl.SHELL_VERSION)
-    assert pl.SHELL_VERSION == 2
+    assert pl.SHELL_VERSION == 3      # shell 3: the page's file picker and dialogs, quit()

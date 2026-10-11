@@ -12,9 +12,20 @@ class ShellBridge(private val activity: MainActivity) {
     /** Shell version, active and installed payloads, the last boot's report. */
     @JavascriptInterface
     fun info(): String = try {
-        Installer.info(activity)
+        // what this shell can do for the page beyond its methods: a file
+        // picker behind <input type="file"> and the JS dialogs (shell 3), and
+        // quit()
+        JSONObject(Installer.info(activity)).put("fileChooser", true).put("quit", true).toString()
     } catch (e: Exception) {
         JSONObject().put("error", e.message ?: "unknown").toString()
+    }
+
+    /** Stop BEGIA altogether: a recording trial is stopped and sealed first,
+     *  then the recorder and this screen go. The page asks the operator
+     *  itself ("A recording is running - stop it and quit?"). */
+    @JavascriptInterface
+    fun quit() {
+        activity.runOnUiThread { activity.quitBegia() }
     }
 
     @JavascriptInterface

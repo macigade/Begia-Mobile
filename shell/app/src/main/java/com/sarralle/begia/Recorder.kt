@@ -34,15 +34,28 @@ object Recorder {
      *  start boots the active slot - or rolls back, if the last one never
      *  became healthy (runtime/begia_shell/payload.py, Slots). */
     fun restart(ctx: Context) {
+        stop(ctx, settle = false)
+        start(ctx)
+    }
+
+    /** Stop the recorder and end its process, and start nothing: BEGIA
+     *  quits. `settle` gives the service a moment to stop before its process
+     *  goes - a sticky service killed while still running is a crash to
+     *  Android, which starts it again. */
+    fun stop(ctx: Context, settle: Boolean = true) {
         ctx.stopService(Intent(ctx, RecorderService::class.java))
+        if (settle) Thread.sleep(600)
         val am = ctx.getSystemService(ActivityManager::class.java)
         val name = ctx.packageName + PROCESS_SUFFIX
         am.runningAppProcesses?.filter { it.processName == name }?.forEach {
             Log.i(TAG, "killing recorder process ${it.pid}")
             Process.killProcess(it.pid)
         }
-        start(ctx)
     }
+
+    /** The notification's Stop BEGIA, to MainActivity: named after this
+     *  app's id, so no package is spelt by hand. */
+    val ACTION_QUIT: String get() = BuildConfig.APPLICATION_ID + ".QUIT"
 
     /** slots/state.json as the slot manager wrote it, or null. */
     fun slotState(ctx: Context): JSONObject? = readJson(File(slotsDir(ctx), "state.json"))

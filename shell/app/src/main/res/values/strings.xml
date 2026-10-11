@@ -43,4 +43,8 @@
     <string name="licence_share_usage">Send a usage report</string>
     <string name="licence_box_none">The laptop has this phone\'s request now, but no licence for it yet. Ask for one, then tap again.</string>
     <string name="licence_box_old">That laptop\'s BEGIA predates the licence box — update it, or use a file or the QR.</string>
+    <string name="notif_stop">Stop BEGIA</string>
+    <string name="quit_stopping">Stopping BEGIA…</string>
+    <string name="quit_failed_title">BEGIA is still running</string>
+    <string name="quit_failed">The trial could not be stopped, so BEGIA was left running: %1$s</string>
 </resources>

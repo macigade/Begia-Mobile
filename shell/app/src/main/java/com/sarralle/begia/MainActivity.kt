@@ -18,11 +18,17 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.CookieManager
+import android.webkit.JsPromptResult
+import android.webkit.JsResult
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import android.widget.Button
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -91,6 +97,16 @@ class MainActivity : AppCompatActivity() {
         uri?.let { offerInstall(it) }
     }
     private var licenceCheckedDay = ""      // onResume: companion mode re-checked once a day
+    // <input type="file"> in the page (the I/O check's tag list, the Signals
+    // CSV): the system's picker, its answer handed back to the WebView
+    private var fileCallback: ValueCallback<Array<Uri>>? = null
+    private val pagePickOne = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        answerFiles(uri?.let { arrayOf(it) })
+    }
+    private val pagePickMany = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+        answerFiles(uris.takeIf { it.isNotEmpty() }?.toTypedArray())
+    }
+    @Volatile private var quitting = false   // quitBegia() under way: nothing restarts or polls
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,6 +145,7 @@ class MainActivity : AppCompatActivity() {
             allowFileAccess = true      // the payload's boot page, from the slot directory
         }
         web.addJavascriptInterface(ShellBridge(this), "BegiaShell")
+        web.webChromeClient = PageChrome()
         val debug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         WebView.setWebContentsDebuggingEnabled(debug)   // chrome://inspect from the laptop
         web.webViewClient = object : WebViewClient() {
@@ -249,6 +266,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(i: Intent?) {
+        if (i?.action == Recorder.ACTION_QUIT) { quitBegia(); return }
         if (i?.action == Intent.ACTION_VIEW) i.data?.let { offerInstall(it) }
     }
 
@@ -256,9 +274,11 @@ class MainActivity : AppCompatActivity() {
 
     /** Ask /api/state every 700 ms; the answer decides between the page and the boot screen. */
     private fun poll() {
+        if (quitting) return
         io.execute {
             val st = probe()
             ui.post {
+                if (quitting) return@post
                 onProbe(st)
                 ui.postDelayed({ poll() }, 700)
             }
@@ -882,6 +902,157 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.w(Recorder.TAG, "battery optimisation dialog: $e")
             }
+        }
+    }
+
+    // --------------------------------------------------------- quit ----
+
+    /** Stop BEGIA altogether (the owner: "a clear button to stop acquisition
+     *  process in the background"): the notification's Stop BEGIA and the
+     *  page's BegiaShell.quit(). A recording trial goes through the
+     *  recorder's own POST /api/trial/stop first, which answers once the
+     *  trial is closed and sealed - never cut off; should that fail, BEGIA
+     *  stays up and says so. Then the service stops, its process ends, and
+     *  this screen goes too, out of the recent apps. */
+    fun quitBegia() {
+        if (quitting) return
+        quitting = true
+        Toast.makeText(this, R.string.quit_stopping, Toast.LENGTH_SHORT).show()
+        Thread({
+            var why: String? = null
+            try {
+                val (code, body) = getLocal("/api/state")
+                if (code == 200 && JSONObject(body).optBoolean("recording", false)) {
+                    // a trial of hours has a long final flush: ten minutes
+                    val c = Net.connect(Recorder.BASE_URL + "/api/trial/stop", 2000, 600_000)
+                    c.requestMethod = "POST"
+                    c.doOutput = true
+                    c.setRequestProperty("Content-Type", "application/json")
+                    c.outputStream.use { it.write("{}".toByteArray()) }
+                    val sc = c.responseCode
+                    if (sc >= 400) {
+                        val err = c.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                        why = (try { JSONObject(err).optString("detail") } catch (e: Exception) { "" })
+                            .ifBlank { "the recorder answered $sc" }
+                    } else {
+                        // the route answers when the trial is closed; this only confirms it
+                        for (n in 0 until 50) {
+                            val (s2, b2) = getLocal("/api/state")
+                            if (s2 != 200 || !JSONObject(b2).optBoolean("recording", false)) break
+                            Thread.sleep(200)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                why = e.message ?: e.toString()
+            }
+            if (why != null) {
+                Log.w(Recorder.TAG, "quit refused: the trial did not stop ($why)")
+                ui.post {
+                    quitting = false
+                    poll()
+                    tell(getString(R.string.quit_failed_title), getString(R.string.quit_failed, why))
+                }
+                return@Thread
+            }
+            Log.i(Recorder.TAG, "BEGIA quits")
+            Recorder.stop(this)
+            ui.post {
+                finishAndRemoveTask()
+                ui.postDelayed({ android.os.Process.killProcess(android.os.Process.myPid()) }, 400)
+            }
+        }, "begia-quit").start()
+    }
+
+    // ------------------------------------------- the page's browser ----
+
+    private fun answerFiles(uris: Array<Uri>?) {
+        fileCallback?.onReceiveValue(uris)
+        fileCallback = null
+    }
+
+    /** <input accept=".xlsx,.csv,..."> as the MIME types a document picker
+     *  filters by: extensions mapped, MIME types kept, any file when nothing
+     *  usable is left. A CSV has many names, plain text among them. */
+    private fun mimeTypes(accept: Array<String>?): Array<String> {
+        val out = linkedSetOf<String>()
+        for (raw in accept.orEmpty().flatMap { it.split(',') }) {
+            val a = raw.trim().lowercase()
+            when {
+                a.isEmpty() -> {}
+                a.contains('/') -> out.add(a)
+                a == ".csv" -> out.addAll(listOf("text/csv", "text/comma-separated-values", "application/csv",
+                                                 "application/vnd.ms-excel", "text/plain"))
+                a == ".txt" -> out.add("text/plain")
+                a == ".json" -> out.add("application/json")
+                a == ".xlsx" -> out.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                a == ".xls" -> out.add("application/vnd.ms-excel")
+                else -> android.webkit.MimeTypeMap.getSingleton()
+                    .getMimeTypeFromExtension(a.removePrefix("."))?.let { out.add(it) }
+            }
+        }
+        return if (out.isEmpty()) arrayOf("*/*") else out.toTypedArray()
+    }
+
+    /** What the page asks of the browser around it: a file (<input
+     *  type="file">) and window.alert / confirm / prompt. A WebView without a
+     *  WebChromeClient answers none of them - silently. */
+    private inner class PageChrome : WebChromeClient() {
+        override fun onShowFileChooser(view: WebView, callback: ValueCallback<Array<Uri>>,
+                                       params: FileChooserParams): Boolean {
+            fileCallback?.onReceiveValue(null)      // a picker still open: its page gets nothing
+            fileCallback = callback
+            val types = mimeTypes(params.acceptTypes)
+            return try {
+                if (params.mode == FileChooserParams.MODE_OPEN_MULTIPLE) pagePickMany.launch(types)
+                else pagePickOne.launch(types)
+                true
+            } catch (e: Exception) {
+                Log.w(Recorder.TAG, "no file picker: $e")
+                fileCallback = null
+                false
+            }
+        }
+
+        override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
+            AlertDialog.Builder(this@MainActivity)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok) { _, _ -> result.confirm() }
+                .setOnCancelListener { result.cancel() }
+                .show()
+            return true
+        }
+
+        override fun onJsConfirm(view: WebView, url: String, message: String, result: JsResult): Boolean {
+            AlertDialog.Builder(this@MainActivity)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok) { _, _ -> result.confirm() }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> result.cancel() }
+                .setOnCancelListener { result.cancel() }
+                .show()
+            return true
+        }
+
+        override fun onJsPrompt(view: WebView, url: String, message: String, defaultValue: String?,
+                                result: JsPromptResult): Boolean {
+            val edit = EditText(this@MainActivity).apply {
+                setText(defaultValue ?: "")
+                setSelection(text.length)
+                setSingleLine()
+            }
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            val box = FrameLayout(this@MainActivity).apply {
+                setPadding(pad, pad / 2, pad, 0)
+                addView(edit)
+            }
+            AlertDialog.Builder(this@MainActivity)
+                .setMessage(message)
+                .setView(box)
+                .setPositiveButton(android.R.string.ok) { _, _ -> result.confirm(edit.text.toString()) }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> result.cancel() }
+                .setOnCancelListener { result.cancel() }
+                .show()
+            return true
         }
     }
 
