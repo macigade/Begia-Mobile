@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, evening — rail tiles, a sliding Live menu, Animations in Options (shared `ui/`; nothing to do but install)
+
+The owner: "the text is cropped. make the dropdown animated, and the left
+panel buttons more tile-like (and in-app animations possible to be switched
+off in options)". `#rail .mod` is a tile (020-nav.css); `.mod-subs` folds
+with max-height/opacity (`.mod-subs.hidden` stays laid out); in the rail
+`.mod-sub` wraps. `#motion-on` in Options sets `data-motion` on <html>
+(localStorage `motion`, default on - NOT the system's reduce-motion, which a
+VM sets); `:root[data-motion="off"]` stills every transition/animation.
+
+---
+
 ## 2026-10-11, later — Live's sub-menu (shared `ui/`; nothing to do but install)
 
 The owner: "The live graph, compare db and view a DB should be submenus of
