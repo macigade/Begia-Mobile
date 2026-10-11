@@ -47,4 +47,10 @@
     <string name="quit_stopping">Stopping BEGIA…</string>
     <string name="quit_failed_title">BEGIA is still running</string>
     <string name="quit_failed">The trial could not be stopped, so BEGIA was left running: %1$s</string>
+    <string name="leave_title">Leave BEGIA?</string>
+    <string name="leave_body">Minimize: BEGIA keeps acquiring in the background, and its notification brings it back.\n\nQuit: the acquisition stops and BEGIA closes.</string>
+    <string name="leave_recording">A trial is recording.\n\nMinimize: it goes on recording in the background, and the notification brings BEGIA back.\n\nQuit: the trial is stopped and saved, then the acquisition stops and BEGIA closes.</string>
+    <string name="leave_remote">Minimize: BEGIA stays open in the background.\n\nQuit: BEGIA closes on this phone. The laptop carries on as it is.</string>
+    <string name="leave_minimize">Minimize</string>
+    <string name="leave_quit">Quit</string>
 </resources>

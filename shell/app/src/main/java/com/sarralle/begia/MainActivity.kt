@@ -879,10 +879,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Back: a web page reached from BEGIA goes back to it; BEGIA itself asks
+     *  whether to quit or to keep running (askLeave). Never back to the boot
+     *  page under the app - that only had the poll load the app again, so
+     *  Back reloaded BEGIA instead of leaving it. */
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        // keep recording: leave the task rather than destroy the screen
-        if (web.canGoBack()) web.goBack() else moveTaskToBack(true)
+        val url = web.url.orEmpty()
+        if (url.startsWith("http") && !url.startsWith(base()) && web.canGoBack()) web.goBack() else askLeave()
     }
 
     // ----------------------------------------------------- first launch ----
@@ -906,6 +910,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     // --------------------------------------------------------- quit ----
+
+    /** Leaving BEGIA the usual way, with Back (the owner, 2026-10-11:
+     *  "prompt for quit and stop acquisition or MINIMIZE"): Minimize keeps
+     *  the recorder acquiring - and a trial recording - behind the other
+     *  apps, as Back always did; Quit is quitBegia(). */
+    private fun askLeave() {
+        if (quitting) return
+        val body = when {
+            remote != null -> R.string.leave_remote   // the laptop's trial is not this phone's to stop
+            recording -> R.string.leave_recording
+            else -> R.string.leave_body
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.leave_title)
+            .setMessage(body)
+            .setPositiveButton(R.string.leave_minimize) { _, _ -> moveTaskToBack(true) }
+            .setNegativeButton(R.string.leave_quit) { _, _ -> quitBegia() }
+            .setNeutralButton(android.R.string.cancel, null)
+            .show()
+    }
 
     /** Stop BEGIA altogether (the owner: "a clear button to stop acquisition
      *  process in the background"): the notification's Stop BEGIA and the
