@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, late — Compare DBs and View a DB as pages, with a PLC search (shared `ui/` + a route; nothing to do but install)
+
+The owner: "in android, when in compare/view db the left panel disappears.
+on PC they are popups, i want them to be full modules on the screen + i
+have no way to search the PLC for desired signals/db here". `#dbc-overlay`
+and `#dbv-overlay` now live in `<main id="charts">` (class `.dbc-view`):
+`livePage(which)` shows one in `#chart-scroll`'s place; `markModule` calls
+`liveModule(m)`, which puts them away when another module opens. The block
+fields search as you type: `GET /api/dbcompare/search?q=&proto=` (hits
+`{node_id, name}`; a signal's hit is its parent node), shown in
+`#dbp-hits` under the field.
+
+---
+
 ## 2026-10-11, evening — rail tiles, a sliding Live menu, Animations in Options (shared `ui/`; nothing to do but install)
 
 The owner: "the text is cropped. make the dropdown animated, and the left
