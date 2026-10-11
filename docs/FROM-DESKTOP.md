@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, later still — the PLC panel on Live's pages (shared `ui/` + a route; nothing to do but install)
+
+The owner: "in the view db and compare i dont need the second left panel as
+it is now ... what i really need is a way to search plc without knowing the
+exact name, i mean like browse without text input too". `#plc-browse` is the
+sidebar's first card; `#sidebar.plcb-on` (set by `livePage`, cleared by
+`liveModule`) hides every other card. Its tree reads
+`GET /api/dbcompare/browse?node=&proto=` (`{proto, nodes: [{node_id, name,
+has_children, is_var}]}` - what is not a variable can be opened, as OPC UA
+gives no has_children); `#plcb-q` searches. Rows get View, or A / B.
+
+---
+
 ## 2026-10-11, late — Compare DBs and View a DB as pages, with a PLC search (shared `ui/` + a route; nothing to do but install)
 
 The owner: "in android, when in compare/view db the left panel disappears.
