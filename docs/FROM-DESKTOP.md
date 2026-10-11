@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, evening — the I/O check project: a new tab and peer sharing (shared `ui/` + `app/`; install with the next payload)
+
+The owner wants one I/O check project per FAT that the whole team marks
+(design: `docs/IOCHECK-PROJECT-DESIGN.md`). New: `app/iocheck/project.py`,
+`app/iocheck/sharing.py`, `app/routes/ioproject.py` (`/api/ioproject*`),
+`ui/js/289-ioproject.js`, `ui/css/159-ioproject.css`, a third I/O check tab
+**Project** (`data-mod="ioproject"`, with a phone tab icon). Projects are
+kept in `ioprojects/` beside `trials/`.
+
+What the phone needs to check, nothing to build yet:
+- **Sharing goes out as a UDP broadcast** ("BEGIA?" to 255.255.255.255:4858,
+  from Python, `sharing.find_begias`) and then HTTPS POSTs to the members'
+  `/api/ioproject/share`. Check that a broadcast leaves the phone (no
+  multicast lock should be needed to *send*; the answers come back unicast).
+  The phone's own `/api/ioproject/share` is open to the network (it proves
+  itself with the project's password) - reachable only if the phone's BEGIA
+  listens on its WiFi address; if it does not, the phone still shares by
+  asking the PC (the asker gets and gives in one exchange).
+- **Import a tag list** uses a file input: needs shell 3's file chooser, as
+  the I/O check import does.
+- Tiles: a tap selects one; with something selected a tap adds or removes.
+  Shift-runs are the PC's; a long-press run for touch comes later.
+
+---
+
 ## 2026-10-11, later — "BEGIA?" says what answers (shared `ui/` + the answer; install with the next payload)
 
 The owner: "find laptop finds only the phone. Make sure running BEGIA
