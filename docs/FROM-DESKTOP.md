@@ -29,7 +29,8 @@ no Live leftovers in the I/O check, and DB names instead of codes.
   `.mod[data-mod="..."]` (every device); the desktop draws them in
   020-nav.css; `.mod-sub` has `--sub-icon`. Each `.mod`'s name is in a
   `span.mod-label` (tests pin it).
-- `#rail-fold` (desktop/tablet rail only) sets `data-rail="slim"` on
+- `#rail-fold` (one handle, a child of `#rail`, absolutely on its right edge
+  halfway down; desktop/tablet rail only) sets `data-rail="slim"` on
   <html> (localStorage `rail_slim`, applied in 100-theme.js).
 - `#suite` is a grid with a sliding `::before` pill (across; down in the
   rail); `.suite-btn::before` has `--suite-icon`.
