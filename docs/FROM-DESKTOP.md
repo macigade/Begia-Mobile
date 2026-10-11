@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, very last — Shift-click ticks a run (shared `ui/`; nothing to do but install)
+
+`shiftTicks(box)` (js/040-picker.js): Shift + click ticks every box between
+the last clicked and this one, by node (`data-node-id` / `data-id`), after
+the clicked box's own tick, one change each, found afresh (the I/O check
+redraws on every tick); listening in the capture phase, as the tree's boxes
+stop their clicks. On `#tree`, `#search-results`, the I/O check's
+`#ioi-l-tree`, `#ioi-l-results`, `#ioi-list`, `#ioi-r-tree`,
+`#ioi-r-results`. A touch screen has no Shift; nothing changes there.
+
+---
+
 ## 2026-10-11, last — no text cursor outside fields (shared `ui/`; nothing to do but install)
 
 `css/010-base.css`: `body { caret-color: transparent }`, back to `auto` in
