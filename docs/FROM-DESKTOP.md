@@ -24,7 +24,9 @@ as the change. Entries say what to *do*, not just what happened.
 
 The owner: "the text is cropped. make the dropdown animated, and the left
 panel buttons more tile-like (and in-app animations possible to be switched
-off in options)". `#rail .mod` is a tile (020-nav.css); `.mod-subs` folds
+off in options)" - then "slightly more beautiful/modern maybe some shades
+or gradient". `#rail .mod` is a tile with a gradient and shadows in the
+theme's own colours, lifting on hover (020-nav.css); `.mod-subs` folds
 with max-height/opacity (`.mod-subs.hidden` stays laid out); in the rail
 `.mod-sub` wraps. `#motion-on` in Options sets `data-motion` on <html>
 (localStorage `motion`, default on - NOT the system's reduce-motion, which a
