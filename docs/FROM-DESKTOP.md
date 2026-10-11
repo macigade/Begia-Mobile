@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11 — View a DB (shared `ui/` + a route; nothing to do but install)
+
+The owner: "i want to view a DB as i do in TIA ... which signals have
+changed since a given moment (which i can later restart)". `#btn-dbview`
+in the Signals toolbar opens `#dbv-overlay` (Compare DBs' frame and block
+list, `js/266-dbview.js`, `css/158-dbview.css`, also linked in boot.html);
+it polls `GET /api/dbview?db=&proto=` (app/routes/dbcompare.py; the member
+list kept 60 s, values read each time) about once a second, slower when a
+read is slow. Changed rows `.dbv-changed`, changed in the last read
+`.dbv-now`; Restart and "Only what changed". `tests/js/test_dbview.js`.
+
+---
+
 ## 2026-10-10, later — the bars under the header on light themes (shared `ui/`; nothing to do but install)
 
 The owner: "the errors that show below the header should be a different
