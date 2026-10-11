@@ -40,8 +40,16 @@ What the phone needs to check, nothing to build yet:
   asking the PC (the asker gets and gives in one exchange).
 - **Import a tag list** uses a file input: needs shell 3's file chooser, as
   the I/O check import does.
-- Tiles: a tap selects one; with something selected a tap adds or removes.
-  Shift-runs are the PC's; a long-press run for touch comes later.
+- Tiles: a tap selects one; with something selected a tap adds or removes;
+  a long press selects the run from the last one picked (e428605).
+- Seen on the A17 (v0.9-302): joined a project made on the PC, shared both
+  ways through `adb reverse` (the phone's BEGIA listens on 127.0.0.1 only,
+  so a phone always *asks*; that is enough). The phone marks as its
+  licence's name ("A17"). On a phone the tools sit behind **More...**.
+- Later the same evening: earlier checks, hand-kept checklists, a CSV
+  report (`<a download>` - check the shell saves it), byte groups, and
+  **Share via the PLC** (`app/iocheck/plcbox.py`: HTTPS to an S7-1500's web
+  server - outbound only, nothing for the shell to do).
 
 ---
 
