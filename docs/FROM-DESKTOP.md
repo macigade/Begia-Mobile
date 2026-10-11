@@ -28,8 +28,14 @@ the cabinet from a prompt) and hands the answer to the
 `begia-iocheck-inputs` event. Server: `app/iocheck/taglist.py` (TIA's
 .xlsx via the standard library - its first sheet part is `sheet.xml` - or
 a CSV), tags found as `<I|Q>Area.<name>` over S7 or by the last step of
-their path over OPC UA, then the same add as a tick. A phone can import a
-file from its storage too.
+their path over OPC UA, then the same add as a tick. **Not on the phones
+yet:** the shell has no WebChromeClient, so a page's `<input type="file">`
+opens no picker and `window.prompt` / `confirm` show nothing - the button
+is hidden where `window.BegiaShell` exists. **Wanted for the next shell:** a
+WebChromeClient with `onShowFileChooser` (the system picker, the uri
+handed back) and `onJsPrompt` / `onJsConfirm` / `onJsAlert` (native
+dialogs); then the tag list import and the Signals CSV import work on a
+phone, and the page shows the button again (feature: `info().fileChooser`).
 
 ---
 
