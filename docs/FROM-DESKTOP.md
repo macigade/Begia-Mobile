@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-11, after the end — the page side of shell 3 (shared `ui/`; install with shell 3)
+
+From the Android session's shell 3 (branch shell3/quit-and-chooser,
+cd33558): `info().fileChooser` / `info().quit`, `BegiaShell.quit()`.
+- `shellHas(key)` (js/090-doors.js) reads info(); `#cvp-quit` (Setup >
+  This phone, above LICENCE) shows with `quit` and calls `quitBegia()`,
+  which asks first (a running recording named) and then `BegiaShell.quit()`.
+- `#ioi-import` shows in the app when `fileChooser`; the Signals CSV import
+  needed nothing - it simply works now.
+
+---
+
 ## 2026-10-11, the end — the I/O check imports a tag table (shared `ui/` + a route; nothing to do but install)
 
 `#ioi-import` + `#ioi-import-file` on the Inputs page; `ioiImport` (js/288)
