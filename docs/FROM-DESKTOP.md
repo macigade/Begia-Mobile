@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-13, later — I/O project: checks inside it, and Delete (shared `ui/` + `app/`; install with the next payload)
+
+The project holds all the I/O; a **check** is a piece of the work - a cabinet,
+a map selection, or what is not checked yet - with its progress, Map (only
+its signals), **Check tab** (its signals on the I/O check's left as a cabinet
+named after it; `POST /api/ioproject/checks/{id}/run`), Done / Again.
+**Delete...** offers the PDF report, asks the password (an in-page field), and
+lets the maker delete for every member (a `project_deleted` record at the
+next share; the others see a banner and Remove it here). New record kinds
+`check`, `check_state`, `project_deleted` - an older build ignores them.
+Nothing for the shell to do; the report offer is a download link.
+
+---
+
 ## 2026-10-13 — the I/O check's left list, grouped and filtered (shared `ui/`; install with the next payload)
 
 The owner imported 614 inputs and the Inputs tab became unusable. Now, once
