@@ -20,6 +20,29 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-13, night — a new built-in simulator: a small generic plant (shared `app/`; install with the next payload)
+
+`app/sim/plant.py` (`PlantSim`) replaces `app/sim/slagdoor.py`, which is
+gone; `app/simulator.py` still forwards, now to the new module. Same
+endpoint, port, ns=3 and S7-form node ids; the root folder is
+**`SIM_PLANT`** (was `SIM_EAF`) and the namespace URI `urn:begia:sim:plant`.
+The I/O check's cabinet (`DB_Cabinet` inputs, `FB_Cabinet`, `DO_01..04`) is
+unchanged, faults and all - the boot test needs nothing.
+
+New tags, plain English: `DB_Thermal`, `DB_Tank`, `DB_Pump`, `DB_Axis_1/2`,
+`DB_Injection`, `DB_Header`, the PID blocks `HYD_AXIS_1_PID`,
+`HYD_AXIS_2_PID`, `INJ_FLOW_PID`, `PRESS_PID`, and `DB_Sequence` with
+`SEQ_MAIN` / `SEQ_AXIS` structs (Step, SubStep, Step_Text, ...).
+
+**What the phone sees:** joining the simulator with no list of its own now
+brings a starting set of 17 signals (the toast says "a starting set of 17
+signals"); a saved simulator list naming the old blocks (`DB_SlagDoor`,
+`1YSD101_PID`, `1YSD102_PID` - the tablet's 46, for one) has those removed
+on the join ("N signals of the old simulator removed"). New config field
+`sim.seeded` (bool). Nothing for the shell to do.
+
+---
+
 ## 2026-10-13, evening — I/O project: the hardware (ET200 stations), view only (shared `ui/` + `app/`; install with the next payload)
 
 Import > **Hardware (TIA CAx)...** reads TIA's CAx export (`.aml`, Tools >
