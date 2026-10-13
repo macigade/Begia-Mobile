@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-13, evening — I/O project: the hardware (ET200 stations), view only (shared `ui/` + `app/`; install with the next payload)
+
+Import > **Hardware (TIA CAx)...** reads TIA's CAx export (`.aml`, Tools >
+Export CAx data) with `app/iocheck/hardware.py` (standard library XML): the
+stations, their modules, slots and I/O addresses. Each project signal then
+carries `hw` = {station, module, slot, order, channel}; the map groups **by
+station** (module headings select a whole card), Details has Station /
+Module / Ch, a check can cover a station, the report has the four columns.
+A `hardware` record shares it with every member. The file input needs
+shell 3's file chooser, as the other imports. Nothing for the shell to do.
+
+---
+
 ## 2026-10-13, later — I/O project: checks inside it, and Delete (shared `ui/` + `app/`; install with the next payload)
 
 The project holds all the I/O; a **check** is a piece of the work - a cabinet,
