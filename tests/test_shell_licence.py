@@ -40,7 +40,7 @@ def test_the_vectors_are_the_pinned_ones():
 
 def test_the_vector_key_is_not_trusted():
     # signed by a throwaway key whose private half was never written
-    assert DATA["key_id"] == "4bb7ca0e479043a8"
+    assert DATA["key_id"] == "c8d8fc5c4297cdd2"     # made 2026-10-14; the first was 4bb7ca0e479043a8
     assert DATA["key_id"] not in trust.LICENCE_KEYS
     assert DATA["public"] not in trust.LICENCE_KEYS.values()
 

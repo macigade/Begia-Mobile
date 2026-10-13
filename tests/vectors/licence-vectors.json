@@ -6,7 +6,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "expires": null,
@@ -14,7 +14,7 @@
      "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
      "product": "BEGIA"
     },
-    "sig": "2f3a5fa222b8e87562fc4bcf58da0b2b0ec086fad745cc1d3aa2709bd7489916ba78853e158df3cadf0b2b3734b98d27024f5c109cd6e39c8b94b5d25d939603"
+    "sig": "d909f68ce4132bd3fba30c475e64140b52b7571e48c9c7a5644443bae2fb209c769905b03b14496aec8af1cf25b93d530aba810f04c0fc25dd1067556d963b05"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "v1-pc-ok",
@@ -27,7 +27,7 @@
    "device": null,
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "expires": null,
@@ -35,7 +35,7 @@
      "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
      "product": "BEGIA"
     },
-    "sig": "2f3a5fa222b8e87562fc4bcf58da0b2b0ec086fad745cc1d3aa2709bd7489916ba78853e158df3cadf0b2b3734b98d27024f5c109cd6e39c8b94b5d25d939603"
+    "sig": "d909f68ce4132bd3fba30c475e64140b52b7571e48c9c7a5644443bae2fb209c769905b03b14496aec8af1cf25b93d530aba810f04c0fc25dd1067556d963b05"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "v1-unchecked-kind-ok",
@@ -48,7 +48,7 @@
    "device": "phone",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "expires": null,
@@ -56,7 +56,7 @@
      "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
      "product": "BEGIA"
     },
-    "sig": "1ccc5bb47f5d306aaa361e721c6bc1e6448c3ccc296cdef5039e4d71727a8626108720f6e65edb580025c2a643669dbb78eac0b786466a01162c9d8260fc7c01"
+    "sig": "96392a877e238d4cdf9e1de9b08f02f8af75452615ce578c8c59c50de69df79c3c292baf93eddedb7171629a84089a5b60a10e22f5ba55e2f45d593d0c246209"
    },
    "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
    "name": "v1-on-phone",
@@ -69,7 +69,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -82,7 +82,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "v2-pc-ok",
@@ -95,7 +95,7 @@
    "device": "phone",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "phone",
@@ -108,7 +108,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "a779797113c364e7f7a95644f1cc4240d03515c1a1a0a29c9363aa70283158c459a740badcca868956fe104e4195468ecad520a91bf5da9c756482ab1026b20e"
+    "sig": "8cd9a5ef3bbbeb4b017f0606f58744a5b151785e838d469aa289743fa463b34407079286c2f8e7201ded6737040946400b0737e153f9a8a6701439a64e380802"
    },
    "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
    "name": "v2-phone-ok",
@@ -121,7 +121,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "phone",
@@ -134,7 +134,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "273a23fb9df4124fbc777632454a6cbf409ac88bf5425d575ae2099aa11c8fde776c236cf0fffec27c5aa60835db4b117ab919b154e615e139a3799360d63a04"
+    "sig": "d9e1a883afa4e04873a8775213d5daa4003e59feb173f6c66b694c2e24d2f4c4034113939ccc8c2f489e16f1e0eefbb7bf052c6eebb23e282980083d884c7008"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "phone-on-pc",
@@ -147,7 +147,7 @@
    "device": "phone",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -160,7 +160,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "ae739682b99d386efdc3eaff48c2c9879858f7890eed4de25ed520eaab63ba31ac1953ba7761bbdea5f7785bd870b8bd15e3d43ac82eb1a69aa00698721ad600"
+    "sig": "06fd5b7b6d91f8f4bfac7c24931265964e1f0700413bb45a8134adf2ff471c501b597504e4ad80cfce01a222038a4b5026e59571b469e53e201a0a92bee9700e"
    },
    "machine": "5Q7N-DIIU-QKCP-PMBP-OPC3",
    "name": "pc-on-phone",
@@ -173,7 +173,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -186,7 +186,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "altered-sig",
@@ -199,7 +199,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -212,7 +212,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "74HU-XCKW-FNUW-SQIC-RHSP",
    "name": "other-machine",
@@ -225,7 +225,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -238,7 +238,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "kqu33n2nu26d7hbgfhvo",
    "name": "typed-code-ok",
@@ -251,7 +251,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "165d5a3df3691f8b",
+    "key_id": "5af3a88bfdcff4ba",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -264,7 +264,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "73b9568aaa9d288a58f7b3446c5de34991fc7d3cdca2dde6a40fc67fbbf64e81e0b65260357db11008328c1a7b8bf6895a159596406baafdc76529f469a0e604"
+    "sig": "7a1e19668b2a2b13f019c633de9ad092fdf4738f6f10e7ad978c927e4474b4ce3106c78f15608449c399bc4c77c480095699423c81385bb96bb756e9647c4405"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "unknown-key",
@@ -277,7 +277,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -290,7 +290,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "expired-day-13-ok",
@@ -303,7 +303,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -316,7 +316,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "expired-day-14-ok",
@@ -329,7 +329,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -342,7 +342,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "expired-day-15-refused",
@@ -355,7 +355,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -369,7 +369,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "3131e9a412ec6b4907e909f99fc5bc08e86abddf31f08f6b4e1efdbf94fc72941a7eecf1959cabbd9cb1e05d4012ff7661edb33befabf84a07dc3b207f610e0a"
+    "sig": "45cfab0da06e7b71fc20e469fb1e331c33cb5f7f26d0ea8609dfa40cfd8f5caa03d06356997ab2a3ab8f5fbc28190f5a4e8016b7872a9be2454a5d65dc76fd02"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "no-expiry-ok",
@@ -382,7 +382,195 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "grace_days": 30,
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "aafd61f08ea882bcf5ae349d6a05425f895d8765f3ab711ef4c31d58eadabf8b98eae335da971a618304108fa7d0c364129c4323d9607f76057195561c7be20b"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-30-day-30-ok",
+   "ok": true,
+   "today": "2027-05-06",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "grace_days": 30,
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "aafd61f08ea882bcf5ae349d6a05425f895d8765f3ab711ef4c31d58eadabf8b98eae335da971a618304108fa7d0c364129c4323d9607f76057195561c7be20b"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-30-day-31-refused",
+   "ok": false,
+   "today": "2027-05-07",
+   "why_has": "30-day grace period"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "grace_days": 0,
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "3a10b065669bd28cab92112f0a0c7fe6a30b28db7023393cb725388325c5d017a326cf96f60f66fde0e885340f185cfff8efbaa78d1fba22ac3983f2ff090a07"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-0-on-the-day-ok",
+   "ok": true,
+   "today": "2027-04-06",
+   "why_has": ""
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "grace_days": 0,
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "3a10b065669bd28cab92112f0a0c7fe6a30b28db7023393cb725388325c5d017a326cf96f60f66fde0e885340f185cfff8efbaa78d1fba22ac3983f2ff090a07"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-0-day-1-refused",
+   "ok": false,
+   "today": "2027-04-07",
+   "why_has": "no grace period"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-14-is-not-written",
+   "ok": false,
+   "today": "2027-04-21",
+   "why_has": "14-day grace period"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "grace_days": "thirty",
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "6e838a450f6c9a4c9cc4284e3ba31419da4b89af913fd90880bd907a9ca165bcef1898946c684e7b3ecdcc8837fcb3a44af5d601b092437c59d522395e77c209"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-not-days-refused",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "grace period that is not a number of days"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
+    "licence": {
+     "customer": "Vector Customer",
+     "device": "pc",
+     "expires": "2027-04-06",
+     "grace_days": 366,
+     "holder": "Test",
+     "id": "L-2026-T-0001",
+     "issued": "2026-10-08",
+     "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+     "name": "vector",
+     "product": "BEGIA",
+     "v": 2
+    },
+    "sig": "fce6e0a066c2d26c9b7e2bf1dbf2e08a9b732c2e46c527e5cc00ef71b1e85ab05b1e5d10e677f0d0152a7cf198c345853224d4ce17bc25a58a95e5ce034f630b"
+   },
+   "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
+   "name": "grace-too-long-refused",
+   "ok": false,
+   "today": "2026-10-08",
+   "why_has": "grace period that is not a number of days"
+  },
+  {
+   "clock_max": null,
+   "device": "pc",
+   "doc": {
+    "alg": "ed25519",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -395,7 +583,7 @@
      "product": "BEGIA",
      "v": 3
     },
-    "sig": "da010866731a03b29f41c8fb51f3e6fedcfb17d17136d94f9205fb779705cc29a069aea34ea93ce4d2169ceaaf98e7e2a1e726c81e080f278fe397c125cd8601"
+    "sig": "aa5efa486c7c1f052e3b89a3ef088bcf52b1ff95a2104343a7e384bacfcf75ecbee3f1f7135fbb1b300734f05bb2357f7a4e0c92bb96798c69cc3993feef790e"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "future-v3",
@@ -408,7 +596,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -421,7 +609,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "3b9d63484d8c83803d21b9ddeae39c55c64a59f5805fc124d8819f6fe4cac150a1c715b54af1ac0fe043c87729a5c12b3643d32c47f32ea2fe6fa9015808460c"
+    "sig": "11b6cbf8bcbc0ddafe2a5f6bf1761ca9c9d69e9b10b9770cd0400e49e67b346feefab43cc20d0788b71f414b7eac7106ec808453fcd72799d7c3a76c7fe26b0e"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "issued-tomorrow-ok",
@@ -434,7 +622,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -447,7 +635,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "b64947ad2a4b5a0641ee8f59eaac08e195617afa10b16c1f713ff3175cb8dc7d618d0c4d88e579f382b40766acbcb745bb071c0c621a1da49a7691bcb0a2e90a"
+    "sig": "715576c4e7a8191e8c37776457774fe183d27e61501a5c7c51ba0836d703876ebf9248b083a67f1d8853f599cfe31bd3b1d22571fe1ce5dfe0a7eec5a4385903"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "issued-in-future",
@@ -460,7 +648,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -473,7 +661,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "anchor-later-than-today",
@@ -486,7 +674,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -499,7 +687,7 @@
      "product": "BEGIA",
      "v": 2
     },
-    "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+    "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "anchor-before-today-ok",
@@ -512,7 +700,7 @@
    "device": "pc",
    "doc": {
     "alg": "ed25519",
-    "key_id": "4bb7ca0e479043a8",
+    "key_id": "c8d8fc5c4297cdd2",
     "licence": {
      "customer": "Vector Customer",
      "device": "pc",
@@ -525,7 +713,7 @@
      "product": "OTHER",
      "v": 2
     },
-    "sig": "6a571b8c51ba7124b3d8ec87efb3b90eae2382a82e790c15f17b7fcaaa88994b390cacc9f4eae8502688ef4993cdea5c41efec01b256fd28ba67a911aa956008"
+    "sig": "209d6e106ecfef7fdc1617df7873449c82a72a6efd5c493d56749ee718efb9bf179a9e335b9010691015e542ac2d0565dc35d105396c074d95355fa953f0d20c"
    },
    "machine": "KQU3-3N2N-U26D-7HBG-FHVO",
    "name": "other-product",
@@ -547,7 +735,8 @@
   }
  ],
  "grace_days": 14,
- "key_id": "4bb7ca0e479043a8",
+ "grace_max": 365,
+ "key_id": "c8d8fc5c4297cdd2",
  "made": "2026-10-08",
  "note": "signed by a throwaway key; its private half was never written. No build may list this key.",
  "packs": [
@@ -560,7 +749,7 @@
     "licences": [
      {
       "alg": "ed25519",
-      "key_id": "4bb7ca0e479043a8",
+      "key_id": "c8d8fc5c4297cdd2",
       "licence": {
        "customer": "Vector Customer",
        "device": "phone",
@@ -573,11 +762,11 @@
        "product": "BEGIA",
        "v": 2
       },
-      "sig": "a779797113c364e7f7a95644f1cc4240d03515c1a1a0a29c9363aa70283158c459a740badcca868956fe104e4195468ecad520a91bf5da9c756482ab1026b20e"
+      "sig": "8cd9a5ef3bbbeb4b017f0606f58744a5b151785e838d469aa289743fa463b34407079286c2f8e7201ded6737040946400b0737e153f9a8a6701439a64e380802"
      },
      {
       "alg": "ed25519",
-      "key_id": "4bb7ca0e479043a8",
+      "key_id": "c8d8fc5c4297cdd2",
       "licence": {
        "customer": "Vector Customer",
        "device": "pc",
@@ -590,7 +779,7 @@
        "product": "BEGIA",
        "v": 2
       },
-      "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+      "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
      }
     ],
     "made": "2026-10-08",
@@ -607,7 +796,7 @@
     "licences": [
      {
       "alg": "ed25519",
-      "key_id": "4bb7ca0e479043a8",
+      "key_id": "c8d8fc5c4297cdd2",
       "licence": {
        "customer": "Vector Customer",
        "device": "phone",
@@ -620,11 +809,11 @@
        "product": "BEGIA",
        "v": 2
       },
-      "sig": "a779797113c364e7f7a95644f1cc4240d03515c1a1a0a29c9363aa70283158c459a740badcca868956fe104e4195468ecad520a91bf5da9c756482ab1026b20e"
+      "sig": "8cd9a5ef3bbbeb4b017f0606f58744a5b151785e838d469aa289743fa463b34407079286c2f8e7201ded6737040946400b0737e153f9a8a6701439a64e380802"
      },
      {
       "alg": "ed25519",
-      "key_id": "4bb7ca0e479043a8",
+      "key_id": "c8d8fc5c4297cdd2",
       "licence": {
        "customer": "Vector Customer",
        "device": "pc",
@@ -637,7 +826,7 @@
        "product": "BEGIA",
        "v": 2
       },
-      "sig": "d20e5ba85068cd1558166d6b049e018883c284650f2261290f4e0ab46b62c199e4e3d5ce0c51628e9c21a40efc9933f517066d07b9eae62ccd41022cac83ba02"
+      "sig": "8d7d8ad6f5623538cbd7300b1af33dac7136209007b4855544d33d5f21f02cfd42f537219281a3abf6ad8a1e09510467855dd2b5302e0a7d556155a1ea2c840a"
      }
     ],
     "made": "2026-10-08",
@@ -645,7 +834,7 @@
    }
   }
  ],
- "public": "0b6e349eac56d7cbf21f4c50ab7b75694dedb966068b8165a7af5e480e47f72d",
+ "public": "d88335a78d19b809d2e734d7d50a399f8e14f771f6641c00ee54514bcf7413d9",
  "record_v": 2,
  "requests": [
   {

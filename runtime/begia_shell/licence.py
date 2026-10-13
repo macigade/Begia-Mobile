@@ -31,6 +31,7 @@ PRODUCT = "BEGIA"
 RECORD_V = 2                 # the newest record this code understands
 CODE_GROUPS = 5              # XXXX-XXXX-XXXX-XXXX-XXXX: 100 bits
 GRACE_DAYS = 14              # after expiry: still runs, says so, then stops
+GRACE_MAX = 365              # a licence's own grace_days, at most
 DEVICE = "phone"             # what this verifier runs on (a tablet is a phone)
 LICENCE_FILE = "licence.json"
 
@@ -73,6 +74,19 @@ def _day(text) -> Optional[date]:
 
 # ----------------------------------------------------------------- verify ---
 
+def grace_of(record: dict) -> int:
+    """The days a licence keeps working after it ends: its own grace_days,
+    signed with the rest of it (the Licence Manager writes one only when it
+    is not GRACE_DAYS), else GRACE_DAYS. ValueError for anything that is not
+    a whole number of days from 0 to GRACE_MAX."""
+    g = record.get("grace_days")
+    if g is None:
+        return GRACE_DAYS
+    if isinstance(g, bool) or not isinstance(g, int) or not 0 <= g <= GRACE_MAX:
+        raise ValueError(g)
+    return g
+
+
 def verify(doc, machine: str, today: Optional[date] = None, keys: Optional[dict] = None,
            device: Optional[str] = DEVICE, clock_max: Optional[date] = None) -> dict:
     """What a licence document is worth on this device, today. Never raises.
@@ -90,7 +104,7 @@ def verify(doc, machine: str, today: Optional[date] = None, keys: Optional[dict]
     judge = max(today, clock_max) if clock_max else today
     out = {"ok": False, "why": "", "customer": "", "expires": None, "days_left": None,
            "issued": None, "key_id": "", "machine": "", "id": "", "device": "pc",
-           "name": "", "holder": "", "v": 1}
+           "name": "", "holder": "", "v": 1, "grace_days": GRACE_DAYS}
     if not isinstance(doc, dict) or not isinstance(doc.get("licence"), dict):
         out["why"] = "this is not a BEGIA licence file"
         return out
@@ -105,6 +119,11 @@ def verify(doc, machine: str, today: Optional[date] = None, keys: Optional[dict]
         out["issued"] = _day(rec.get("issued"))
     except (ValueError, TypeError):
         out["why"] = "the licence carries a date that is not a date"
+        return out
+    try:
+        out["grace_days"] = grace_of(rec)
+    except ValueError:
+        out["why"] = "the licence carries a grace period that is not a number of days"
         return out
     pub = keys.get(out["key_id"])
     if not pub:
@@ -137,10 +156,13 @@ def verify(doc, machine: str, today: Optional[date] = None, keys: Optional[dict]
         return out
     if out["expires"] is not None:
         out["days_left"] = (out["expires"] - judge).days
-        if out["days_left"] < -GRACE_DAYS:
-            out["why"] = (f"the licence expired on {out['expires'].isoformat()}, and the "
-                          f"{GRACE_DAYS}-day grace period after it ended on "
-                          f"{(out['expires'] + timedelta(days=GRACE_DAYS)).isoformat()}")
+        grace = out["grace_days"]
+        if out["days_left"] < -grace:
+            ended = out["expires"].isoformat()
+            out["why"] = (f"the licence expired on {ended}, and it has no grace period" if not grace else
+                          f"the licence expired on {ended}, and the "
+                          f"{grace}-day grace period after it ended on "
+                          f"{(out['expires'] + timedelta(days=grace)).isoformat()}")
             return out
     out["ok"] = True
     return out
