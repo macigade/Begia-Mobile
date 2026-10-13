@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, later — a grace period per licence: merge `licence/grace-per-licence` (the shell's verifier; shared `app/` too)
+
+The Licence Manager can now give a licence its own grace period
+(`grace_days`, 0 to 365, signed in the record; written only when it is not
+14). BEGIA's verifier (`app/access/licence.py`, in the payload) and the
+reference honour it. **The shell's own verifier needs it too**, or the shell
+and the payload disagree after the end date: it is done for you on the
+branch **`licence/grace-per-licence`** (e3f00a0, from
+`shell3/quit-and-chooser`): `runtime/begia_shell/licence.py` gets
+`GRACE_MAX`, `grace_of()`, check 2a and check 10 with the licence's own
+number; `tests/vectors` are the new run (key `c8d8fc5c4297cdd2`) and
+`tests/test_shell_licence.py` pins that key. 42 tests pass there. Merge it
+where `shell3/quit-and-chooser` goes; nothing else to do.
+
+`/api/licence` now carries `grace_days` (the licence's, else 14), and the
+licence card's "keeps running N more" uses it.
+
+---
+
 ## 2026-10-14 — Google sign-in inside BEGIA: the page's half is in (shared `ui/`; the shell's half is yours)
 
 The licence door's **Request online...** now signs in without leaving BEGIA
