@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-13 — the I/O check's left list, grouped and filtered (shared `ui/`; install with the next payload)
+
+The owner imported 614 inputs and the Inputs tab became unusable. Now, once
+the left has rows: the PLC browser folds behind a **Browse the PLC** button,
+the list takes the panel, grouped by cabinet then by byte (bits) or runs of
+words (analog), each group folding with a tick for all of it; a filter
+(text, kind, hide spares), Select shown / None, the ticks kept through every
+repaint. On a phone the list opens by itself when a list appears. Uses
+`::details-content` (Chrome 131+) so the list scrolls inside the panel; an
+older WebView only loses that height limit. Nothing for the shell to do.
+
+---
+
 ## 2026-10-11, evening — the I/O check project: a new tab and peer sharing (shared `ui/` + `app/`; install with the next payload)
 
 The owner wants one I/O check project per FAT that the whole team marks
