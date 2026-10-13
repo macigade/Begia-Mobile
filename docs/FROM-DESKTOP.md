@@ -20,6 +20,37 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14 — Google sign-in inside BEGIA: the page's half is in (shared `ui/`; the shell's half is yours)
+
+The licence door's **Request online...** now signs in without leaving BEGIA
+and sends the request from the door itself (`ui/js/097-signin.js`; plan:
+docs/IN-APP-SIGNIN.md). On a PC: a small Google window over BEGIA. In the
+BEGIA app it uses Google built into the shell **when the shell has
+`BegiaShell.googleIdToken`**; without it (every shell today) the request page
+opens in the phone's browser exactly as before - nothing breaks.
+
+**What the shell does, when you build it** (shell 3.x, Credential Manager,
+`com.google.android.libraries.identity.googleid`):
+
+- `BegiaShell.googleIdToken(nonce: String)` - returns at once; shows the
+  account picker with `GetGoogleIdOption.Builder()
+  .setServerClientId("118369397450-ohlnklbd4j5ls2pjr7l0c1e4l5q7qo7f.apps.googleusercontent.com")
+  .setFilterByAuthorizedAccounts(false).setNonce(nonce)` (the **Web** client
+  ID; `nonce` is already the SHA-256 hex the page wants in the token - set it
+  as it is, and skip `setNonce` for an empty string).
+- Then, on the UI thread: `window.begiaGoogleIdToken({token: "<idToken>"})`,
+  or `window.begiaGoogleIdToken({error: "cancelled"})` when the person backs
+  out, `{error: "<message>"}` for anything else. An object or its JSON string
+  both work. The page exchanges the token with MG Victus's backend itself;
+  the shell keeps nothing.
+- Prerequisite (the owner, once): an **Android** OAuth client in the same
+  Google Cloud project for `com.mgvictus.begia` and the release keystore's
+  SHA-1 (read with `keytool -list`; never print the keystore's passwords).
+- The licence card offers Request online on a shell with `googleIdToken`
+  even without `openUrl`.
+
+---
+
 ## 2026-10-13, night — a new built-in simulator: a small generic plant (shared `app/`; install with the next payload)
 
 `app/sim/plant.py` (`PlantSim`) replaces `app/sim/slagdoor.py`, which is
