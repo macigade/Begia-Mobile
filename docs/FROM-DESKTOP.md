@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, evening — I/O check popup: a second review of the queue (shared `ui/`; install with the next payload, with the three entries below)
+
+All in `ui/js/284-iocheck-popup.js` and `ui/css/155-iocheck-popup.css`.
+**On the phone**, *Answered: OK · A17* (an input answered elsewhere while
+the popup shows it) was hidden by the phone's rule that hides the popup's
+small notes: only **Next waiting** said anything. It now shows over the note
+and the marks. Its Enter button's word follows the queue (*Done* turned
+*Next waiting* when one came in behind a note being typed), and a note given
+with the other answer is said too. A new check closes the popup left on the
+last one's list or *Nothing waiting* (it covered the panel before the first
+press); its *N waiting* still opens it. A button still focused by its click
+outside the popup (the simulated cabinet's) lets the focus go when an input
+moves, so Enter marks the one shown instead of pressing that button again.
+In the list, a row whose input moves again or is found keeps its own
+**Not OK** / **OK** (its words are redrawn around them): before, the whole
+row was rebuilt and a tap landing as it changed was lost.
+No API or payload change; nothing for the shell to do.
+
+---
+
 ## 2026-10-14, later afternoon — I/O check popup: answered elsewhere, and the way back to the queue (shared `ui/`; install with the next payload, with the two entries below)
 
 - An input answered on another device (or from the table) while this popup
