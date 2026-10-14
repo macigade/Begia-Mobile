@@ -20,6 +20,57 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, later afternoon — I/O check popup: answered elsewhere, and the way back to the queue (shared `ui/`; install with the next payload, with the two entries below)
+
+- An input answered on another device (or from the table) while this popup
+  shows it: the popup says *Answered: OK · A17*, **Next waiting** / **Done**
+  takes Enter (`data-act="onward"`), and the marks stay without Enter - a
+  team member's answer is never overwritten by a key pressed out of habit.
+- With the popup closed and inputs waiting, a **N waiting** button
+  (`#ioc-queue`) beside the check's count opens the first one waiting.
+Nothing for the shell to do.
+
+---
+
+## 2026-10-14, afternoon — I/O check popup: review fixes to the queue (shared `ui/`; install with the next payload, with the midday entry)
+
+Found by a review of the queue below, all in `ui/js/284-iocheck-popup.js`.
+**The phone over Wi-Fi was the likely victim of the first:** when a mark's
+answer reached the page before its frame on the socket (or the socket was
+away), the input just marked came straight back - after the last one, in
+place of *Nothing waiting* - and Enter would answer it a second time, the
+suggested note over the one typed. The popup now takes the row the server
+answers with at once (a frame already in, with a newer row, is kept). Also:
+← → and Enter no longer step or mark the popup while another module is up
+(the popup is out of sight with its tab); *OK all found* sends a note typed
+for one of them; the list moves no rows when one in the middle is answered,
+and a row rebuilt under the keyboard keeps its focus. No API or payload
+change; nothing for the shell to do. With hundreds waiting, the queue under
+the popup's header takes two lines at 360 px - it wraps, nothing overflows.
+
+---
+
+## 2026-10-14, midday — I/O check: the popup queues what comes in, Back / Next and a list (shared `ui/`; install with the next payload)
+
+The owner, at a plant: "i want to stack incoming changes, browse with
+next/back buttons and a list view". The Check tab's detection popup
+(`ui/js/284-iocheck-popup.js`, `282`, `286`, `ui/css/155-iocheck-popup.css`)
+no longer jumps to a new input while one is shown: the new one waits in a
+queue (the inputs not yet marked, in the order they first moved), and a
+note half typed, the focus and the caret stay where they were. Under the
+header: **‹ Back**, **3 of 21**, **Next ›**, **N new** (a dot on the side
+they are) and **List**; after any mark it moves on to the next one waiting,
+and at the end it says **Nothing waiting** until the next input moves.
+**List** shows every one waiting, each row with its state, address, edges,
+time, and **Not OK** / **OK** - the old "Earlier · not marked yet" stack under
+the popup is gone into it, *OK all found* too. On the phone the queue sits
+in the card under the header, Back / Next / List as 44 px icons on one line
+at 360 px; the list's answers are 44 px under each row; *Nothing waiting* is
+a card over the table, as small mode is. The keyboard's ← → step on a
+laptop. No API or payload change; nothing for the shell to do.
+
+---
+
 ## 2026-10-14, morning — Live: a chart's analog traces can be shaded (shared `ui/` + `app/`; install with the next payload)
 
 The owner: "the colored area below the graph", as digital lanes have it,
