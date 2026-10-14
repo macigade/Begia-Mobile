@@ -20,6 +20,93 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, night — I/O check: a DB search too slow for the link asks, no longer refuses; the simulator's `hold` (shared `app/` + `ui/`; install with the next payload, with the entry below)
+
+- The owner prefers nudges to hard stops. Past this link's pace (S7: too
+  many members, a PLC too slow for any search, no time beside the rows;
+  OPC UA: a slow sampling), the start row's option is offered in amber
+  (*... or start anyway*), and `POST /api/iocheck/start` answers 422 with
+  `{detail, anyway: true, members, every_ms, budget_ms, hold_ms}`. The page
+  asks (*Start anyway* / *Cancel*, `askConfirm`) and sends Start again with
+  `anyway: true`. Past this host's ceiling (5,000 on the phone) or the OPC
+  UA server's items it is still a plain 422. `api()` (js/020) now keeps
+  `status` and `body` on the error it throws.
+- **For the boot test (`tools/boot_test.py`):** the new simulator's step
+  registers (`DB_Sequence.SEQ_MAIN.SubStep` every 0.7 s) sometimes land in
+  a press's half second, and the check then names them before `in_07`. Two
+  runs in four failed that way here. Set `sim.hold = True` on the
+  `PlantSim` before starting it: both sequences stay at rest, and the rest
+  of the plant runs on. `tests/py/test_iocheck_sim.py` does this.
+Nothing else for the shell to do.
+
+---
+
+## 2026-10-14, evening — I/O check: the DB search's limit follows the link (shared `app/` + `ui/`; install with the next payload)
+
+The owner, at a plant over S7comm-plus: the search refused past 5000
+members - "can we lift this limit?". The fixed 5000 is gone. BEGIA times
+its own S7 reads and allows as many DB members as it can read again within
+the 500 ms a member has to follow its input (OPC UA: the server's own item
+limits); on a slow link that is fewer than 5000, on a fast one more. The
+phone's own ceiling stays 5,000 (`licence.device_kind() == "phone"`), the
+laptop's is 10,000: a tick on the right past it is refused with
+*holds more than 5,000 members* on the phone.
+
+- **How the members are read.** Over S7 they are no longer in the signals'
+  sweep: a request of 32 between two sweeps, round robin, so the check's
+  rows and any recorded signal wait for one member request at most; over
+  OPC UA they get subscriptions of their own, made after the signals'.
+  `State.bulk()` is new beside `polled()`; both drivers take
+  `get_bulk=`. With no check running nothing changes.
+- **`GET /api/iocheck/scope`** gains `list_cap`, `pace` (`proto`,
+  `measured`, `host` pc | phone, `host_members`, S7 `request_ms`) and
+  `limits`: per pick of the start row (`""` everything on the left, else a
+  cabinet) the link's figures and, for `area` / `every`, `{every_ms,
+  verdict, hold_ms, requests}`; `area` gains `total`, both gain `requests`.
+  `cap` is now this machine's listing ceiling (10,000; 5,000 on the phone).
+- **Start** refuses with the reason and the figures (*every DB and %M hold
+  5,000 members in 157 reads, each member read about every 9.4 s on this
+  PLC - too slow for the search to follow (it has time for 4 reads, about
+  128 members): ...*), and times an S7 link not timed yet with up to three
+  reads first - never while a trial records or a trigger is armed. A 409
+  if the link drops while it is timed.
+- **The check's file** (`session.search`) gains `proto`, `every_ms`,
+  `every_now`, `budget_ms`, `limit`, `hold_ms`, `measured`, `slow` (spans
+  `[start, end | null, unread | late]`), `refused`, `unread`, `late`; a row
+  gains `read_ms`, a member `within[]`. A file from before resumes. A new
+  mapping state **`too slow`** (with `slow_to`): an input moved while the DB
+  was not read in time - the popup says *DB read too slowly* and suggests
+  *Do it again*; *nothing found* says *among the rest* when the PLC refused
+  members; a lag off a DB read slowly reads *within 85 ms*.
+- **The words**: the start row's options, the Inputs tab's counts and the
+  running panel say *N members, each read about every X* (`iocEvery`,
+  `iocSearchClause`), in amber when too slow. On the phone the panel's
+  "Search the DB" value can end in an ellipsis; its title holds the rest.
+- **Recording beside a search** (review fixes). Over OPC UA a DB member
+  ticked as a signal while a check searches is written by the signal's
+  subscription alone - the members' own item, kept for it, also wrote it,
+  unscaled, between the signal's samples. A Stop and a Start the driver
+  did not see between make the members' items again, so each sends the
+  value it holds (the check's seed). Over S7 a member request whose every
+  item was refused is no sign of life: a session that refuses everything
+  is reconnected within a second, not after every member wore out its
+  five refusals.
+- **The search's words over time** (review fixes). A press is *too short*
+  by how often the DB was read when it was made - a row gains `short[]`
+  beside a bool's edges - so a stall a minute later no longer turns an
+  input's *nothing found* into *too short* and back. While the DB is read
+  too slowly the panel says how slowly (`session.search.late_ms`), never
+  the last round that was in time beside *too slow*; over OPC UA *the
+  server sends the DB's changes up to X late now*. Over OPC UA how late the
+  changes come is judged over the last ten seconds: one slow moment, or a
+  clock set right, no longer keeps the search *too slow* for the rest of
+  the check. An output that moved just after a slow span is *too slow*
+  too: its command may have moved inside it.
+
+Nothing for the shell to do.
+
+---
+
 ## 2026-10-14, evening — I/O check Inputs: selecting on the left (shared `ui/`; install with the next payload)
 
 The owner: "better selection methods, with shift here to make deleting
