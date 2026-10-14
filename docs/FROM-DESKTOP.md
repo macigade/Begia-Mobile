@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, morning — Live: a chart's analog traces can be shaded (shared `ui/` + `app/`; install with the next payload)
+
+The owner: "the colored area below the graph", as digital lanes have it,
+for analog charts too. Each chart's tile in Live's left panel (the drawer on
+a phone) gets a **◪** switch between its name and its number; on, the area
+under each analog trace of that chart is filled in the trace's colour, down
+to the bottom of its own scale. Hidden on a chart of digital lanes only.
+Stored with the chart's other settings: `PUT /api/pane` takes `shade: true`
+(off is sent as null and not kept), and the `panes` frame carries it; a page
+that receives a change of shade rebuilds its charts. On touch devices the
+switch is as large as the ✕ (36 px). Also: the off-scale "auto" tag and the
+Y min/max boxes now save the chart's whole state - they used to send the
+range alone, which wiped the chart's name, height and order. Nothing for the
+shell to do.
+
+---
+
 ## 2026-10-14, night — Setup: room for the device search; the Quit button's colour (shared `ui/`; install with the next payload)
 
 - Setup > This phone's **Quit BEGIA** button had its red outline from
