@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, night — Setup: room for the device search; the Quit button's colour (shared `ui/`; install with the next payload)
+
+- Setup > This phone's **Quit BEGIA** button had its red outline from
+  `var(--bad)`, which no sheet declares - it fell back to the text colour.
+  It is `var(--rec)` now (BEGIA's red). Nothing to do.
+- Setup gets an empty, hidden `<section id="nsc-card">` under the
+  connections list and `setModule("connect")` fires `begia-connect-open` -
+  the host for the device search's card when it is integrated
+  (docs/PROFINET-SEARCH-HANDOFF.md). Nothing shows yet; on the phone's own
+  BEGIA it stays hidden (the search runs on a laptop only).
+
+---
+
 ## 2026-10-14, later — a grace period per licence: merge `licence/grace-per-licence` (the shell's verifier; shared `app/` too)
 
 The Licence Manager can now give a licence its own grace period
