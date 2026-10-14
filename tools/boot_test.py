@@ -177,8 +177,10 @@ def run(payload: Path, port: int, keep: bool) -> int:
             "import snap7; assert not hasattr(snap7, 'Client'), snap7.__file__\n"
             "from s7commplus import AsyncClient\n"
             "import s7commplus.legitimation, s7commplus.typeinfo\n"
-            "from app.s7plus import S7PlusDriver\n"
-            "from app import driver, recorder, trigger, udp, tls\n"
+            "from app.drivers.s7plus import S7PlusDriver\n"
+            "from app.drivers import opcua, udp\n"
+            "from app.recording import store, trigger\n"
+            "from app.net import tls\n"
             "from app.iocheck import IoCheck\n"
             "print('ok')\n")
         r = subprocess.run([sys.executable, "-c", code, str(slot), str(slot / "vendor")],
