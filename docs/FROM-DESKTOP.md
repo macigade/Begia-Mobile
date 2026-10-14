@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, evening — I/O check Inputs: selecting on the left (shared `ui/`; install with the next payload)
+
+The owner: "better selection methods, with shift here to make deleting
+easier, ctrl+a etc". On a keyboard (a laptop; a tablet with one): Shift+click
+ticks a range on the left list - over the byte and cabinet ticks too, a range
+keeping to the clicked box's kind (rows, bytes or cabinets; `data-level` on a
+group's tick); Ctrl+A ticks every row shown, Esc unticks them, Delete takes
+the ticked off after an in-page "Remove" question. Never in a text field.
+On a phone nothing changes (no Shift, no keys). Nothing for the shell to do.
+
+---
+
 ## 2026-10-14, evening — I/O check popup: a second review of the queue (shared `ui/`; install with the next payload, with the three entries below)
 
 All in `ui/js/284-iocheck-popup.js` and `ui/css/155-iocheck-popup.css`.
