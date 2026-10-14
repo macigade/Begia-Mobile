@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, late night — Compare DBs and View a DB: the whole member name on a phone (shared `ui/`; install with the next payload)
+
+The owner: "the db comparison in android phones makes it impossible to see
+full name of the members". Compare DBs (`ui/js/265-dbcompare.js`,
+`ui/css/157-dbcompare.css`) is a row per member under `data-layout="phone"`:
+the whole name across the screen (`td.dbc-rel`, wrapped), then A's value and
+B's in two columns under the A / B titles, *missing* for a side without it;
+the types and the second name go. Under `data-device="tablet"` the two
+tables stay and a long name wraps; View a DB's names wrap on both
+(`ui/css/158-dbview.css`). Nothing for the shell to do.
+
+---
+
 ## 2026-10-14, night — I/O check: a DB search too slow for the link asks, no longer refuses; the simulator's `hold` (shared `app/` + `ui/`; install with the next payload, with the entry below)
 
 - The owner prefers nudges to hard stops. Past this link's pace (S7: too
