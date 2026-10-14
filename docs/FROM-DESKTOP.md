@@ -20,6 +20,34 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-14, late night — I/O check: hide inputs by name while checking (shared `app/` + `ui/`; install with the next payload)
+
+- **New `POST /api/iocheck/hide`** `{words: ["QB", ...]}`, for a running check
+  or a stopped one. The words are trimmed and kept once each whatever their
+  case, up to 20 of 40 characters. No words clears the filter. Without a
+  check it answers 409 *no I/O check to filter*. It answers with the whole
+  check and sends the same full `iocheck` frame to every page.
+- **The session gains `hide`** (the words) and **each row gains `hidden`**
+  (bool): true when the row's name or address holds one of the words, in any
+  case. A file from before resumes with `[]` and `false`.
+- **`summary`** counts only the rows not hidden (`total`, `waiting`,
+  `changed`, ...) and adds **`hidden`**, only when there are any. That
+  includes the watch's `iocheck.summary`: a new key, and the others keep
+  their meaning for what is shown.
+- **An `iocheck` frame's `edges` never name a hidden row**, so a hidden input
+  never opens the popup, buzzes or takes the big line. Its row still comes
+  in `rows`, flagged `hidden`.
+- **`GET /api/watch`**: the `iocheck` block's `last` never picks a hidden row.
+  No key changed.
+- **The page:** a "Hide while checking" box (`#ioc-hide`, with
+  `#ioc-hide-show` "N hidden · show them") on the Check tab's setup panel.
+  Hidden rows are not drawn and never queued. On the phone the box is in the
+  setup panel, above the simulated cabinet.
+- **Do:** nothing for the boot test. If the watch shows `summary.total`, it is
+  now the count of rows shown.
+
+---
+
 ## 2026-10-14, late night — Compare DBs and View a DB: the whole member name on a phone (shared `ui/`; install with the next payload)
 
 The owner: "the db comparison in android phones makes it impossible to see
