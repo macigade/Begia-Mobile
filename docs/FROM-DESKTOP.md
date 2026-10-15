@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Many signals: an add of more than 100 asks first; a chart and the page draw a bounded number (shared `app/` + `ui/`; install with the next payload)
+
+The owner added a block of 3,319 members to Live by mistake; the page froze,
+and again at every start. `POST /api/signals/bulk` with more than 100 new
+signals answers 422 `{detail, anyway: true, count, total}` before anything
+is probed; the page asks (`askConfirm`) and sends the same add with
+`anyway: true`. A chart draws its first `chartMaxTraces()` traces (16 under
+`data-layout="phone"`, 32 elsewhere) with *+N not drawn* in its header,
+and the page its first `chartMaxPanes()` charts (12 / 40). The axis plan is
+linear in its pane (`monPlan`). Nothing for the shell to do.
+
+---
+
 ## 2026-10-15 — The P&ID reader (new `app/pnid/`, `app/routes/pnid.py`, `ui/js/295-pnid.js`, `ui/css/160-pnid.css`; install with the next payload)
 
 - **A new module, laptop work first.** It reads a P&ID (PDF or picture) into
