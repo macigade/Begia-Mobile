@@ -20,6 +20,73 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-15 — The P&ID reader (new `app/pnid/`, `app/routes/pnid.py`, `ui/js/295-pnid.js`, `ui/css/160-pnid.css`; install with the next payload)
+
+- **A new module, laptop work first.** It reads a P&ID (PDF or picture) into
+  its instrument tags, finds them among the PLC's names and sends them to the
+  I/O check project and the Inputs list. Spec: `docs/PNID.md`.
+- **What it needs to read:** pypdfium2 for a PDF and Windows' own text
+  recognition (through PowerShell) for a picture - both new in
+  `requirements.txt` with Pillow. Neither is imported when the module loads,
+  so a phone without them still starts: `GET /api/pnid` then says
+  `pdf: false, pictures: false`, and reading a PDF fails with *this BEGIA
+  cannot read PDFs - pypdfium2 is not installed*. Viewing a drawing read on
+  the laptop needs pypdfium2 too (its pages are drawn by it).
+- **Routes:** `GET /api/pnid`, `POST /api/pnid/switch {on}`,
+  `POST /api/pnid/read {file_b64, filename}` -> `{job}`,
+  `GET /api/pnid/job/{job}`, `GET /api/pnid/drawing/{id}` (+ `/page/{n}?w=`),
+  `PUT .../review`, `DELETE /api/pnid/drawing/{id}`, `POST .../match`
+  (409 not connected), `POST .../use`. Off (the switch), all but the status
+  and the switch answer 404.
+- **What it writes elsewhere:** the Inputs through the same path as the
+  Inputs tab (`iocheck_inputs_add`: the usual `begia-iocheck-inputs` and
+  socket frames), and the open I/O project through its own records (*add*,
+  *labels*, *note* - a new cabinet *P&ID <drawing>*). Nothing new for a
+  member's share.
+- **The page:** the module adds its own buttons (beside *Import a tag list...*
+  and in the project's Import menu), its panel and an Options card with the
+  switch. On a phone the panel is the whole screen with *Drawing* / *Tags*
+  tabs. `index.html` and `boot.html` link `css/160-pnid.css`; `index.html`
+  loads `js/295-pnid.js` last.
+- **Do:** nothing for the boot test. If the phone should not offer reading,
+  switch it off there (Options; kept per install in `pnid/settings.json`), or
+  leave it - without pypdfium2 it says why when used.
+## 2026-10-15 — I/O check Inputs: two steps, each a browser beside its list (shared `ui/`, `app/routes/ioinputs.py`, `app/iocheck/rules.py`; install with the next payload)
+
+- **The layout:** `#ioi-sides` is no longer phone-only: its two buttons are
+  the steps' tabs on every layout (`role="tab"`, `aria-selected`, *1 · What
+  to check · N* / *2 · Where to look · M*), first in the tab's bar. One step
+  at a time everywhere (`#ioinputs-view[data-side]`, remembered as before in
+  localStorage `ioi-side`). Each `.ioi-side` is a grid of `.ioi-browser` (the
+  head, the bar, the tree) and the list (`details.ioi-chosen`), side by side;
+  on `data-layout="phone"` a column, as before. Beside the browser the list
+  is always open.
+- **Moved:** `#ioi-r-count` and `#ioi-r-every` are in step 2's list now (with
+  a new bar, `#ioi-r-pace`), no longer in its head.
+- **New:** `#ioi-suggest` and `GET /api/iocheck/areas/suggest` -> `{dbs:
+  [{node_id, name, path, tag}], more, tags}` (409 not connected) - the DBs
+  named after the left's tags; the page ticks them through `POST
+  /api/iocheck/areas` as any tick.
+- **Do:** on the tablet and the phone, check the tabs read well in the bar
+  and the right's list scrolls. The boot test is unaffected (no route or key
+  changed).
+
+---
+
+## 2026-10-15 — I/O check Inputs: what is ticked scrolls on the right too (shared `ui/css/150-iocheck.css`; install with the next payload)
+
+- **A CSS fix, nothing else.** A `<details>`' content sits in a box of its
+  own (`::details-content`); only the left's long-list mode gave it the height
+  to hand on, so the right's list of what is ticked (`#ioi-dblist`) - and the
+  left's while browsing - grew past the panel instead of scrolling. Now
+  `.ioi-chosen[open]` clips and its `::details-content` is a flex column with
+  `min-height: 0`, on both sides.
+- **Do:** on a phone the lists are full height (`max-height: none`), so the
+  change shows mostly on a laptop or tablet; check that the right side's list
+  scrolls on the tablet after the payload.
+
+---
+
 ## 2026-10-14, late night — I/O check: hide inputs by name while checking (shared `app/` + `ui/`; install with the next payload)
 
 - **New `POST /api/iocheck/hide`** `{words: ["QB", ...]}`, for a running check
