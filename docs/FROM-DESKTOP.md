@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Selecting: drag over ticks, the Trials list's keys, the menu by keyboard (shared `ui/`; install with the next payload)
+
+`dragTicks(box)` (js/040) sweeps ticks with a mouse or a pen - never a
+finger, which scrolls; the picker and `ask({checks})` lists use it. Trials:
+`trialSweep` (mouse only - a finger keeps its long press to select) and
+`trialKeys`; rows have `tabIndex = 0`. The context menu (js/055) takes the
+arrows, focuses its first item, and opens from the Menu key / Shift+F10 on a
+focused element registered with `onCtxMenu`. Ticked rows: CSS `:has()`
+(the WebView must be Chromium 105 or later). Nothing for the shell to do.
+
+---
+
 ## 2026-10-16 — Many signals: an add of more than 100 asks first; a chart and the page draw a bounded number (shared `app/` + `ui/`; install with the next payload)
 
 The owner added a block of 3,319 members to Live by mistake; the page froze,
