@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Right-click / long-press menus in more places (shared `ui/`; install with the next payload)
+
+`onCtxMenu` (js/055, a long press under a finger) on: Add signals' rows
+(`pickRowMenu`, bound in js/055), Setup's saved connections (`connMenu`,
+js/140), Compare DBs rows (`dbcRowMenu`, js/265), View a DB rows (js/266),
+the Strings readouts in Live (js/185). The menu now listens to its keys as
+it opens. Nothing for the shell to do.
+
+---
+
 ## 2026-10-16 — Selecting: drag over ticks, the Trials list's keys, the menu by keyboard (shared `ui/`; install with the next payload)
 
 `dragTicks(box)` (js/040) sweeps ticks with a mouse or a pen - never a
