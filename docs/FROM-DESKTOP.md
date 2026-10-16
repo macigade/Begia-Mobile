@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — The zoom window: a box drawn on a chart zooms it (shared `ui/`; install with the next payload)
+
+`.pane-zoom` in a chart's header arms `zoomBoxArm` (js/180): a `.zoom-catch`
+over the plot (`touch-action: none`) takes one pointer drag, then
+`zoomToBox` sets x and every non-`d_` Y scale (kept in `yZoom`) and holds the
+pane. Chart menu: *Zoom back out*. Nothing for the shell to do.
+
+---
+
 ## 2026-10-17 — The Strings chart is a chart; the text panel is gone; Live's arrow in the rail (shared `app/` + `ui/`; install with the next payload)
 
 - Pane -1 (`TEXT_PANE`) takes a name and an order like any pane, and
