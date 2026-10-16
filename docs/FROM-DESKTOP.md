@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — The Signals table by finger: taps add and take out, a long press selects a run (shared `ui/`; install with the next payload)
+
+`sigRowPress` (js/135): a tap whose mouse events say `sourceCapabilities.
+firesTouchEvents` (else the last `pointerdown` was touch/pen) toggles its
+row while anything is selected. `sigTableMenu(row, e)` keeps the selection
+under a finger and starts with `sigSelectItems` (the run from the anchor,
+all shown, clear). `#sig-selinfo` carries a Clear button. If the WebView's
+compat mouse events lack `sourceCapabilities`, the pointerdown fallback
+covers it. Nothing for the shell to do.
+
+---
+
 ## 2026-10-17 — A folded chart: one row of readings, scrolled sideways (shared `ui/`; install with the next payload)
 
 `:root .pane.folded .pane-head .ph-sigs` is one flex row (over `.ph-2rows`
