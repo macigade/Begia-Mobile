@@ -20,6 +20,14 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Live's list: Shift ranges and sweeps over the show/hide ticks (shared `ui/`; install with the next payload)
+
+`input.sig-show` carries `data-id` (the node id); `shiftTicks` and `dragTicks`
+are bound once on `#signal-list` (js/070). A sweep never starts the row's
+HTML5 drag. Nothing for the shell to do.
+
+---
+
 ## 2026-10-16 — Digital signals drawn as states: bands, one TRUE/FALSE column, TRUE/FALSE beside each lane (shared `ui/`; install with the next payload)
 
 Front end only (`ui/js/100-theme.js`, `180-panes.js`, `070-signals.js`,
