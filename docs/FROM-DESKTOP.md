@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — The Strings chart is a chart; the text panel is gone; Live's arrow in the rail (shared `app/` + `ui/`; install with the next payload)
+
+- Pane -1 (`TEXT_PANE`) takes a name and an order like any pane, and
+  `hidden` (new in `PaneBody`, `PUT /api/pane`): removed from Live, its
+  signals still read. `chartLine()` (js/070) is the order of the charts with
+  it; `stringsMenu` (js/185). The text panel (`#text-panel`) stays hidden.
+- A tablet's or a phone's rail: Live's tile wraps, its arrow beside its name
+  (css/158). Nothing for the shell to do.
+
+---
+
 ## 2026-10-17 — The Signals table by finger: taps add and take out, a long press selects a run (shared `ui/`; install with the next payload)
 
 `sigRowPress` (js/135): a tap whose mouse events say `sourceCapabilities.
