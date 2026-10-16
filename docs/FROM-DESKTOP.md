@@ -20,6 +20,14 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Analyse: Shift+click ranges, and a Panes view of the signal list (shared `ui/`; install with the next payload)
+
+`anSetMany(keys, on)` (js/210) and `palRange` / `palPaneGroups` (js/220);
+`palMode` takes "panes" (localStorage `an_pal_mode`). Nothing for the shell
+to do.
+
+---
+
 ## 2026-10-16 — Live's list: Shift ranges and sweeps over the show/hide ticks (shared `ui/`; install with the next payload)
 
 `input.sig-show` carries `data-id` (the node id); `shiftTicks` and `dragTicks`
