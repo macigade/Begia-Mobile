@@ -20,6 +20,52 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Digital signals drawn as states: bands, one TRUE/FALSE column, TRUE/FALSE beside each lane (shared `ui/`; install with the next payload)
+
+Front end only (`ui/js/100-theme.js`, `180-panes.js`, `070-signals.js`,
+`220-analysis-chart.js`); no route or payload changed. In a Live chart with
+analog traces each shown digital signal draws on its own scale `d_<i>`,
+ranged by `digitalBand(j, m)` (a band low in the plot, the first on top),
+looking `digitalLook` (stepped, filled down to FALSE where TRUE). One
+`digitalAxis` column (`digital: true`, first among the Y axes) carries every
+band's FALSE and TRUE, drawn by `digitalAxisPlugin`, boxed in each signal's
+colour. `monPlan` gives all of a chart's bools that one slot, keyed by the
+first, wanting the left; the axis budget gives it first place, so on
+`data-layout="phone"` (two columns) a mixed chart shows the TRUE/FALSE column
+and its first analog axis. Y gestures leave the `d_*` scales alone,
+`monDoLink` refuses a bool either way, and a bool's readout has no L/R. Lane
+strips: `lanePlugin` also draws `laneLevels` (TRUE and FALSE in the gutter,
+inside each lane - Review's lanes too), and a Live lane strip takes
+`padding: lanePadding(true)` as the Strings strip does, so a lane is about
+22px at 100% text again. Analyse ranges a bool's group by `digitalBand`
+among its bool groups and labels it with `digitalSplits`/`digitalValues`.
+`readingText` and `fmtSigVal` are unchanged. Nothing for the shell to do.
+
+---
+
+## 2026-10-16 — Live's left panel: a chart tile folds and moves, and "+ New chart" is over the list too (shared `ui/`; install with the next payload)
+
+The owner, from a screenshot of the Live left panel. In `ui/js/070-signals.js`
+a tile's header has a fold switch (`.pt-fold`, `aria-expanded`); folded
+(`.pane-tile.folded`) its rows are not built at all and the header shows
+`.pt-count`. Kept per browser in `localStorage["tiles_folded"]` (pane numbers
+as strings, `"text"` for the Text tile), apart from the chart's own fold
+(`panes_folded`). A tile is dragged by `.pt-grip` onto another tile's top or
+bottom half - a drag of its own (`dragTile`), so signal rows still drag as
+before. The grip is hidden where `data-device` is not `desktop`: under a
+finger the header's `.pt-more` (or a long press on it, off the name field)
+opens `tileMenu` (fold, Move up, Move down, rename, remove, fold all, the
+chart's own menu, and *Fill under the traces* On/Off - the ◪'s switch);
+`paneMenu` has Move up and Move down too. On `data-layout="phone"` the
+tile's `.pt-shade` is hidden (the menu has it) and a folded tile's count is
+the number alone, so the name field keeps about 100px. `reorderPane` now orders every pane in `paneOrder()`,
+empty ones included, and PUTs `/api/pane` only for the panes whose order
+changed - no route changed. `#btn-add-pane-top` over `#signal-list` does
+what `#btn-add-pane` does; Fold all / Unfold all are `#btn-tiles-fold` /
+`#btn-tiles-unfold` in `#sig-menu`. Nothing for the shell to do.
+
+---
+
 ## 2026-10-16 — Signals table: a Block column, %I addresses, Change block, copy and paste with duplicates held as drafts (shared `app/` + `ui/`; install with the next payload)
 
 - **New route** `POST /api/signals/change-block {old, new, node_ids: [...],
