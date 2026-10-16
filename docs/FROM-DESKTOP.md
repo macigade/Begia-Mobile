@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — A folded chart: one row of readings, scrolled sideways (shared `ui/`; install with the next payload)
+
+`:root .pane.folded .pane-head .ph-sigs` is one flex row (over `.ph-2rows`
+and the tablet/phone wrap), `.ph-row2` hidden; `fitReadouts` leaves a folded
+pane alone; `readoutWheel` turns the wheel sideways. Nothing for the shell
+to do.
+
+---
+
 ## 2026-10-16 — Analyse: Shift+click ranges, and a Panes view of the signal list (shared `ui/`; install with the next payload)
 
 `anSetMany(keys, on)` (js/210) and `palRange` / `palPaneGroups` (js/220);
