@@ -20,6 +20,39 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-16 — Signals table: a Block column, %I addresses, Change block, copy and paste with duplicates held as drafts (shared `app/` + `ui/`; install with the next payload)
+
+- **New route** `POST /api/signals/change-block {old, new, node_ids: [...],
+  copies: [{key, signal}], anyway}` -> `{changed: [{old, node_id}], added:
+  [{key, node_id}], skipped: [{node_id, key?, why}], signals: [...]}`. The
+  first `old` in each address becomes `new` (over OPC UA inside the quoted
+  identifier; a dotted `old` also matches across the quotes). `node_ids` are
+  signals in the list, re-pointed in place keeping their settings (as
+  `/api/signals/repoint`, which now shares the code); `copies` are added
+  under the new address with the settings they carry (`old` empty: added as
+  they are). Each new address is probed; what the PLC has not got, what is
+  already in the list and two landing on one address are skipped with a
+  reason, the rest go through. 409 while a trial records or the PLC is not
+  connected, and the source guards of the other adds. More than 100 copies:
+  the same 422 `{anyway: true, ...}` question as `/api/signals/bulk`.
+- **The signal payload** carries `abs_address` (%I12.3) live from the S7
+  driver (`absolute_for`) where it can say, the stored one otherwise; the
+  adds and the re-point now store it from the probe (`"abs"`).
+- **The page:** a `block` column in `#sig-table` (`data-col="block"`, hidden
+  under `data-layout="phone"` like the section); the Name cell shows the name
+  without its block (display only: the stored name is unchanged). New
+  `ui/js/135-sigedit.js` (index.html loads it after `130-tree.js`): the row
+  menu is `sigTableMenu` (Change block..., Copy, Paste, Duplicate, Remove,
+  then the signal's own), Ctrl+C / Ctrl+V on the table (`copy` / `paste`
+  events, never in a field), pasted duplicates held per connection in
+  localStorage `sig_drafts:<connection>` and drawn as `tr.sig-draft` rows
+  under `tr.sig-drafts-head`; rows are focusable (Up/Down, Space,
+  Shift+Up/Down), Escape clears the selection, a press on the # or Type cell
+  sweeps a selection. `ask()` takes `focus: <field key>`.
+- Nothing for the shell to do.
+
+---
+
 ## 2026-10-16 — Right-click / long-press menus in more places (shared `ui/`; install with the next payload)
 
 `onCtxMenu` (js/055, a long press under a finger) on: Add signals' rows
