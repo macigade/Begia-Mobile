@@ -20,6 +20,34 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — the same menus on every device: Options and Analyse on the phone, the licence in Options only, the app's Setup block on a tablet (shared `ui/`; install with the next payload)
+
+- **The phone layout hides no module**: the rule in `ui/css/120-phone.css`
+  that hid `.mod[data-mod="analysis"]` and `.mod[data-mod="options"]` is
+  gone; six tabs along `#phone-tabs` (checked at 375 px, none clipped).
+  `#cvp-options` (the Options button inside Setup) is removed.
+- **The licence is said in Options only**: Setup's LICENCE block
+  (`#cvp-lic`, `#cvp-lic-state`, `-note`, `-facts`, `-scan`, `-door`,
+  `-usage`, `-online`) is removed, and `LICENCE_VIEWS` (js/095) has one
+  view, `#ov-licence`. Options paints it from the shell's reading as before
+  (`paintDeviceLicence`, called by Options and by `renderPhoneCard`).
+  **Shell strings to change:** `second_unlicensed` and the courtesy check
+  said *(Setup › This phone)*; the page now says *(Options › Licence)* -
+  please say the same in `strings.xml`.
+- **Setup's app block (`#cv-phone`) shows wherever the BEGIA app runs**
+  (`phoneCardShown()` = phone layout or `window.BegiaShell`), so a **tablet**
+  in the app gets *Second screen* (`#cvp-watch`, Find, the laptop address)
+  and the update from the laptop - before, it was the phone layout's alone
+  and a tablet had no way to start companion mode or take the laptop's
+  build. Its head is now `#cvp-dev-head` (*THIS PHONE* / *THIS TABLET*, from
+  `data-device`), and the page's words say *this tablet* on a tablet
+  (`appDevice()`; `laptopOffer(i, mine, dev)`). Nothing changes in the
+  shell's API; `watchLaptop`, `checkLaptop`, `installFromLaptop` are called
+  as before. Please check companion mode and the laptop update on the tablet
+  once this payload is on it.
+- The P&ID reader's Options card (`#pn-card`, js/295) has a second note
+  saying where the reader opens. No route changes.
+
 ## 2026-10-17 — I/O check and P&ID reader: sweeps, step 2's ticks, row menus (shared `ui/`; install with the next payload)
 
 - **Sweeps and Shift ranges** (`dragTicks` / `shiftTicks`, js/040) on
