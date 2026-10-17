@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — I/O check: a pre-check sets aside what flickers on its own (shared `app/` + `ui/`; install with the next payload)
+
+- **`POST /api/iocheck/start`** takes `precheck: true`. The session gains
+  **`precheck`**: `null`, or `{state: "watching" | "review" | "done", since,
+  done, moved, discarded}`. While it is watching or under review the check
+  searches nothing and **every `iocheck` frame's `edges` is empty**: nothing
+  pops up, buzzes or takes the big line; rows still come, with their counts.
+- **New routes:** `POST /api/iocheck/precheck/stop` (the whole check plus
+  `moved`, the busiest first), `POST /api/iocheck/precheck/done {node_ids}`
+  (those discarded, the rest waiting again), `POST
+  /api/iocheck/precheck/back {node_ids}` (none: all back). 409 outside a
+  pre-check / with none discarded.
+- **Each row gains `discarded`** (bool). A discarded row is not drawn, never
+  queued or announced, no longer read (`watched_rows`), counted apart:
+  **`summary.discarded`**, only when there are any - the watch's
+  `iocheck.summary` too - and the watch's `last` never picks one.
+- **The page:** `#ioc-pre-start` under Start; `#ioc-pre` (watching: the text,
+  `#ioc-pre-stop`) and `#ioc-pre-review` (the list, `#ioc-pre-all`,
+  `#ioc-pre-none`, `#ioc-pre-done`) in the Check view; `#ioc-pre-back` in the
+  setup panel. On a phone the list takes the width, a 20 px box a row.
+- **Do:** nothing for the boot test (no key changed meaning). If the watch
+  shows the I/O check's counts, `summary.discarded` is new.
+
+---
+
 ## 2026-10-17 — The zoom window: a box drawn on a chart zooms it (shared `ui/`; install with the next payload)
 
 `.pane-zoom` in a chart's header arms `zoomBoxArm` (js/180): a `.zoom-catch`
