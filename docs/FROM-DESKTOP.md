@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-17 — I/O check and P&ID reader: sweeps, step 2's ticks, row menus (shared `ui/`; install with the next payload)
+
+- **Sweeps and Shift ranges** (`dragTicks` / `shiftTicks`, js/040) on
+  `#ioi-l-tree`, `#ioi-l-results`, `#ioi-list`, `#ioi-r-tree`,
+  `#ioi-r-results`, `#ioi-dblist`, `#ioc-pre-list` and the P&ID reader's
+  `#pn-groups` - a mouse or a pen; a finger scrolls, as before.
+- **One request a gesture** in the browsers (`ioiTick`, js/287): the routes
+  and bodies are the same - `POST /api/iocheck/inputs`, `/inputs/remove`,
+  `/areas`, `/areas/remove` - but they now carry many items at once where a
+  range sent one request a box; a sweep's goes at the lift.
+- **Step 2's list keeps its ticks**; new `#ioi-db-sel-all`,
+  `#ioi-db-sel-none`, `#ioi-db-sel-count`; Ctrl+A / Esc / Delete on the step
+  shown. The Inputs tab's and the popup's keys do nothing while the P&ID
+  panel (`body.pn-open`) or a menu (`.ctx-menu`) is up; the panel's Esc stops
+  there.
+- **Menus** (`onCtxMenu`, js/055): a long press opens them on an Inputs row,
+  a browser's row, a P&ID tag or letter code - and, in the Check table and
+  the popup's list, **on the name only** (`td.ioc-name`, `.ioc-er-name`),
+  never on a mark button: the field end's thumb held on OK stays an OK. The
+  pre-check's list is no longer drawn again on every frame.
+- **Do:** nothing for the shell or the boot test.
+
+---
+
 ## 2026-10-17 — I/O check: a pre-check sets aside what flickers on its own (shared `app/` + `ui/`; install with the next payload)
 
 - **`POST /api/iocheck/start`** takes `precheck: true`. The session gains
