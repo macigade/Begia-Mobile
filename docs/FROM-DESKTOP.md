@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — the P&ID reader: no switch, a button on each I/O check tab (shared `ui/`, `app/`; install with the next payload)
+
+- **`POST /api/pnid/switch` is gone**, and with it `pnid/settings.json`'s
+  meaning: the reader is always on, and no `/api/pnid*` route answers 404
+  for being off. `GET /api/pnid` still says `"on": true` for an older page.
+- **No Options card** (`#pn-card`, `#pn-on` are gone). The entries are
+  `#pn-open-inputs` (Inputs, step 1), `#pn-open-project` (the project's bar,
+  before `#iop-more`), `#pn-open-check` (the Check tab, after `#ioc-csv`) -
+  all *P&ID drawings…* - and `#pn-open-import` (*A P&ID drawing…*, the
+  project's Import menu). None is hidden any more; all call `pnOpen()`.
+
 ## 2026-10-17 — the same menus on every device: Options and Analyse on the phone, the licence in Options only, the app's Setup block on a tablet (shared `ui/`; install with the next payload)
 
 - **The phone layout hides no module**: the rule in `ui/css/120-phone.css`
