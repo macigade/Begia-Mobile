@@ -20,6 +20,13 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — the group header's tick fixed; + New group asks a name (shared `ui/`; install with the next payload)
+
+- `.sig-group .gtick` gets `width: auto` - the table's inputs are 100% wide,
+  so the tick spanned the header (v0.9-379/380), hid `.gname` past the edge
+  and caught every tap on the header. Take this payload over 379/380.
+- `#btn-new-group` asks the name (`askPrompt`) before `POST /api/groups`.
+
 ## 2026-10-18 — grips on the signals, dragged by finger (shared `ui/`; install with the next payload)
 
 - `gripDrag(grip, {start, over, drop, done, scroller})` and `sigGrip()`
