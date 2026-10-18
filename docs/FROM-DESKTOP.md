@@ -20,6 +20,14 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — the hover box marks the signal under the pointer (shared `ui/`; install with the next payload)
+
+- `tooltipPlugin` (js/170) rows may carry `series` (the trace's index in
+  `u.series`); `nearestSeries(u, idx, top, candidates)` picks the shown one
+  whose line is nearest the pointer's height (within `TT_NEAR_PX` = 24 px),
+  and that row gets `.u-tt-on`. Live's and Analyse's rows set it. On a phone
+  the finger's height counts the same way. No route changes.
+
 ## 2026-10-18 — the P&ID reader: .A / .B tags, a page at a time (shared `app/` + `ui/`; install with the next payload)
 
 - **`app/pnid/tags.py`**: a loop may end in a letter after a dot, dash or
