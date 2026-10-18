@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — the signal search: own-name hits first, block totals, 1000 in the picker (shared `app/` + `ui/`; install with the next payload)
+
+- `GET /api/search` (S7 driver): tag hits whose own name (after the block)
+  holds the query come before those found only through the block's name;
+  natural order within each; an address query is unchanged. New field
+  `block_totals: {block: n}` for the blocks on screen - how many hits each
+  holds of all of them. OPC UA answers without it.
+- The picker asks `limit=1000` (`PICK_HITS`, js/040); `drawHits` puts a
+  `.tree-more` line above a list cut short, and `hitTree(node, q, ctx,
+  totals)` shows a top-level block as "36 of 1200".
+
+## 2026-10-18 — the Signals table's groups: from a selection, dragged whole, one tick, folding (shared `ui/`; install with the next payload)
+
+- The group header (`tr.sig-group`, js/120 `groupHeaderRow`) gets a fold
+  button (`.gfold`, folded groups kept in `localStorage.sig_groups_folded`,
+  their rows not rendered) and a tri-state tick (`.gtick`) that sends
+  `PATCH /api/signals/bulk {node_ids, active}` for the whole group.
+- The row menu (`sigTableMenu`) has *Create a group from these…*
+  (`sigGroupFrom`: `askPrompt`, then `POST /api/groups {name}` and
+  `POST /api/groups/assign`). No new routes.
+- `sigRowPress`: a mouse press on a row of a selection of several no longer
+  selects that row alone on the way down; it does so on the button up
+  without a drag (`sigPressUp` / `sigPressSettled`). Touch is unchanged.
+
 ## 2026-10-18 — the hover box marks the signal under the pointer (shared `ui/`; install with the next payload)
 
 - `tooltipPlugin` (js/170) rows may carry `series` (the trace's index in
