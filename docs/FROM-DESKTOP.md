@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — the laptop and the updates in one card: Options › Laptop & updates (shared `ui/`; install with the next payload)
+
+- **`#cv-phone` moved from Setup into Options' Updates card** (`#ov-update`,
+  after the internet check), whose head (`#ov-update-head`) reads *Laptop &
+  updates* wherever the block shows (the BEGIA app, or the phone layout) and
+  *Updates* on a laptop. Every id inside is the same (`#cvp-laptop`,
+  `#cvp-find`, `#cvp-check`, `#cvp-pair`, `#cvp-laptop-install`, `#cvp-watch`,
+  `#cvp-app`, `#cvp-update`, `#cvp-restart`, `#cvp-quit` ...); the laptop's
+  address is still `localStorage.laptop`, and `begia-found` /
+  `begia-laptop` are unchanged.
+- **It is rendered, and the quiet laptop search runs, when Options opens**
+  (`setModule("options")` → `renderPhoneCard()`, `findLaptops(true)` once),
+  no longer when Setup opens. Setup is the PLC connections only.
+- *Check the laptop for an update*, its code row and *Install it* are out
+  of `.ph-adv` (always in view); the block's own *Advanced settings* switch
+  is gone - the one in Options' Display card covers it.
+- **Shell strings:** anything that sends the user to *Setup* for the laptop
+  (second screen, the laptop's build, This phone) should now say *Options ›
+  Laptop & updates*.
+
 ## 2026-10-18 — the P&ID reader: no switch, a button on each I/O check tab (shared `ui/`, `app/`; install with the next payload)
 
 - **`POST /api/pnid/switch` is gone**, and with it `pnid/settings.json`'s
