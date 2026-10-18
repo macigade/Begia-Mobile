@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — the P&ID reader: .A / .B tags, a page at a time (shared `app/` + `ui/`; install with the next payload)
+
+- **`app/pnid/tags.py`**: a loop may end in a letter after a dot, dash or
+  underscore (`1YVH 133.A`, `1PIT173.B`, `YVH 135-C`); each is a tag of its
+  own, its norm without the dot (`1YVH133A`), so a drawing read again lists
+  more tags than before. `match.py` is unchanged: `HPU_1YVH133.A`'s words
+  already made the key `1YVH133A`. A kept drawing from before
+  (`drawing.json` without `tags_version` 2) is found again from its
+  `words.json` the first time it is loaded and written back: `GET
+  /api/pnid/drawing/{id}` may answer more tags than the last time, the
+  review's `ticked` grown by the new ones.
+- **`PUT /api/pnid/drawing/{id}/review`** takes **`page`** (0 every page) and
+  keeps it in the review; an older page that sends none keeps 0.
+- **The panel**: `#pn-only` (a select: every page, or one) in the list bar;
+  on one page the list, a letter code's box and count, and **Send** are that
+  page's (`Send page 6…`), and the cabinet offered is `P&ID <name> p.6`.
+  `#pn-view` takes Ctrl + wheel (a non-passive `wheel` listener that calls
+  `preventDefault` only with Ctrl or Cmd held) to zoom about the pointer.
+- **Do:** nothing for the shell or the boot test.
+
+---
+
 ## 2026-10-18 — the laptop and the updates in one card: Options › Laptop & updates (shared `ui/`; install with the next payload)
 
 - **`#cv-phone` moved from Setup into Options' Updates card** (`#ov-update`,
