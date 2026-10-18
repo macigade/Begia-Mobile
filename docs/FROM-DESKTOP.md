@@ -38,6 +38,10 @@ as the change. Entries say what to *do*, not just what happened.
   page's (`Send page 6…`), and the cabinet offered is `P&ID <name> p.6`.
   `#pn-view` takes Ctrl + wheel (a non-passive `wheel` listener that calls
   `preventDefault` only with Ctrl or Cmd held) to zoom about the pointer.
+- **`POST /api/pnid/drawing/{id}/match`** answers each tag's **inputs and
+  outputs only** (`area` "in" / "out"; `match.FIELD`) - no DB member, no
+  %M, where it listed them after the I/O. A project row for a tag with none
+  says *no input or output found in the PLC*.
 - **Do:** nothing for the shell or the boot test.
 
 ---
