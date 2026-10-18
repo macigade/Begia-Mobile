@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-18 — grips on the signals, dragged by finger (shared `ui/`; install with the next payload)
+
+- `gripDrag(grip, {start, over, drop, done, scroller})` and `sigGrip()`
+  (js/040): a drag by pointer events with pointer capture, so it starts from
+  a finger in the WebView, where HTML5 drag and drop never does. The grip
+  (`.sig-grip`, `touch-action: none`) stops the row's mousedown, touchstart
+  and pointerdown, so no selection, sweep, native drag or long-press menu
+  starts from it. A `.grip-ghost` label follows the pointer.
+- Live's rows (`#signal-list .sig`): the grip ends the row (grid column 4;
+  on the phone layout column 5, after the tools); it drops onto a
+  `.pane-tile` (a place in its list, `tileInsertAt`) or a `.pane[data-pane]`
+  - `moveSignalTo(sig, pane, before)`, the same move the tile's HTML5 drop
+  makes now.
+- The Signals table: the grip is in `td.act` before the tick
+  (`sigTableGrip`); it drops the selection (or the row) on a
+  `tr.sig-group`, which now carries `data-group`. No route changes.
+
 ## 2026-10-18 — the signal search: own-name hits first, block totals, 1000 in the picker (shared `app/` + `ui/`; install with the next payload)
 
 - `GET /api/search` (S7 driver): tag hits whose own name (after the block)
