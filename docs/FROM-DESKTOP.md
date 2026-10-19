@@ -20,6 +20,13 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-19 — Analyse's tree: a branch's tick (shared `ui/`; install with the next payload)
+
+- `renderPalTree` (js/220) puts a `.pal-tick` checkbox on every
+  `.an-pal-branch`: `palSetBranch(keys, on, label)` -> `anSetMany`; asks
+  (`askConfirm`) before adding more than `PAL_ASK_OVER` (100). Tri-state
+  (indeterminate when some are on). No route changes.
+
 ## 2026-10-19 — I/O check: a tolerance for analog signals (shared `app/` + `ui/`; install with the next payload)
 
 - **`POST /api/iocheck/tolerance {tol, node_ids?}`**: without `node_ids`
