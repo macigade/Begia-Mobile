@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-19 — the check's popup minimizes to a bar; skipped stays skipped (shared `ui/`; install with the next payload)
+
+- `iocPopMin()` (`localStorage.ioc-pop-min`) and `iocPaintMini(q)` (js/284):
+  minimized, the popup is `.ioc-pop.mini`, a bar at the bottom with
+  `.ioc-mini-open` (data-act `min`, opens it again) and ×. Each view's head
+  has `.ioc-min` (data-act `min`). New `IOC_ICON.down` / `.up` (js/282).
+- `announce()` (js/286) passes over a row whose status is `skipped`: no
+  popup, no `#ioc-last` line, no vibrate. `POST /api/iocheck/reset` (Again)
+  is the way back, as before. No route changes.
+
 ## 2026-10-19 — the P&ID reader marks what is on the check list (shared `ui/`; install with the next payload)
 
 - `pn.listed` (js/295) holds the node ids of the Inputs tab's left list:
