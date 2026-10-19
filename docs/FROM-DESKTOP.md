@@ -20,6 +20,14 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-19 — the P&ID reader marks what is on the check list (shared `ui/`; install with the next payload)
+
+- `pn.listed` (js/295) holds the node ids of the Inputs tab's left list:
+  filled by `GET /api/iocheck/inputs` when the panel opens and by every
+  `begia-iocheck-inputs` event (the `iocheck_inputs` frames). A hit on it
+  gets `.pn-sig.listed` and a `.pn-listed` "to check" badge; its tag a
+  `.pn-listed-n` count. No route changes.
+
 ## 2026-10-19 — the P&ID reader: outputs found, the find box in the PLC's names; .A / .B names kept (shared `app/` + `ui/`; install with the next payload)
 
 - S7 `index_map()` flattens the native areas (IArea, QArea, MArea ...) before
