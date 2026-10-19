@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-19 — Analyse: one digital column; the empty chart said (shared `ui/`; install with the next payload)
+
+- `buildAnalysisChart` (js/220): the first digital group gets
+  `digitalAxis(...)` (js/100), the others `{scale, show: false}`;
+  `digitalAxisPlugin` draws every band's FALSE/TRUE in that column. The
+  grid goes to the first shown analog column. The axis budget counts the
+  digital column once (`analysis.axesShown/axesTotal` are columns now).
+- `anNoData(u, src)` / `anNoDataText(data, src, connected)`: a `.an-nodata`
+  line in the plot while no series has a sample. No route changes.
+
 ## 2026-10-19 — Analyse's tree: a branch's tick (shared `ui/`; install with the next payload)
 
 - `renderPalTree` (js/220) puts a `.pal-tick` checkbox on every
