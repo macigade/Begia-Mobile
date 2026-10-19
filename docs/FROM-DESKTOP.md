@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-19 — I/O check: a tolerance for analog signals (shared `app/` + `ui/`; install with the next payload)
+
+- **`POST /api/iocheck/tolerance {tol, node_ids?}`**: without `node_ids`
+  the general tolerance (`AppConfig.iocheck_tol`, every input's own
+  cleared); with them, those inputs' own (`SignalCfg.tol`; `tol` null back to
+  the general one). Answers `{tol_all, check}`; saves and sends the
+  `iocheck_inputs` frame, and the whole check when one runs.
+- **New fields:** the inputs payload's **`tol_all`**; each input's **`tol`**;
+  the session's **`tol_all`** and each row's **`tol`** (null for a digital
+  input). A number with a tolerance moves when it is that far from where it
+  last moved, so frames may carry fewer edges for jittery analog rows; an
+  analog edge `[t, v, 1, up]` after a connected reading is a move while
+  wired (`iocAnalogMoved`, js/280).
+- **The CSV** gains a last column, **`tolerance`**.
+- **The page:** `#ioc-tol-box` (`#ioc-tol`, `#ioc-tol-set`,
+  `#ioc-tol-says`) on the Check tab's setup panel; *Tolerance...* in the row
+  menus (`iocAskTol`, js/284). A digital input has none.
+- **Do:** nothing for the shell or the boot test (no key changed meaning;
+  the CSV's columns grew by one at the end).
+
+---
+
 ## 2026-10-19 — the check's popup minimizes to a bar; skipped stays skipped (shared `ui/`; install with the next payload)
 
 - `iocPopMin()` (`localStorage.ioc-pop-min`) and `iocPaintMini(q)` (js/284):
