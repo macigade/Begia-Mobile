@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-19 — the P&ID reader: outputs found, the find box in the PLC's names; .A / .B names kept (shared `app/` + `ui/`; install with the next payload)
+
+- S7 `index_map()` flattens the native areas (IArea, QArea, MArea ...) before
+  it answers, as `search()` does: `POST /api/pnid/drawing/{id}/match` can
+  now return `out` hits (a valve's -Cmd) it never could on a CPU whose QArea
+  nothing had opened.
+- `pnShown` (js/295) also lets a tag through when one of its PLC hits'
+  name, path or address holds what was typed.
+- `iocShort` (js/280) keeps `1PIT172.B-Fbk` whole: a last element of one
+  letter or digit (with an optional -suffix) belongs to the tag before it.
+
 ## 2026-10-18 — the group header's tick fixed; + New group asks a name (shared `ui/`; install with the next payload)
 
 - `.sig-group .gtick` gets `width: auto` - the table's inputs are 100% wide,
