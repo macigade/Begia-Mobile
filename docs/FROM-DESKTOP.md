@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — the I/O check project: Show the hardware; its menus close (shared `ui/`; install with the next payload)
+
+- js/289: the hardware line gets a `.iop-hw-toggle` button; `iopHwPaint(hw)`
+  fills `#iop-hw-view` (index.html) - stations by `group`, `details` per
+  station, its modules' table made when opened; rebuilt only when the
+  hardware changes. css/159 `.iop-hw-*`.
+- The toolbar's `details.iop-dd` menus: one open at a time; closed by a
+  pointerdown outside, Esc, an item clicked or a file picked.
+
 ## 2026-10-20 — the I/O check's hardware read from a real export (shared `app/` + `ui/`; install with the next payload)
 
 - app/iocheck/hardware.py: a `System:Device` inside a device is a module of
