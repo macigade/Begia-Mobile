@@ -152,6 +152,16 @@ class ShellBridge(private val activity: MainActivity) {
         activity.runOnUiThread { activity.openUrl(url) }
     }
 
+    /** Sign in with Google inside the app (shell 3.3; IBA-CODE
+     *  docs/IN-APP-SIGNIN.md): returns at once; Android's account picker
+     *  opens, and the answer is `window.begiaGoogleIdToken({token} | {error})`
+     *  - `error: "cancelled"` when the person backs out. `nonce` is already
+     *  the SHA-256 hex the token must carry. The shell keeps nothing. */
+    @JavascriptInterface
+    fun googleIdToken(nonce: String) {
+        activity.googleIdToken(nonce)
+    }
+
     /** Only install payloads signed by a key this app trusts, from now on
      *  (or not). The APK's own embedded payload is never subject to it. */
     @JavascriptInterface

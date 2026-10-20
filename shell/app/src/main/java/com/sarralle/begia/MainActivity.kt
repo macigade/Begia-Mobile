@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.CancellationSignal
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
@@ -34,7 +35,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.credentials.CredentialManager
+import androidx.credentials.CredentialManagerCallback
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import org.json.JSONObject
@@ -746,6 +758,53 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** The bridge's googleIdToken (shell 3.3): the licence door's Request
+     *  online signs the person in here, where Google allows it - never in the
+     *  web view (IBA-CODE docs/IN-APP-SIGNIN.md). Credential Manager shows the
+     *  account picker and returns an ID token for the backend's WEB client ID
+     *  with the page's nonce; the page exchanges it with the backend itself.
+     *  Needs the Android OAuth client for com.mgvictus.begia and the release
+     *  key's SHA-1 in the same Google Cloud project (the owner's, once) - a
+     *  phone without it gets Google's own refusal as the error. */
+    fun googleIdToken(nonce: String) {
+        ui.post {
+            val option = GetGoogleIdOption.Builder()
+                .setServerClientId(GOOGLE_WEB_CLIENT_ID)
+                .setFilterByAuthorizedAccounts(false)
+                .apply { if (nonce.isNotEmpty()) setNonce(nonce) }
+                .build()
+            val request = GetCredentialRequest.Builder().addCredentialOption(option).build()
+            val answer = { a: JSONObject ->
+                web.evaluateJavascript(
+                    "window.begiaGoogleIdToken && window.begiaGoogleIdToken($a)", null)
+            }
+            try {
+                CredentialManager.create(this).getCredentialAsync(this, request, CancellationSignal(),
+                    ContextCompat.getMainExecutor(this),
+                    object : CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
+                        override fun onResult(result: GetCredentialResponse) {
+                            val c = result.credential
+                            answer(if (c is CustomCredential &&
+                                    c.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                                JSONObject().put("token", GoogleIdTokenCredential.createFrom(c.data).idToken)
+                            } else JSONObject().put("error", "Google gave no sign-in token"))
+                        }
+
+                        override fun onError(e: GetCredentialException) {
+                            Log.w(Recorder.TAG, "Google sign-in: ${e.type}: ${e.message}")
+                            answer(JSONObject().put("error", when (e) {
+                                is GetCredentialCancellationException -> "cancelled"
+                                is NoCredentialException -> "no Google account to sign in with on this phone"
+                                else -> e.message ?: e.type
+                            }))
+                        }
+                    })
+            } catch (e: Exception) {
+                answer(JSONObject().put("error", e.message ?: "Google sign-in is not available on this phone"))
+            }
+        }
+    }
+
     /** "Send a usage report..." (LICENSING-DESIGN 5.3 c): the service's
      *  report, through the share sheet. */
     fun shareUsage() {
@@ -1083,5 +1142,10 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val FAILED_AFTER_MS = 90_000L
         private const val REMOTE_FAILED_AFTER_MS = 12_000L   // a laptop answers at once or not at all
+        // The backend's WEB client ID (public: Supabase's own sign-in redirect
+        // carries it). The ID token is issued for it; the Android client in the
+        // same Google Cloud project only lets this app ask (googleIdToken).
+        private const val GOOGLE_WEB_CLIENT_ID =
+            "118369397450-ohlnklbd4j5ls2pjr7l0c1e4l5q7qo7f.apps.googleusercontent.com"
     }
 }
