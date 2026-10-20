@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — the I/O check's hardware read from a real export (shared `app/` + `ui/`; install with the next payload)
+
+- app/iocheck/hardware.py: a `System:Device` inside a device is a module of
+  it; a station's `name` is its head module's own name when it has one
+  (`device` keeps TIA's), plus `group`, `pn_name`, `ip`; a module has
+  `kind` and `channels`; `place()` returns `status: True` (and the channel
+  it is the status of, or None for a whole byte) past a module's channels.
+- js/289: `iopChannel(hw, words)` for the Ch column and the tooltip; a
+  station header shows `pn_name`, its tooltip TIA name / folder / IP.
+  Reports: `project._channel_text` ("QI n").
+
 ## 2026-10-20 — the phone shows its hidden four; shell 3.3 has googleIdToken (shared `ui/`; Begia-Mobile branch `shell/google-signin`)
 
 - css/120-phone.css no longer hides `.pane-fold`, `#vb-seal`,
