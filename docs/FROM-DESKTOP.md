@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — Live: the scrollbar's room kept; a count on every chart (shared `ui/`; install with the next payload)
+
+- `#sidebar` and `#chart-scroll` (css/030) have `scrollbar-gutter:
+  stable`. On a phone's overlay scrollbars it takes no room.
+- `tileCount` (js/070) is always shown now (not only folded); `paneCount(n)`
+  (js/180) beside a chart's name, `.pane-count` (css/060), in Live's panes
+  and the Strings chart (js/185). On a phone the tile keeps the number
+  alone, the chart header keeps the word (`.pane-count .pt-count-w`).
+
 ## 2026-10-20 — Live's tree fixed: the list again at link-up; sections as levels (shared `app/` and `ui/`; install with the next payload)
 
 - `State._driver_status` (app/state.py): a link that comes up broadcasts
