@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — Live's tree of blocks and members; the dialog's long label (shared `ui/`; install with the next payload)
+
+- `#btn-sig-tree` in the Signals card header and *Show as a tree* in
+  `tileMenu` (js/070): `setLiveTree(on)` (localStorage `live_tree`);
+  `renderSignalList` gathers a tile's rows and `liveTreeFill(body, items)`
+  places them by `sigTreePlan(items, group, pool, liveTreeOpen, true)`
+  (js/130 - new `isOpen` and `compactTop` arguments, branch entries carry
+  `path`). Branch rows `.sig-node` (fold, `.sig-node-tick` -
+  `setTracesHidden(ids, hide)` in js/180, `.sig-node-name`, `.sig-node-n`);
+  rows indented by `--tree-depth`; folds in localStorage `live_tree_folded`.
+  On the phone the Tree button wraps under Rate - checked at 375 px.
+- js/050: a field label longer than `DLG_LABEL_CH` (11) gets `.dlg-stack`
+  (above its box); `.dlg-field`'s first column is `11ch`, nowrap.
+
 ## 2026-10-20 — A trial's time: `app/clock.py`, the PLC's clock, bad readings (shared `app/` and `ui/`; install with the next payload)
 
 - New `app/clock.py`: `CLOCK.now_ms()` stamps every sample, trial and mark
