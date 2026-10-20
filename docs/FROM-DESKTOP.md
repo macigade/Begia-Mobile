@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — Live's tree fixed: the list again at link-up; sections as levels (shared `app/` and `ui/`; install with the next payload)
+
+- `State._driver_status` (app/state.py): a link that comes up broadcasts
+  the `signals` frame after the status - over S7 `block`/`section`/`dtype`
+  are known only once connected, and a page that got its list before had
+  `block: ""` everywhere (Live's tree flat). Pinned in
+  tests/py/test_link_up_signals.py.
+- `liveLevels(sig)` (js/070) for Live's tree: sigLevels, and over S7 the
+  name's levels after the block when the name starts with `sig.block` and
+  ends in the node id's member (`1YPH107.Input.areaLocal` for node id
+  `1YPH107.areaLocal`). `sigTreePlan` takes it as a 6th argument
+  `levelsOf` (default sigLevels; the Signals table unchanged).
+
 ## 2026-10-20 — Live's tree of blocks and members; the dialog's long label (shared `ui/`; install with the next payload)
 
 - `#btn-sig-tree` in the Signals card header and *Show as a tree* in
