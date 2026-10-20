@@ -20,6 +20,37 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — A trial's time: `app/clock.py`, the PLC's clock, bad readings (shared `app/` and `ui/`; install with the next payload)
+
+- New `app/clock.py`: `CLOCK.now_ms()` stamps every sample, trial and mark
+  (`recording/meta.now_ms`, the OPC UA / S7 / UDP drivers, the push and
+  socket floors, the trigger's elapsed time, IoCheck's clock). Steady from
+  an anchor on `time.time()`: a step of the wall clock is followed outside
+  a trial (`CLOCK.steps`) and noted inside one (`hold()`/`release()` from
+  `Recorder.start/stop`, the notes written by `flush`). A sleep is detected
+  with `CLOCK_BOOTTIME` on Linux/Android (GetTickCount64 on Windows): the
+  phone's suspend counts as time that passed. Nothing past Python 3.11.
+- OPC UA: `_measure_clock()` reads `Server_ServerStatus_CurrentTime` (three
+  reads 0.3 s apart) at connect and every 60 s; `_quality_and_time` moves
+  each SourceTimestamp by `CLOCK.plc_offset`. A server whose CurrentTime
+  does not run with the laptop's is not believed.
+- Config `trial_clock` (`"pc"` | `"plc"`), `PUT /api/trial/clock {clock}`;
+  the status frame carries `clock: {trial, plc_offset_ms, plc_source}`.
+  Trial meta: `time_base`, `plc_offset_ms`, `time_base_note` (in
+  `PROVENANCE_KEYS`, so in the CSV preamble).
+- Trial card: `#trial-clock-row` (`#clock-sel`) and `#clock-note`, painted
+  by `paintTrialClock(st)` from `setStatus` (js/060, js/030). The phone's
+  Trial card gets them too - look at it there.
+- Bad readings: `state.page_points` sends a bad sample as `[t, null]`; the
+  charts' series are `spanGaps: false` now (js/100 `laneSeries`, js/180,
+  js/220, js/240) - a null is a gap, uPlot.join's undefined still spanned.
+  `trial_data`'s series carry null for bad rows; its stats and
+  `range_stats` are over good rows, `n_bad` in both. CSV: an empty cell and
+  `# bad_quality:` lines; .dat NaN.
+- Report (js/250): a *Times from* row after Time zone (`reportClockText`);
+  the Time zone line says "in the time zone of the PC" now.
+- `SimCfg.clock_skew_s`; PlantSim writes its CurrentTime every tick.
+
 ## 2026-10-19 — Analyse: one digital column; the empty chart said (shared `ui/`; install with the next payload)
 
 - `buildAnalysisChart` (js/220): the first digital group gets
