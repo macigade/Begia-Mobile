@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — the project map's menu is openCtxMenu (shared `ui/`; install with the next payload)
+
+- js/289: `iopMenu` opens `openCtxMenu(x, y, iopMenuItems(id))`; the old
+  `#iop-menu` element, `iopMenuClose` and `.iop-menu*` CSS are gone. A
+  finger's long press on the map is still a run (iopPress), as before.
+- js/055: an item may carry `cls` (its own class); css/159 draws the
+  verdict dots for `.ctx-item.st-*` (`st-unchecked` a ring), over the touch
+  padding of css/140.
+
 ## 2026-10-20 — Live: the scrollbar's room kept; a count on every chart (shared `ui/`; install with the next payload)
 
 - `#sidebar` and `#chart-scroll` (css/030) have `scrollbar-gutter:
