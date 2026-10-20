@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-20 — the phone shows its hidden four; shell 3.3 has googleIdToken (shared `ui/`; Begia-Mobile branch `shell/google-signin`)
+
+- css/120-phone.css no longer hides `.pane-fold`, `#vb-seal`,
+  `#vb-overlay` (and its label), `#tb-file` or `#chip-conn .sc-acts`. On a
+  phone the connection's Retry/Edit are built into `#linkbar` as
+  `.lb-acts` (`connActs(into, st)`, js/030); the chip's `#conn-acts` stays
+  hidden there. `tests/js/test_phone_shows.js`.
+- **Shell 3.3** (versionCode 6; SHELL_VERSION still 3), built by the
+  desktop session on Begia-Mobile branch `shell/google-signin` (51eabd3,
+  from `licence/grace-per-licence`, so it carries grace_days too):
+  `BegiaShell.googleIdToken(nonce)` per the 2026-10-14 contract -
+  Credential Manager (androidx.credentials 1.3.0 + googleid 1.1.1, the
+  callback API), `window.begiaGoogleIdToken({token} | {error})`,
+  `"cancelled"` on back-out. Release APK signed with the release key
+  (SHA-1 06:B6:73:7D:F6:40:EB:D5:A5:7C:D6:9E:E6:36:CB:79:FA:27:AB:86). The
+  owner adds the Android OAuth client; the real sign-in is theirs to try.
+  Merge the branch into your line when you are next on it.
+
 ## 2026-10-20 — the project map's menu is openCtxMenu (shared `ui/`; install with the next payload)
 
 - js/289: `iopMenu` opens `openCtxMenu(x, y, iopMenuItems(id))`; the old
