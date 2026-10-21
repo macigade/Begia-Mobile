@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — a list of names added at once, as a TIA tag table (shared `app/` + `ui/`; install with the next payload)
+
+- `POST /api/signals/by-names {names: [..], group, pane_name, rate_ms, anyway}`
+  (routes/signals.py `add_by_names`, bodies `ByNamesBody`): each name as
+  `/by-name` takes one (`tia_query`, `find_tag`), the found ones probed and
+  added at once into `group` (appended to `cfg.groups` when new; "" =
+  Ungrouped) and one pane - the one whose `cfg.panes[n].name` is
+  `pane_name` (letter case aside), else max+1, named `pane_name` (or its
+  stale config dropped). Answers `{rows: [{name, node_id?, added?, why?}],
+  added, group, pane}` - a row per non-empty name, in order. More than
+  `ADD_ASK_OVER` found: 422 `{detail, anyway, count, total}`, as
+  `/api/signals/bulk`. 409 not connected / a trial / the source moved.
+- js/136-tagtable.js (new, after 135): `openTagTable(prefill)` - the window
+  `#tag-box` over `#tag-back` (z 66/67: over the picker, under the dialog);
+  `tagRows` [{name, state "" | "added" | "why", why}] outlive it;
+  `tagPasteNames(text)` (a line a row, its first non-empty cell, a header
+  left out), `tagPasteAt(i, text, whole)` (Excel-like: writes over row i
+  and down). While open it takes the document's keydown and paste in the
+  capture phase (Space starts no trial behind it). Button `#btn-tag-table`
+  in the Signals toolbar. js/135 `sigNewRow`: a paste of several rows opens
+  it with them; one tabbed row gives its first cell. css/080.
+
 ## 2026-10-21 — the percent views: 0..100 % and -100..100 % (shared `app/` + `ui/`; install with the next payload)
 
 - `SignalCfg.fmt` takes "pct" (0..100 %, 0 % at 0 counts / 4 mA) and "pctc"
