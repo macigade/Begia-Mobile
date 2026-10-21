@@ -20,6 +20,13 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — TIA's quotes off a search (shared `app/` + `ui/`; install with the next payload)
+
+- `GET /api/search` takes every `"` off `q` before the driver sees it
+  (routes/signals.py `tia_query`), so a name copied from TIA finds its tag
+  whichever page asks. js/040 `runSearch` takes them off the box too and
+  writes the cleaned text back into it.
+
 ## 2026-10-21 — the format by place: I/O WORD/INT mA, a DB's WORD binary, its INT decimal (shared `app/` + `ui/`; install with the next payload)
 
 - The signal list carries `area` ("in", "out", "mem", "db", "other") from
