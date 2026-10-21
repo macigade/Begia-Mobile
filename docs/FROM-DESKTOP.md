@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — a signal added by its exact name (shared `app/` + `ui/`; install with the next payload)
+
+- `POST /api/signals/by-name {name}` (routes/signals.py `add_by_name`):
+  `tia_query` takes the quotes off, the driver's new `find_tag(name)` gives
+  the node ids it stands for (S7: the symbol, its block opened; IArea./
+  QArea./MArea. + a tag's own name; a whole address; the letter case only
+  as a fallback - OPC UA: the index's variable whose s7 name or browse path
+  is it), one is added through `add_signal` (pane: a new one; group "").
+  422 empty, 404 none, 409 several / already in the list / a trial / not
+  connected.
+- js/135 `sigNewRow`/`addByName`: the first row of the Signals table under
+  its header (js/130 `renderSigTable`), an input `#sig-new-name` whose text
+  (`sigNewText`) and caret survive a rebuild. css/080.
+
 ## 2026-10-21 — TIA's quotes off a search (shared `app/` + `ui/`; install with the next payload)
 
 - `GET /api/search` takes every `"` off `q` before the driver sees it
