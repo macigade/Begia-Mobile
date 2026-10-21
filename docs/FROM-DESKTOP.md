@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — the percent views: 0..100 % and -100..100 % (shared `app/` + `ui/`; install with the next payload)
+
+- `SignalCfg.fmt` takes "pct" (0..100 %, 0 % at 0 counts / 4 mA) and "pctc"
+  (-100..100 %, 0 % at 13824 / 12 mA) too.
+- js/070: the mA helpers became `AN_VIEWS` {ma, pct, pctc}: [unit, decimals,
+  count->value, value->count]; `anOn(sig)` (Live) / `anView(sig)` (a trial's,
+  by today's signal) give the view or ""; `anOf`, `anText`, `anLin`,
+  `anCount`, `anUnit` take it. (maOn, maView, maOf, maText, maLin, maCount
+  are gone.) `fmtChoices` lists ma, pct, pctc for `maFits` types;
+  `fmtMenuChoices(ref, after)` makes the menu row - one % button, lit in
+  either percent view, `again: true` so a press on it lit turns to the
+  other - used by the readout chip (`AN_CHIP` text: mA, %, ±%) and
+  `signalMenu`.
+- js/055 `openCtxMenu`: a choice with `again` acts when it is the lit one.
+
 ## 2026-10-21 — a signal added by its exact name (shared `app/` + `ui/`; install with the next payload)
 
 - `POST /api/signals/by-name {name}` (routes/signals.py `add_by_name`):
