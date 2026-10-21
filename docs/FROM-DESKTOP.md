@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — a format by type: WORD/INT mA, DWORD binary (shared `app/` + `ui/`; install with the next payload)
+
+- `SignalCfg.fmt` "" is now the type's own (js/070 `fmtNow`: WORD, INT,
+  UInt16, Int16 -> "ma" when `maFits`; DWORD -> "bin"; else "dec"); decimal
+  chosen is stored as "dec" (`PATCH /api/signals {fmt: "dec"}` keeps "dec").
+  `fmtChoices` values are "dec" | "hex" | "bin" | "ma"; `fmtNow` always
+  returns one of them. `bitsText`, `maOn`, the axis tag and the sidebar's
+  `.bits-row` read `fmtNow`, never `sig.fmt`.
+- js/180: a binary reading's `.val` gets `.bits` (css/060: 13 px, breaks).
+
 ## 2026-10-21 — mA in Analyse; Add signals shows and finds the address (shared `app/` + `ui/`; install with the next payload)
 
 - js/070: `maView(sig)` (Live's `maOn`, or a trial signal's by today's of its
