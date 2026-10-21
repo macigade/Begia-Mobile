@@ -20,6 +20,27 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — Live: a WORD's format on its chart; an analog word in mA (shared `app/` + `ui/`; install with the next payload)
+
+- `SignalCfg.fmt` takes "ma" too (`PATCH /api/signals {fmt}`; 422 names it).
+- js/070: `fmtChoices(sig)` ([value, label, words]: DEC/HEX/BIN for a
+  `bitWidth` type, + "4-20 mA" for an unscaled WORD/UINT/UInt16/INT/Int16 -
+  `maFits`), `fmtFits`, `fmtNow` (the format in force). `maOn`, `maOf`
+  (a sample to mA: a WORD's 32768+ wraps negative; 16#7FFF/16#8000 -> null),
+  `maText` (3 places, "overflow"/"underflow"), `maLin`/`maCount` (Y limits,
+  kept in counts), `liveSigVal` (fmtSigVal in mA + " mA"). `numText` reads
+  through `maOn`; `wholeType` (+ `INT_TYPES`): an INT/DINT's whole number
+  without ".00" in numText, fmtVOf and the axis tag.
+- js/190 `liveSeries` = `displaySeries` in mA for an `maOn` signal - Live's
+  redraw only; Analyse keeps `displaySeries` (the count).
+- js/180: a `.ph-fmt` chip on each readout's row 2 (hidden on a phone, where
+  the readout's long-press menu has "Shown as"); the unit reads "mA"; the
+  tooltip and the chart menu's Copy the values use `liveSigVal`; the ⋯
+  menu's Y limits are typed in mA for an mA trace. css/060 `.ph-fmt`,
+  css/130 its 36 px touch size.
+- js/170 `fmtTick(v, dec, incr)`: k/M/G only where one decimal of it tells
+  the ticks apart, else the whole number.
+
 ## 2026-10-21 — the I/O check project: the hardware's channels with the project's signals (shared `app/` + `ui/`; install with the next payload)
 
 - app/iocheck/hardware.py `place()`: an output module's (DQ/DO/AQ/AO) input
