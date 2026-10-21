@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — the format by place: I/O WORD/INT mA, a DB's WORD binary, its INT decimal (shared `app/` + `ui/`; install with the next payload)
+
+- The signal list carries `area` ("in", "out", "mem", "db", "other") from
+  the driver's `area_of` - shown, not stored (routes/common.py
+  `_signals_payload`). Over OPC UA it is known once the index is built: the
+  driver now calls its status callback then, and `State._driver_status`
+  sends the list again the first time `index_state` turns ready/partial.
+- js/070 `fmtNow`'s own: WORD/INT/UInt16/Int16 of the inputs or outputs
+  (`ioArea`: `area`, a %I/%Q `abs_address`, or IArea./QArea.) -> "ma"; any
+  other WORD/UInt16, and a DWORD -> "bin" (unscaled); else "dec".
+
 ## 2026-10-21 — a format by type: WORD/INT mA, DWORD binary (shared `app/` + `ui/`; install with the next payload)
 
 - `SignalCfg.fmt` "" is now the type's own (js/070 `fmtNow`: WORD, INT,
