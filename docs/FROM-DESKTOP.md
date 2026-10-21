@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — the I/O check project: the hardware's channels with the project's signals (shared `app/` + `ui/`; install with the next payload)
+
+- app/iocheck/hardware.py `place()`: an output module's (DQ/DO/AQ/AO) input
+  bytes are its outputs' value status - `status: True`, `channel` = the bit
+  (None for a whole byte); before, they came back as input channels.
+- js/289: `iopHwPaint(hw, sigs)` now takes the project's signals and is
+  rebuilt on every draw (open stations in `iopHwOpen`, scrollTop kept);
+  `iopHwPlaced(sigs)` maps station -> `slot|module` -> {values, qi, other};
+  a module's `table.iop-hw-ch` has a row per channel: signal + status, its
+  QI signal + status; `.iop-hw-sig` click = `iopPick`, contextmenu =
+  `iopMenu`. By default only the stations carrying signals (the
+  `.iop-hw-all` tick shows all).
+- css/159: on `data-layout="phone"` the address goes under the name and the
+  table's padding shrinks - it fits 375 px with no sideways scroll.
+
 ## 2026-10-21 — the I/O check project: Show the hardware; its menus close (shared `ui/`; install with the next payload)
 
 - js/289: the hardware line gets a `.iop-hw-toggle` button; `iopHwPaint(hw)`
