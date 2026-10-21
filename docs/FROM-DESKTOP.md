@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-21 — mA in Analyse; Add signals shows and finds the address (shared `app/` + `ui/`; install with the next payload)
+
+- js/070: `maView(sig)` (Live's `maOn`, or a trial signal's by today's of its
+  node, `fmtSource`, when its recorded gain/offset are 1/0), `shownNum`,
+  `shownText`, `shownUnit`, `shownSeries`, `fmtShown` (was `liveSigVal`),
+  `fmtDrawn` (a value already in mA), `fmtChip(ref, cls, after)` - the one
+  chip for Live's readouts (`.ph-fmt`), Analyse's palette rows (`.sd.an-fmt`)
+  and a trial's pane heads.
+- js/220 `updateAnalysis` draws `shownSeries`; the tooltip `fmtShown`; the
+  A/B table `shownText`, Δ/rate from `shownNum`, the mean via `maLin`, the
+  unit `shownUnit`; js/210's extreme rings `shownNum`. js/240: a trial pane's
+  series (and overlay) `shownSeries`, its tooltip `fmtDrawn`, its figures
+  `shownStats` - `sigStats` (the report's) unchanged.
+- js/040 `PICK.meta: true`: the type and the `abs` address on every row of
+  Add signals; css/140 `.tnode .ioi-abs` ordered after the name. The search
+  box says "a name, or an address like IW64 or %I12.3".
+- app/drivers/s7plus/driver.py `address_query(q)`: IW4430, I3600.2, IX12.3,
+  MD100 (no %) are addresses; `search()` then gives the tags at that address
+  first and still the names; with % an address only, as before.
+
 ## 2026-10-21 — Live: a WORD's format on its chart; an analog word in mA (shared `app/` + `ui/`; install with the next payload)
 
 - `SignalCfg.fmt` takes "ma" too (`PATCH /api/signals {fmt}`; 422 names it).
