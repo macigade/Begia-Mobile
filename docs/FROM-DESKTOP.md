@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-22 — the website's licence key is trusted (shared `app/`; install with the next payload; the shell's own list is yours)
+
+- app/access/licence.py `LICENCE_KEYS` gains `"1da9b85ebee83fdf":
+  "6602191c1d0d46d57f1c79c0da75a5771167e1823b6387fb82dbcb25dde78727"` -
+  the website admin page's key (docs/WEBSITE-ADMIN-DESIGN.md), made by the
+  owner with the Licence Manager's tools/make_web_key.py.
+- **The shell's own licence list** (`LICENCE_KEYS` in
+  runtime/begia_shell/trust.py, on your local branch `licence/phone` - not
+  on origin, so not touched from here) needs the same line, and its test
+  `test_the_licence_key_is_the_managers` the second entry, when that branch
+  goes in; then an APK. Until then a phone's payload accepts a web-signed
+  licence and the shell's own check does not.
+
 ## 2026-10-22 — the I/O check holds "nothing found" until the DB could answer (shared `app/` + `ui/`; install with the next payload)
 
 - app/iocheck/correlation.py `correlate(..., now_ms=None, gap_ms=0)`: with
