@@ -20,6 +20,38 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-22 — the guide (shared `ui/`; install with the next payload)
+
+- js/268-guide.js (new, before 270-boot) + css/145-guide.css (after
+  140-late; boot.html links it too): `startGuide()` from Options' new
+  first card `#ov-help` / `#btn-guide`. `GUIDE_STEPS` [{sel, go, title,
+  text, look}] - `go` is `guideTo(mod, tab)` (setModule + showTab);
+  `guideSpot(rect, cw, ch, vw, vh)` places the card and the arrow (pure).
+  While it is up it takes the document's click/dblclick/keydown in the
+  capture phase: a `look` step's function is not pressed, the one-key
+  shortcuts wait (Space), Escape ends it; it hides while `modal-open`,
+  `pn-open`, the picker, a dialog, the report or a body-level menu is up.
+  On the phone its targets are the bottom tabs (`.mod[data-mod=…]`).
+
+## 2026-10-22 — a PC's code with its board; the internet's date (shared `app/`; install with the next payload)
+
+- app/access/licence.py: a PC's identity is `win:<guid>|board:<SMBIOS UUID>`
+  (`board_uuid()` reads GetSystemFirmwareTable 'RSMB'; `board_from_smbios`
+  parses it; placeholders give ""). `identities()`, `machine_codes()` (the
+  shown code first, then the MachineGuid's alone), `ledger_code(path)` (the
+  code the installed licence names, else the first). `verify()` and
+  `pick_from_pack()` take one code or a list; `status()` takes `codes` and
+  adds `codes` and `ledger` to its dict. **On a phone nothing changes**: an
+  `and:` identity is one code, as before.
+- app/access/usage.py: the ledger is filed under `status["ledger"]`; the
+  internet's date is asked (`_maybe_net`, a HEAD to config.BACKEND, its Date
+  header, through `_tls()` - on a phone the Android roots) at the start and
+  every 6 h, raising `clock_max`; BEGIA_USAGE_SEND=off and config
+  `licence.net_date` false switch it off. routes/access.py installs a
+  licence naming any of the codes and picks up online by each in turn.
+- Nothing for the shell: its own `code_of` on the phone's id is unchanged,
+  and the vectors are the same.
+
 ## 2026-10-21 — a list of names added at once, as a TIA tag table (shared `app/` + `ui/`; install with the next payload)
 
 - `POST /api/signals/by-names {names: [..], group, pane_name, rate_ms, anyway}`
