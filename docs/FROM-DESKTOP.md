@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-22 — the I/O check holds "nothing found" until the DB could answer (shared `app/` + `ui/`; install with the next payload)
+
+- app/iocheck/correlation.py `correlate(..., now_ms=None, gap_ms=0)`: with
+  `now_ms`, an input that would be not mapped / too short / partial / too
+  slow while its latest edge + its window's end + `gap_ms` (the members'
+  read period) is still ahead stays `{"state": "searching", "to": [],
+  "settling": true, "settle_until": ms}`. check.py passes `now_ms` and the
+  search's `every_now`/`every_ms`, and correlates again at the earliest
+  `settle_until` though nothing moves (`_settle_at`).
+- js/280 `iocStripShort(st, short, settling)`, `iocState(...)` carries
+  `settling`; js/284 says "waiting for the DB" (arrow, list, strip) and
+  "Updates in place in a moment" for a settling input - the phone shows
+  the same words.
+
 ## 2026-10-22 — the guide (shared `ui/`; install with the next payload)
 
 - js/268-guide.js (new, before 270-boot) + css/145-guide.css (after
