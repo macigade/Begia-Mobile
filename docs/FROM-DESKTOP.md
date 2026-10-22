@@ -32,7 +32,8 @@ as the change. Entries say what to *do*, not just what happened.
 - js/280 `iocStripShort(st, short, settling)`, `iocState(...)` carries
   `settling`; js/284 says "waiting for the DB" (arrow, list, strip) and
   "Updates in place in a moment" for a settling input - the phone shows
-  the same words.
+  the same words. `iocStrip` and `iocPopFound` too: "both edges seen -
+  reading the DB members, one moment", and no "release it" asked.
 
 ## 2026-10-22 — the guide (shared `ui/`; install with the next payload)
 
