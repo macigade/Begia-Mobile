@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-23 — the rail is a PC's default; the layout choice has a key of its own (shared `ui/`; install with the next payload)
+
+- js/100: a layout chosen in Options is kept as localStorage `layout_choice`
+  (`applyLayout(l, true)` from js/110); the start no longer writes `layout`.
+  None chosen: `defaultLayout()` - the rail where `deviceKind()` is
+  "desktop", the tabs on a phone or a tablet, so nothing changes on yours.
+  An old `layout` of "rail" counts as chosen (the default was "classic", and
+  every start wrote it, so "classic" there says nothing).
+- Options names the device's own: "Rail — down the side (default)" on a PC,
+  "Bottom tabs (default)" on a phone or a tablet.
+- The ruler (js/015 `rulerLabels(splits, incr, phone, at)`, `at.x(i)` /
+  `at.w(text)` in canvas pixels; `rulerTop` / `rulerUnder`): the whole date
+  also moves to the next tick when it would run into that tick's clock.
+
 ## 2026-10-23 — the time and the date as chosen in Options (shared `ui/`; install with the next payload)
 
 - New js/015-timefmt.js, loaded right after js/010: `clockText(t, {ms,
