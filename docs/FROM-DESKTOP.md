@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-23 — the time and the date as chosen in Options (shared `ui/`; install with the next payload)
+
+- New js/015-timefmt.js, loaded right after js/010: `clockText(t, {ms,
+  secs, fmt})`, `dayText(t, fmt)`, `dayClockText`, `stampText(iso)`,
+  `monthDayText`, the ruler's `rulerLabels` / `rulerValues(phone)`, and
+  `setTimeFormats(time, date)`. The choice is per browser, localStorage
+  `time_fmt` ("24" | "12") and `date_fmt` ("iso" | "dmy" | "mdy" | "dot");
+  nothing new on the server.
+- Options > Display has `#time-fmt-sel` and `#date-fmt-sel` after the text
+  size. Every `toLocaleTimeString` / `toLocaleDateString` on the page is
+  gone: `fmtT`, `iocHms`, `dbvClock`, `iopWhen`, the readings' "since", the
+  share "until", the trial line and the overlay list say it through them.
+- The ruler's ticks (js/180 `buildRuler`): `rulerValues(isPhone())` in
+  place of `PHONE_TIME_STAMPS` (removed). A phone keeps what that table
+  did - the clock only under its seconds, the day without its year - and
+  the whole date under the first tick now goes under the first tick it
+  fits under instead of losing its first characters at the left end.
+- js/170 `clockTicks` says its hours as chosen; `clockSpace()` spaces a
+  12-hour axis wider (js/180, js/185).
+
 ## 2026-10-23 — a folded chart maximized shows its plot (shared `ui/`; install with the next payload)
 
 - js/180 `isFolded(paneNo)` is false for `maximizedPane` (the redraw, the
