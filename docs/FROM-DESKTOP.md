@@ -20,6 +20,13 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-23 — a folded chart maximized shows its plot (shared `ui/`; install with the next payload)
+
+- js/180 `isFolded(paneNo)` is false for `maximizedPane` (the redraw, the
+  build and the sizing all read it); `foldKept(paneNo)` is the fold as
+  saved, which js/055's pane menu offers to undo. The phone's landscape
+  auto-maximize shows a folded first chart too.
+
 ## 2026-10-23 — live charts: thinned to the pane's pixels, not drawn while hidden (shared `ui/`; install with the next payload)
 
 - js/190 `thinForPixels(t, v, a, b, cols)`: each pixel column's lowest and
