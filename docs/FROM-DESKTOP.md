@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-23 — live charts: thinned to the pane's pixels, not drawn while hidden (shared `ui/`; install with the next payload)
+
+- js/190 `thinForPixels(t, v, a, b, cols)`: each pixel column's lowest and
+  highest, in order, the ends kept, a null kept. `displaySeries(sig, now,
+  lo, hi, cols)` / `liveSeries(..., cols)` thin when the window holds more
+  than 2*cols+2 points (no `cols`: as before - Analyse); `holdAcrossGaps`
+  then only across two columns or more. `redraw()` passes `cols` =
+  max(200, pane width).
+- `chartsShown()` (#chart-scroll not hidden): `redraw()` and the smooth
+  slide skip the charts while a page is over them; js/266 `livePage("graph")`
+  calls `redrawSoon()`. `redrawSoon` waits max(80 ms, 3 x the last
+  redraw's cost).
+- Why: Chrome closed the laptop's page, out of memory, with 80 signals at
+  10 ms on a 10-minute window. A phone with many fast signals is helped the
+  same way.
+
 ## 2026-10-22 — the website's licence key is trusted (shared `app/`; install with the next payload; the shell's own list is yours)
 
 - app/access/licence.py `LICENCE_KEYS` gains `"1da9b85ebee83fdf":
