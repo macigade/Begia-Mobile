@@ -52,6 +52,19 @@ as the change. Entries say what to *do*, not just what happened.
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
 
+## 2026-10-24 — the PC's exe is windowed, with a tray icon (shared `app/`; nothing for the phone to do)
+
+- New app/tray.py (win32 only; serve.run starts it only on win32 with a
+  window wanted) and app/winconsole.py `capture_output()` / `LogWriter`:
+  where sys.stdout/stderr are None (the windowed exe) every print becomes a
+  log record, and app/state.py then gives the root a NullHandler instead of
+  a stream handler (the file handler is added as before). On the phone
+  stdout is not None, so nothing changes: `output_captured()` is False and
+  basicConfig is as it was. app/serve.py `_serve` now builds a
+  uvicorn.Server for the HTTP listener too (no `uvicorn.run`) and exposes
+  `request_stop()`; a shell that calls `serve.run()` sees the same two
+  listeners as before.
+
 ## 2026-10-24 — the init frame names its build; a page on another build reloads (shared `ui/` and `app/`; install with the next payload)
 
 - routes/ws.py: the init frame carries `"build": version.build()`. js/020
