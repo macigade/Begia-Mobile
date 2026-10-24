@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — text contrast 4.5:1 in every classic theme (shared `ui/`; install with the next payload)
+
+- Tokens:
+  - `--muted3` raised to 4.5:1 on `--bg`, `--panel` and `--panel2` in
+    `:root` (010), victus, blueprint, amber, daylight (110), carbon (100)
+    and hmi (090).
+  - `--rec` a shade lighter in `:root`, victus and amber (4.5:1 as text on
+    `--panel2`).
+  - `--accent-dim` a shade darker in `:root` and victus (the accent reads
+    4.5:1 on it).
+  - hmi: `--muted`, `--accent` and `--warn` a shade darker.
+- Rules:
+  - The red behind white text (`.tb-rec`, `.rec-err`, `.btn.rec.active`) is
+    `color-mix(in srgb, var(--rec) 70%, #000)`.
+  - `#rail .mod.active` text is `color-mix(in srgb, var(--accent) 50%,
+    var(--ink))`.
+  - On tinted surfaces (`#sig-table tr.selected`, `tr.sig-branch.selected`,
+    `.viewer-bar`) `--muted` and `--muted3` are redefined as the ink a step
+    back (80% / 72% ink over `--panel`).
+  - `.card h2` has no letter-spacing.
+  - `.chip`, `.pane-live`, `.cv-head` and `.rec-err` say
+    `text-transform: uppercase` (their text already was).
+- What to do: nothing. A shell that copied any of these colours into its own
+  CSS should take the new values.
+
 ## 2026-10-25 — who else on this PLC tracks what; the I/O check asks before adding what another tracks (server + shared `ui/`; install with the next payload)
 
 - **The "BEGIA?" answer** (UDP 4858, routes/hosting.py) gains `id` (random
