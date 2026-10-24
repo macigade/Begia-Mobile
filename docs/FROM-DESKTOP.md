@@ -52,6 +52,31 @@ as the change. Entries say what to *do*, not just what happened.
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
 
+## 2026-10-24 — a third layout, Engineering, and the themes eng-light / eng-dark / "system" (shared `ui/`; install with the next payload)
+
+- js/100: `THEMES` gains `"eng-light"` and `"eng-dark"` (THEME_META too);
+  boot.html's `var THEMES` list has the same two, as test_theme_ids.js
+  demands. `"system"` is a CHOICE, not a theme: `applyTheme("system")`
+  saves `theme=system` and sets data-theme to eng-light or eng-dark by
+  `prefers-color-scheme` (`resolveTheme`, `systemDark`), following a change
+  live. `noteLook` hands the shell the theme WORN (`data-theme`), never
+  "system", so the boot page needs nothing new beyond the two ids.
+- js/100: the layout "engineering" (`applyLayout`, `wantedLayout`,
+  `engineeringFits` = desktop and the rail fits). It is never chosen on a
+  phone or a tablet (the Options row hides the option off a desktop,
+  js/110), and `wantedLayout` falls back to classic where it does not fit,
+  so nothing changes on yours. `placeNav` moves #chip-conn, #chip-acq,
+  #rec-indicator, #armed-chip, #time-controls and #trial-controls into the
+  command bar's slots in that layout and back into #topbar in their old
+  order otherwise - the same elements, as the rail's trial bar does.
+- New js/105-engineering.js (after js/100): the status bar's words
+  (`engStatusWords`, pure) painted once a second while the layout is on;
+  new css/115-engineering.css after 110-themes (also linked in boot.html);
+  index.html gains #eng-menubar, #eng-cmdbar (slots #eng-slot-acq/-trial/
+  -rec/-time), the sidebar's `.eng-ph` header and #eng-statusbar, all
+  `.eng-only` (hidden except in that layout). js/010 `palette()` goes by the
+  theme worn: eng-light is a light ground (COLORS_HMI), eng-dark a dark one.
+
 ## 2026-10-24 — the PC's exe is windowed, with a tray icon (shared `app/`; nothing for the phone to do)
 
 - New app/tray.py (win32 only; serve.run starts it only on win32 with a
