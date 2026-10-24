@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-24 — the init frame names its build; a page on another build reloads (shared `ui/` and `app/`; install with the next payload)
+
+- routes/ws.py: the init frame carries `"build": version.build()`. js/020
+  `buildChanged(build)` keeps the first init frame's build as the page's
+  own and, on an init frame from another build, `location.reload()`s before
+  anything of the frame is taken. A frame without `build` (an older
+  server) changes nothing.
+- Why: on a PC BEGIA now opens in a window of its own (new app/window.py:
+  Edge or Chrome in app mode; a second start brings it to the front; an
+  update's restart leaves it there) and the page in that window reconnects
+  to the new build. On a phone the same page reconnecting to its own BEGIA
+  after a payload install reloads onto the new scripts the same way; a
+  phone's page open on a laptop reloads when the laptop updates. Nothing
+  for the shell to do. app/window.py is a no-op off Windows (`find_window`
+  0, `app_path` None); nothing in it is reached on Android.
+
 ## 2026-10-23 — the rail is a PC's default; the layout choice has a key of its own (shared `ui/`; install with the next payload)
 
 - js/100: a layout chosen in Options is kept as localStorage `layout_choice`
