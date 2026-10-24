@@ -62,6 +62,10 @@ def api(port: int, path: str, body: dict | None = None, method: str | None = Non
         return r.status, (json.loads(raw) if raw[:1] in (b"{", b"[") else raw)
 
 
+class Fatal(Exception):
+    """Raised by a wait_for probe when waiting longer cannot help."""
+
+
 def wait_for(what: str, fn, timeout: float, every: float = 0.5):
     deadline = time.monotonic() + timeout
     last = None
@@ -70,6 +74,8 @@ def wait_for(what: str, fn, timeout: float, every: float = 0.5):
             v = fn()
             if v:
                 return v
+        except Fatal:
+            raise
         except Exception as e:
             last = e
         time.sleep(every)
@@ -125,16 +131,27 @@ def run(payload: Path, port: int, keep: bool) -> int:
         # /api/state says only "recording or not" by design (the driver's state
         # travels over the WebSocket), so readiness is "search answers": it
         # refuses with 409 until the driver is connected and has its index
-        # OPC UA reports changes only, so the probe signal must move: the
-        # simulator's line pressure carries noise on every 100 ms tick, while a
-        # PID loop's PV sits flat through the 20 s wait step (seen: 1 sample)
-        q = "Presion_Linea"
-        hits = wait_for(f"search results for {q} (the driver connected and indexed)",
-                        lambda: _hits(api(port, f"/api/search?q={q}&limit=50")[1]), 60, every=2)
-        c.ok(f"connected to the built-in simulator at {r.get('endpoint')}, {len(hits)} hits for {q}")
-        hit = next(h for h in hits if h.get("is_var") and h["node_id"].endswith('"Presion_Linea_bar"'))
+        # OPC UA reports changes only, so the probe signal must move: in the
+        # generic plant (app/sim/plant.py, the simulator since desktop
+        # c93a228) an axis' chamber pressure carries noise on every 100 ms
+        # tick, while a PID loop's PV sits flat through a wait step (seen: 1
+        # sample) - and it is not in the simulator's starting list, which a
+        # second add would answer with 409. Once indexed the search answers
+        # 200; without the signal that is final, so it fails at once rather
+        # than waiting out the minute.
+        q, want = "Press_A_bar", '"DB_Axis_1"."Press_A_bar"'
+
+        def probe():
+            hits = _hits(api(port, f"/api/search?q={q}&limit=50")[1]) or []
+            hit = next((h for h in hits if h.get("is_var") and h["node_id"].endswith(want)), None)
+            if hit is None:
+                raise Fatal(f"the search for {q} answered with {len(hits)} hits and no {want} - "
+                            "a payload from before the generic plant (desktop c93a228) has none")
+            return hit
+        hit = wait_for(f"search results for {q} (the driver connected and indexed)", probe, 60, every=2)
+        c.ok(f"connected to the built-in simulator at {r.get('endpoint')}, found {want}")
         status, sig = api(port, "/api/signals",
-                          {"node_id": hit["node_id"], "name": "Presion_Linea_bar",
+                          {"node_id": hit["node_id"], "name": "DB_Axis_1.Press_A_bar",
                            "path": hit.get("path", ""), "unit": "bar", "rate_ms": 100})
         assert status == 200, sig
         c.ok(f"added a signal over OPC UA: {hit['node_id']}")
