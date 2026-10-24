@@ -76,6 +76,12 @@ as the change. Entries say what to *do*, not just what happened.
   -rec/-time), the sidebar's `.eng-ph` header and #eng-statusbar, all
   `.eng-only` (hidden except in that layout). js/010 `palette()` goes by the
   theme worn: eng-light is a light ground (COLORS_HMI), eng-dark a dark one.
+- Phase 2 (same day): `#eng-cards` after `<main>` in #layout - the task
+  cards Trial / Chart / Info with vertical tabs (js/105 `engCardShow`,
+  `paintEngCards`; localStorage `eng_card`). In the engineering layout
+  placeNav moves every `.card[data-group="record"]` into `#eng-slot-record`
+  and back into #sidebar before the first `.card[data-mod="review"]`
+  otherwise; `.tab[data-tab="record"]` is hidden there. Nothing on a phone.
 
 ## 2026-10-24 — the PC's exe is windowed, with a tray icon (shared `app/`; nothing for the phone to do)
 
