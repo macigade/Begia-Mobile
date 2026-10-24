@@ -82,6 +82,13 @@ as the change. Entries say what to *do*, not just what happened.
   placeNav moves every `.card[data-group="record"]` into `#eng-slot-record`
   and back into #sidebar before the first `.card[data-mod="review"]`
   otherwise; `.tab[data-tab="record"]` is hidden there. Nothing on a phone.
+- The signal table: `#eng-table` (`.eng-only`) after `#time-ruler` in
+  `<main>`; js/105 `engTableRows` / `engTableSig` (pure), `buildEngTable`
+  on a change of the signal list, `paintEngTable` on the tick reading the
+  live `store` through `readingText`; hidden when `chartsShown()` is false
+  or there are no signals. Reads `signals`, `store`, `status`,
+  `touchedPane`, `paneLabel`, `colorOf`, `addressOf`, `touchPane` - all
+  guarded with typeof. Nothing on a phone.
 
 ## 2026-10-24 — the PC's exe is windowed, with a tray icon (shared `app/`; nothing for the phone to do)
 
