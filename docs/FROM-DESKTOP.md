@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — a side panel's width is its stylesheet's until it is dragged (shared `ui/`; install with the next payload)
+
+- js/200-side-panels.js `makeResizable`: with no stored width (`sidebar_w`,
+  `palette_w`), the panel gets no inline width, so its CSS sizes it.
+  `#sidebar` (320 px) and `.an-palette` (210 px) carry the same defaults, at
+  the text size, so nothing looks different. A layout can now set its own
+  width, as the engineering frame will. A dragged width is drawn inline as
+  before. The drawer's `--drawer-w` (a `put()` sizing) is set at boot as
+  before.
+- What to do: nothing. A shell that styled the sidebar's width in its own CSS
+  now sees that width until the panel is dragged.
+
 ## 2026-10-25 — a phone's chart headers: the readings on a line of their own (shared `ui/`; install with the next payload)
 
 - css/120-phone.css: in `data-layout="phone"`, `.pane-head` is a size
