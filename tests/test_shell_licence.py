@@ -47,7 +47,9 @@ def test_the_vector_key_is_not_trusted():
 
 def test_the_licence_key_is_the_managers():
     assert trust.LICENCE_KEYS == {
-        "43fb53eea16a0945": "f470837787fcc13c49b72888ee2a921ca82e24f64ceede67112f1dfb80555124"}
+        "43fb53eea16a0945": "f470837787fcc13c49b72888ee2a921ca82e24f64ceede67112f1dfb80555124",
+        # the website admin page's (IBA-CODE app/access/licence.py, 0995194)
+        "1da9b85ebee83fdf": "6602191c1d0d46d57f1c79c0da75a5771167e1823b6387fb82dbcb25dde78727"}
     # a key id is the first 16 hex digits of the public key's sha256
     for kid, pub in trust.LICENCE_KEYS.items():
         assert hashlib.sha256(bytes.fromhex(pub)).hexdigest()[:16] == kid

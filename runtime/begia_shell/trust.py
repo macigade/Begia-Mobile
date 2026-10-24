@@ -21,6 +21,11 @@ a key not listed here is reported as untrusted whatever the policy.
 # (4bb7ca0e479043a8) is never listed - tests/test_shell_licence.py checks.
 LICENCE_KEYS = {
     "43fb53eea16a0945": "f470837787fcc13c49b72888ee2a921ca82e24f64ceede67112f1dfb80555124",
+    # the website admin page's own key (IBA-CODE docs/WEBSITE-ADMIN-DESIGN.md),
+    # made by the owner with the Licence Manager's tools/make_web_key.py on
+    # 2026-10-22, its private half only on the licence server; the desktop
+    # has trusted it since IBA-CODE 0995194 (app/access/licence.py)
+    "1da9b85ebee83fdf": "6602191c1d0d46d57f1c79c0da75a5771167e1823b6387fb82dbcb25dde78727",
 }
 
 TRUSTED_KEYS = {
