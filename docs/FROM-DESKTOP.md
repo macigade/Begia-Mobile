@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — a phone's chart headers: the readings on a line of their own (shared `ui/`; install with the next payload)
+
+- css/120-phone.css: in `data-layout="phone"`, `.pane-head` is a size
+  container (`container: pane-head / inline-size`) and wraps
+  (`flex-wrap: wrap`). At 480 px or less, a strip with two or more
+  readouts (`.ph-sigs:has(.ph-sig + .ph-sig)`) takes a row of its own
+  (`order: 1; flex: 1 1 100%`), and its readouts go two to a row at 140 px or
+  more each. At 360 px or less, a single readout does too. `.stats` gets
+  `order: 2`, so it stays under the readouts.
+- Found by BEGIA-Website on a 412 demo copy: rail on, 393 px, 115% text. The
+  fold caret, the number, the count and the tools left the readouts 39 px of
+  a 295 px header.
+- js/175-timelink.js `paintRulerOwner`: on a phone (`isPhone()`) the ruler's
+  gutter label is the chart's number alone ("#1"); the full title stays in
+  `title`.
+- What to do: nothing in the shell. Check a two-signal chart upright with the
+  rail on (Options > Layout > Rail) and sideways.
+
 ## 2026-10-24 — the trial backup: each trial copied to a stick or a share (shared `ui/` and `app/`; install with the next payload)
 
 - New app/recording/backup.py and app/routes/backup.py: `GET /api/backup`
