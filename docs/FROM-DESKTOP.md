@@ -196,7 +196,12 @@ as the change. Entries say what to *do*, not just what happened.
   live `store` through `readingText`; hidden when `chartsShown()` is false
   or there are no signals. Reads `signals`, `store`, `status`,
   `touchedPane`, `paneLabel`, `colorOf`, `addressOf`, `touchPane` - all
-  guarded with typeof. Nothing on a phone. 2026-10-25: shown only with
+  guarded with typeof. Nothing on a phone. 2026-10-25: the menu bar -
+  `#eng-menus` inside `#eng-menubar`, built by js/105 `buildEngMenus()` from
+  `engMenuSpec()` (every entry calls setModule / setSuite / livePage /
+  openPicker / startGuide / applyLayout / applyTheme / applyScale or clicks
+  btn-trial, btn-mark, btn-arm); placeNav now `prepend`s the brand and
+  `append`s the modules in that row. Nothing on a phone. Shown only with
   `data-mod="monitor"` and `viewMode !== "trial"`; `.eng-table-wrap` is a
   size container (Address/Type hidden under 760 px of its own width).
 
