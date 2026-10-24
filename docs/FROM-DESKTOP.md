@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — the fourteen forwarding modules are gone from `app/` (payload; install with the next payload)
+
+- Deleted: `app/auth.py`, `discover.py`, `driver.py`, `ibadat.py`, `iocorr.py`,
+  `licence.py`, `pathcheck.py`, `recorder.py`, `s7plus.py`, `simulator.py`, `tls.py`,
+  `trigger.py`, `udp.py`, `watch.py`. They held no code, only forwarded to
+  `app/access/`, `net/`, `drivers/`, `recording/`, `sim/` and
+  `iocheck/correlation.py`, where everything has lived since 2026-10-03. The
+  payload has 14 fewer modules; nothing else changes. `app.main` is still
+  the entry, with every `main.X` name it had.
+- What to do: only if the shell imports one of those names itself
+  (`app.recorder`, `app.licence`, ...): import the package module instead,
+  e.g. `app.access.licence`, `app.recording.store`. BEGIA-Master runs
+  BEGIA-Android's boot_test on a payload from this branch before the merge.
+
 ## 2026-10-25 — Add signals asks first when another BEGIA on this PLC tracks some (server + shared `ui/`; install with the next payload)
 
 - `POST /api/signals/bulk` (`BulkAddBody`) takes `overlap` and `leave`:
@@ -178,6 +192,21 @@ as the change. Entries say what to *do*, not just what happened.
 - Free, the ruler and the scrub bar act on the chart last touched; the
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
+
+## 2026-10-25 — the page's title carries its port off 8080; BEGIA_PORT (shared `ui/` and `app/`; install with the next payload)
+
+- js/105-engineering.js, at load: `document.title += " (<port>)"` when
+  `location.port` is set and not "8080". A PC's second BEGIA (a test copy)
+  finds and fronts its own window by that title (app/window.py
+  `page_title(port)`, `find_window(port)`). On the phone a WebView shows no
+  title, so nothing is seen; if the shell serves on a port other than 8080
+  the title string changes all the same - tell me if anything of yours
+  reads `document.title`.
+- app/state.py: `PORT = int(os.environ.get("BEGIA_PORT") or 8080)`; a shell
+  that sets its own port by assigning `main.PORT` is unaffected (the
+  variable is read at import, the assignment after).
+- app/window.py `brand_window` (the taskbar identity through the window's
+  property store) runs only in a frozen exe on win32: nothing on Android.
 
 ## 2026-10-24 — a third layout, Engineering, and the themes eng-light / eng-dark / "system" (shared `ui/`; install with the next payload)
 
