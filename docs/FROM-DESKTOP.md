@@ -20,6 +20,39 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — who else on this PLC tracks what; the I/O check asks before adding what another tracks (server + shared `ui/`; install with the next payload)
+
+- **The "BEGIA?" answer** (UDP 4858, routes/hosting.py) gains `id` (random
+  per run of BEGIA) and `plc` (a list of 12-hex fingerprints: the PLC this
+  copy is on, `[]` while disconnected). The shell's "find laptop" must keep
+  ignoring fields it does not know - check that its parser is not strict.
+- **`GET /api/tracking`** - open to the network (access/auth.py OPEN), like
+  the answer: `{begia: 1, id, name, device, plc, iocheck: [fp], analyzer:
+  [fp]}`. No names, no values. The phone's own BEGIA serves it once its
+  payload has the route, and is then found by the laptops on its PLC.
+- **`GET /api/tracking/others`** (signed in, the page's): `{on_plc, others:
+  [{name, device, iocheck, analyzer}], iocheck: {node_id: [by]}, analyzer:
+  {node_id: [by]}}`; `?fresh=1` looks again now, else at most every 45 s.
+- **`POST /api/iocheck/inputs`** takes `overlap` (`"ask"` | `"keep"`, the
+  default - an older page never asks) and `leave` (node ids). With `"ask"`
+  and another BEGIA on this PLC tracking some: 409 `{detail, overlap:
+  [{node_id, name, by: [{name, device, where: "iocheck" | "analyzer"}]}],
+  total}`, before anything is read or added. js/287 `ioiCommit` sends
+  `"ask"`, and on that 409 `ioiAskOverlap` opens `ask()` with `checks` -
+  ticked where `where` is "iocheck" - then sends again with `overlap:
+  "keep"` and `leave`. Cancel adds nothing. Words in js/280 `ioiOverlap*`.
+- js/288: `#ioi-others` (a `.ioi-note` over `#ioi-list`) names the others
+  on this PLC (`ioiOthersText`); a row another tracks has *also on X*
+  beside *in the running check* (`ioiAlsoOn`). Fetched when the tab opens
+  and when the rows change, 400 ms after the last.
+- The I/O project's PLC meeting point (`.iop-plc`) stays hidden unless
+  `#iop-plc-show` - a tick in the open project's Members menu, localStorage
+  `iop_plc_show` "1" - is on, or the project shares through a PLC
+  (js/289 `iopPlcShown`, `iopPaintPlc`). Nothing to do on the phone.
+- On a phone connected to a laptop's simulator: the laptop's PLC is its own
+  addresses on the network, the phone's the laptop's address - they match,
+  so the two warn each other. Different simulators never do.
+
 ## 2026-10-25 — a side panel's width is its stylesheet's until it is dragged (shared `ui/`; install with the next payload)
 
 - js/200-side-panels.js `makeResizable`: with no stored width (`sidebar_w`,
