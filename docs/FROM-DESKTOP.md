@@ -108,7 +108,9 @@ as the change. Entries say what to *do*, not just what happened.
   live `store` through `readingText`; hidden when `chartsShown()` is false
   or there are no signals. Reads `signals`, `store`, `status`,
   `touchedPane`, `paneLabel`, `colorOf`, `addressOf`, `touchPane` - all
-  guarded with typeof. Nothing on a phone.
+  guarded with typeof. Nothing on a phone. 2026-10-25: shown only with
+  `data-mod="monitor"` and `viewMode !== "trial"`; `.eng-table-wrap` is a
+  size container (Address/Type hidden under 760 px of its own width).
 
 ## 2026-10-24 — the PC's exe is windowed, with a tray icon (shared `app/`; nothing for the phone to do)
 
