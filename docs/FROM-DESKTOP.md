@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-24 — the trial backup: each trial copied to a stick or a share (shared `ui/` and `app/`; install with the next payload)
+
+- New app/recording/backup.py and app/routes/backup.py: `GET /api/backup`
+  (`supported` = not on Android, `here` = loopback, the folder, whether it
+  can be reached, `copied` {file: {folder: {to, at, seal}}}, `waiting`,
+  `last`, `busy`); `PUT /api/backup` {folder, after_stop}, `POST
+  /api/backup/check`, `GET /api/backup/drives` - all three loopback only
+  (403 elsewhere); `POST /api/trials/backup` {files, folder?} - another
+  folder than the one chosen only from loopback. cfg gains `backup`
+  {folder: "", after_stop: true}; backup.json beside config.json.
+- After a stop (push.py `_after_stop`, after the auto-export) a new frame
+  `{"type": "backup", "results": [...], "waiting": [...], "why", "folder"}`;
+  the push tick retries waiting trials every 20 s. On the phone nothing is
+  configured, so nothing is copied or sent.
+- New js/262-backup.js after js/260: `#backup-row` on the Trials card and
+  `#trial-selcopy` on the selection bar, hidden where `supported` is false
+  (the phone's own server); a "Copy to…" item in a trial's menu (disabled
+  there); `.tcopied` marks; js/020 dispatches the frame to `backupFrame`.
+- A guide step, "Backup" (#backup-row), after "Find a trial".
+
 ## 2026-10-24 — each Live chart its own time, and a Joined/Free switch (shared `ui/`; install with the next payload)
 
 - New js/175-timelink.js, between js/170 and js/180 (docs/PANE-X-AXIS-SPEC.md).
