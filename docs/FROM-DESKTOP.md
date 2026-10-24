@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — Add signals asks first when another BEGIA on this PLC tracks some (server + shared `ui/`; install with the next payload)
+
+- `POST /api/signals/bulk` (`BulkAddBody`) takes `overlap` and `leave`:
+  - `overlap` is `"keep"` by default: never asked, so an older page and the
+    phone's are unchanged. `"ask"` gets a 409 first when another BEGIA on
+    this PLC tracks some of the items.
+  - `leave` is the node ids to leave out. Each one is listed in `skipped`
+    with "left out - another BEGIA on this PLC tracks it".
+  - The 409 is the I/O check's shape (routes/tracking.py `question`):
+    `{detail, overlap: [{node_id, name, by: [{name, device, where}]}], total}`.
+  - It comes after the too-many 422 (`anyway`), and before any node is read.
+- js/040 `bulkAdd` sends `overlap: "ask"`. On the 409 it asks
+  (`pkAskOverlap`): ticked, to leave out, where `where === "analyzer"`;
+  unticked where only an I/O check has it. Then it sends again with `"keep"`,
+  `leave` and whatever `anyway` it had. Cancel sends nothing.
+  `ioiOverlapLabel` (js/280) names each row.
+- What to do: nothing, once the payload is in. The phone's Add signals asks
+  too, and its answer goes back with `leave`.
+
 ## 2026-10-25 — text contrast 4.5:1 in every classic theme (shared `ui/`; install with the next payload)
 
 - Tokens:
