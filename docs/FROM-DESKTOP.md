@@ -20,6 +20,38 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-24 — each Live chart its own time, and a Joined/Free switch (shared `ui/`; install with the next payload)
+
+- New js/175-timelink.js, between js/170 and js/180 (docs/PANE-X-AXIS-SPEC.md).
+  `timeJoined` from localStorage `panes_time_joined` ("1" joined, "0" or
+  missing free); root `data-time="free" | "joined"`. Free: a gesture in a
+  chart moves that chart (`xTargets(paneNo)`), and the Strings strip with
+  it when it is the chart last touched (`touchedPane`, `activeChart()`,
+  `stripFollow()`); joined: every chart. The gestures go through
+  `paneZoomX`, `paneHoldX`, `paneWholeHistory`, `paneLiveToggle` /
+  `paneLiveSet`, `paneShowLast`; `setTimeJoined(true)` puts every chart on
+  the chart last touched's window (`joinCharts`).
+- uPlot cursor sync of key "trend" has `filters: { pub: syncPub }`: the
+  pointer always, a drag-zoom's mousedown/mouseup only while joined. The
+  chart a drag was made in is the one with an anchor (js/170 `dragAnchorT`);
+  `holdForDrag` / `releaseDrag` carry `dragGen`, so a release a frame late
+  no longer clears the next drag's anchor.
+- js/170 `setPaneLive(paneNo, on, batch)`: `batch` skips the redraw
+  (`setPanesLive` draws once). The window choice (js/190) now sets every
+  chart following live.
+- `#btn-timelink` in `#time-controls` after `#window-sel`, Live only
+  (setModule hides it elsewhere). On a phone: the link icon alone, 40x40;
+  under 28em of the bar (Live) the bar tightens - gaps 4px, the spacer
+  gone, the switch 34px wide, fit and LIVE a little narrower - and under
+  21.5em the window says "1m". Measured with no overflow at 360/375/384/390/412
+  and 100/115/130% text.
+- Phone: a free chart's window text in its header (`.pane-win`) is not
+  shown (the readings need the width); in free mode the Strings chart's own
+  LIVE is not shown (the chart it follows has one).
+- Free, the ruler and the scrub bar act on the chart last touched; the
+  ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
+  phone with the new payload starts Free.
+
 ## 2026-10-24 — the init frame names its build; a page on another build reloads (shared `ui/` and `app/`; install with the next payload)
 
 - routes/ws.py: the init frame carries `"build": version.build()`. js/020
