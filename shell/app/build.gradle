@@ -96,8 +96,11 @@ dependencies {
     implementation "androidx.credentials:credentials:1.3.0"
     implementation "androidx.credentials:credentials-play-services-auth:1.3.0"
     implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
-    // JVM unit tests (app/src/test): the device code against the manager's
+    // JVM unit tests (app/src/test): the device code against the manager's,
+    // and a laptop's discovery answer read as Discovery reads it - with the
+    // real org.json, as android.jar's is only stubs off a device
     testImplementation "junit:junit:4.13.2"
+    testImplementation "org.json:json:20160810"
 }
 
 // The embedded payload goes into the APK's assets from wherever the payload
