@@ -193,6 +193,16 @@ as the change. Entries say what to *do*, not just what happened.
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
 
+## 2026-10-25 — app/serve.py: a time limit on the servers' shutdown; a Quit watchdog (shared `app/`; nothing for the phone to do)
+
+- Both uvicorn.Config get `timeout_graceful_shutdown=GRACEFUL_S` (5 s):
+  connections still open 5 s into a stop are cancelled and the ASGI
+  lifespan runs. A shell that calls serve.run() stops at most 5 s later
+  than before when a client hangs, and never hangs on one.
+- `request_stop()` (the PC's tray Quit only) arms a daemon watchdog that
+  ends the process 30 s after (120 s while a trial is being closed). Not
+  reached on Android unless the shell calls request_stop.
+
 ## 2026-10-25 — routes/ws.py notes a loopback socket before the door (shared `app/`; nothing for the phone to do)
 
 - `S.loopback_seen_ms` (app/state.py) is set in the socket route for a
