@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-25 — Live's hover box: off the plot, one signal, a tap for all (shared `ui/`; install with the next payload)
+
+- js/170 `tooltipPlugin({outside: true})`, used by Live's panes (js/180) and
+  Live's Strings chart (js/185 `stepsTooltip(..., true)`). The trial and
+  Analyse charts keep the old box.
+  - The box is a `position: fixed` child of `<body>` (`.u-tt.u-tt-out`).
+  - `tipPlace` puts it beside, above or below the plot, inside
+    `#chart-scroll`. On the plot only when nothing else fits, on the side
+    away from the pointer.
+  - `tipRows` shows the one signal under the pointer: the nearest trace, or
+    the lane at its height in the Strings chart.
+- On a touch screen (`isPhone()`, or `data-device="tablet"`):
+  - Only the chart a finger went down on shows a box (`ttTouched`, set on
+    pointerdown). The box stays 4 s after the finger lifts.
+  - A tap on it shows every signal, in a list that scrolls (`max-height:
+    min(60vh, 420px)`). A tap elsewhere closes it.
+  - It takes pointer events on a phone and a tablet.
+- What to do: nothing in the shell. Phones used to show every signal at the
+  top of the plot; now they show one, and a tap shows all.
+
 ## 2026-10-25 — the fourteen forwarding modules are gone from `app/` (payload; install with the next payload)
 
 - Deleted: `app/auth.py`, `discover.py`, `driver.py`, `ibadat.py`, `iocorr.py`,
@@ -192,6 +212,17 @@ as the change. Entries say what to *do*, not just what happened.
 - Free, the ruler and the scrub bar act on the chart last touched; the
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
+
+## 2026-10-25 — the PC app window's defaults: engineering + "system" (shared `ui/` and `app/`; nothing changes on yours)
+
+- js/100: `appWindow` (the page's address has `?app=window`, which only
+  app/window.py opens) makes `defaultLayout()` "engineering" and the
+  unchosen theme "system". `chooseTheme(t)` (Options' cards and select,
+  the menu) records localStorage `theme_choice`="1" before applyTheme; a
+  phone never opens ?app=window, so its defaults are as they were.
+- /api/state gains `desktop_app` (frozen exe on win32); js/105
+  `engDesktopDefaults` reads it once for a loopback page without the
+  query. A phone's server says false.
 
 ## 2026-10-25 — app/serve.py: a time limit on the servers' shutdown; a Quit watchdog (shared `app/`; nothing for the phone to do)
 
