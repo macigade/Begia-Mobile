@@ -193,6 +193,13 @@ as the change. Entries say what to *do*, not just what happened.
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
 
+## 2026-10-25 — routes/ws.py notes a loopback socket before the door (shared `app/`; nothing for the phone to do)
+
+- `S.loopback_seen_ms` (app/state.py) is set in the socket route for a
+  socket from 127.0.0.1 / ::1 before the licence and sign-in refusals;
+  only app/serve.py's window opener reads it (to-do 20, a PC's restart).
+  On the phone it is set and read by nobody.
+
 ## 2026-10-25 — the page's title carries its port off 8080; BEGIA_PORT (shared `ui/` and `app/`; install with the next payload)
 
 - js/105-engineering.js, at load: `document.title += " (<port>)"` when
