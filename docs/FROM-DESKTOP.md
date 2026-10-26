@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-26 — the Signals table organises the charts (shared `ui/`; install with the next payload)
+
+- js/070 `tablePaneMenu(paneNo)`: Move up/down, Rename…, New chart, Remove
+  this chart. These are the shared functions a tile's menu uses
+  (movePaneStep, renamePane, addPaneShown, deletePane), and the table
+  redraws after each.
+- js/120 puts a `.pane-org` ⋯ button beside each row's chart select.
+- What to do: nothing in the shell.
+
 ## 2026-10-26 — a new chart is named as it is made (shared `ui/`; install with the next payload)
 
 - js/070 `nameNewPane(paneNo)`: `askPrompt("Name", "Pane N")`, saved through
