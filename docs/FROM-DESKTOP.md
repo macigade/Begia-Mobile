@@ -213,6 +213,16 @@ as the change. Entries say what to *do*, not just what happened.
   ruler's left gutter `.ruler-owner` names it. Nothing on the server; a
   phone with the new payload starts Free.
 
+## 2026-10-26 — BEGIA Local's window: /?app=local (shared `ui/` and `app/`; nothing for the phone to do)
+
+- js/105: a page opened with `?app=local` sets its title to "BEGIA Local —
+  process data recorder" (the port added off 8080) and takes none of the
+  Windows app's defaults (engDesktopDefaults returns at once). Only
+  app/window.py opens that address; a phone never does.
+- app/window.py: a `kind` ("window" | "local") through its functions -
+  its own profile folder (window-local), page, title and taskbar id. Inert
+  on Android.
+
 ## 2026-10-25 — the PC app window's defaults: engineering + "system" (shared `ui/` and `app/`; nothing changes on yours)
 
 - js/100: `appWindow` (the page's address has `?app=window`, which only
