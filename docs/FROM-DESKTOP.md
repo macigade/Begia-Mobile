@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-26 — Analyse's and the trial viewer's hover box as Live's (shared `ui/`; install with the next payload)
+
+- js/220 (Analyse) and js/240 (the trial viewer's charts) pass
+  `tooltipPlugin({outside: true})`, as Live does: off the plot, one signal,
+  Ctrl or a tap for all. The viewer's rows carry `series` 1/2 (the signal
+  and its overlay).
+- js/170: the box's bound is the nearest ancestor of the chart that
+  scrolls, no longer `#chart-scroll` alone, so it stays inside Analyse's
+  and the viewer's own views.
+- What to do: nothing in the shell.
+
 ## 2026-10-25 — Live's hover box: off the plot, one signal, a tap for all (shared `ui/`; install with the next payload)
 
 - js/170 `tooltipPlugin({outside: true})`, used by Live's panes (js/180) and
