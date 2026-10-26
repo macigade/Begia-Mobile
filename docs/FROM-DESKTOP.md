@@ -20,6 +20,14 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-26 — a new chart is named as it is made (shared `ui/`; install with the next payload)
+
+- js/070 `nameNewPane(paneNo)`: `askPrompt("Name", "Pane N")`, saved through
+  `savePane` only when changed. It is called after the four ways into a new chart:
+  js/040 bulkAdd (one new pane), js/055 moveToNewPane, js/070 addPaneShown,
+  js/120 the table's "new pane".
+- What to do: nothing in the shell; a phone's add asks the same.
+
 ## 2026-10-26 — Analyse's and the trial viewer's hover box as Live's (shared `ui/`; install with the next payload)
 
 - js/220 (Analyse) and js/240 (the trial viewer's charts) pass
