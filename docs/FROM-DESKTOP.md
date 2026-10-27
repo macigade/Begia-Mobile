@@ -20,6 +20,52 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-27 — Analyse draws its window, not the session (shared `ui/`; install with the next payload)
+
+- js/220 `updateAnalysis`, live: each signal is sliced to the x window on
+  screen plus 5% (at least 1 s), two points a pixel column
+  (`anLiveWindow` → `displaySeries(s, now, lo, hi, cols)`), as Live's
+  panes are. Before, it joined the whole store (up to 250,000 points a
+  signal) on every frame. `anCoverCheck` (the chart's x setScale hook)
+  draws again at once when a zoom, a pan or the ruler moves the window past
+  what was drawn.
+- `statsBetween` starts at A by halving. The A/B cache is kept while both
+  markers lie before the newest reading (`upto`).
+- js/190 `redraw` times Analyse into `lastRedrawCost`, so a slow Analyse
+  backs off as Live does.
+- What to do: nothing in the shell. A phone in Analyse during a long
+  recording no longer stalls.
+
+## 2026-10-27 — Report a bug (server + shared `ui/`; install with the next payload)
+
+- js/264 (new) `bugReportOpen()`: the dialog; Send waits for the
+  description's rule (>= 10 characters and >= 3 words, as the server's).
+  The name is kept in localStorage `bug_user_name`. At most 3 pictures,
+  each shrunk to a longest side of 1920 px (JPEG 0.85 or PNG, whichever is
+  smaller, at most 1.5 MB). `bugReportAddPicture(blob, name)` is the hook
+  for a picture made elsewhere; it opens the dialog if it is shut.
+- Where: `#btn-bug` beside LIVE in the header, hidden on the phone
+  layout (its bar is full), and `#btn-bug-report` in Options > Guide.
+- `POST /api/bugs` {description, user_name, screen, app, pictures: [{name,
+  type, data(base64)}]} → {status: "sent" | "queued" | "refused", error
+  (refused: the inbox's reason), report_id, waiting}. The inbox's 400 or
+  413 sets the report aside in `bug-outbox/refused/`, never sent again; a
+  429 (the day's cap) or 5xx is tried again.
+  app/access/bugs.py adds build, kind ("phone" where
+  licence.device_kind() is phone), device id/name and licence. It writes the
+  report to `<data>/bug-outbox/<report_id>.json` and sends it to
+  `config.BUGS_INBOX`, signed and sent over TLS the way the usage reports
+  are (usage.sign, usage.post_json: Android's CA dirs included). A report
+  that did not go is tried again by the push tick every 10 minutes and
+  after a start. `BEGIA_USAGE_SEND=off` sends nothing.
+- **What to do in the shell:** the picture's file input is
+  `accept="image/*" multiple`. Shell 3's chooser (`onShowFileChooser`)
+  must hand back several uris when `FileChooserParams.getMode()` is
+  MODE_OPEN_MULTIPLE, and offer the gallery for `image/*`. On a phone the
+  text says only "choose…" (no paste or drop). Below shell 3 the button
+  is hidden (`shellHas("fileChooser")`) and the report goes without
+  pictures.
+
 ## 2026-10-27 — the ◎ highlight easier to catch (shared `ui/`; install with the next payload)
 
 - js/170 `FLASH_MS` = 2000 (was 1300), for Live's flashTrace and Analyse's
