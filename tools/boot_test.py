@@ -274,7 +274,10 @@ def _iocheck(port: int, c: Check) -> None:
         def probe():
             m = mapping(name)
             return m if m.get("state") == state else None
-        return wait_for(f"{name} {state}", probe, 10, every=0.25)
+        try:
+            return wait_for(f"{name} {state}", probe, 10, every=0.25)
+        except TimeoutError as e:           # say what the check said instead
+            raise TimeoutError(f"{e}; last seen: {json.dumps(mapping(name))[:600]}") from None
 
     press("DI_11", 1)
     found("DI_11", "searching")
@@ -293,13 +296,26 @@ def _iocheck(port: int, c: Check) -> None:
     assert to[0]["name"].endswith("in_07") and to[0]["relation"] == "inverted", to[:2]
     c.ok(f"DI_07 pressed and released: found {to[0]['name']}, inverted")
 
-    press("DI_08", 1)
-    time.sleep(1.0)
-    press("DI_08", 0)
-    found("DI_08", "not mapped")
-    time.sleep(1.5)                       # a member's late edge would still show
-    assert mapping("DI_08").get("state") == "not mapped", mapping("DI_08")
-    c.ok("DI_08 pressed and released: nothing in the DB follows it")
+    # DI_08 follows nothing: "not mapped". Should one of its edges fall while
+    # the DB was not all being read in time, the check says "too slow" and
+    # asks for the press again (correlation._too_slow) - and, as an operator
+    # would, the bench presses Again (/api/iocheck/reset) and does it again,
+    # three times at most. Anything mapped to it still fails at once.
+    judged = ("not mapped", "too slow", "mapped", "inverted", "too short", "partial")
+    for attempt in range(1, 4):
+        press("DI_08", 1)
+        time.sleep(1.0)
+        press("DI_08", 0)
+        wait_for("DI_08 judged", lambda: mapping("DI_08").get("state") in judged, 10, every=0.25)
+        time.sleep(1.5)                   # a member's late edge, or a late read, would still show
+        verdict = mapping("DI_08")
+        if verdict.get("state") != "too slow":
+            break
+        print(f"  ..  DI_08: the DB was read too slowly to judge it (try {attempt}) - Again", flush=True)
+        api(port, "/api/iocheck/reset", {"node_id": ids["DI_08"]})
+        time.sleep(0.5)
+    assert verdict.get("state") == "not mapped", verdict
+    c.ok("DI_08 pressed and released: nothing in the DB follows it" + (f" (try {attempt})" if attempt > 1 else ""))
 
     status, r = api(port, "/api/iocheck/stop", {})
     assert status == 200, r
