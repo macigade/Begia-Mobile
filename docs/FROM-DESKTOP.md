@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-27 — the ◎ highlight easier to catch (shared `ui/`; install with the next payload)
+
+- js/170 `FLASH_MS` = 2000 (was 1300), for Live's flashTrace and Analyse's
+  flashSignal.
+- js/180 flashLiveSignal: a chart out of view scrolls first and flashes
+  after `FLASH_SCROLL_MS` (450). A maximized chart that isn't the signal's
+  own is swapped for it.
+- What to do: nothing in the shell.
+
 ## 2026-10-26 — the Signals table organises the charts (shared `ui/`; install with the next payload)
 
 - js/070 `tablePaneMenu(paneNo)`: Move up/down, Rename…, New chart, Remove
