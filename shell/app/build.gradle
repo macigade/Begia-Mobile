@@ -36,8 +36,8 @@ android {
         // slot manager (runtime/begia_shell/payload.py, SHELL_VERSION) refuses
         // a newer one: bump both together when a wheel, a permission or the
         // Python version changes, and never for a payload change.
-        versionCode 7
-        versionName "shell 3.4"
+        versionCode 8
+        versionName "shell 3.5"
         ndk { abiFilters "arm64-v8a" }
     }
     buildTypes {

@@ -1054,29 +1054,6 @@ class MainActivity : AppCompatActivity() {
         fileCallback = null
     }
 
-    /** <input accept=".xlsx,.csv,..."> as the MIME types a document picker
-     *  filters by: extensions mapped, MIME types kept, any file when nothing
-     *  usable is left. A CSV has many names, plain text among them. */
-    private fun mimeTypes(accept: Array<String>?): Array<String> {
-        val out = linkedSetOf<String>()
-        for (raw in accept.orEmpty().flatMap { it.split(',') }) {
-            val a = raw.trim().lowercase()
-            when {
-                a.isEmpty() -> {}
-                a.contains('/') -> out.add(a)
-                a == ".csv" -> out.addAll(listOf("text/csv", "text/comma-separated-values", "application/csv",
-                                                 "application/vnd.ms-excel", "text/plain"))
-                a == ".txt" -> out.add("text/plain")
-                a == ".json" -> out.add("application/json")
-                a == ".xlsx" -> out.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                a == ".xls" -> out.add("application/vnd.ms-excel")
-                else -> android.webkit.MimeTypeMap.getSingleton()
-                    .getMimeTypeFromExtension(a.removePrefix("."))?.let { out.add(it) }
-            }
-        }
-        return if (out.isEmpty()) arrayOf("*/*") else out.toTypedArray()
-    }
-
     /** What the page asks of the browser around it: a file (<input
      *  type="file">) and window.alert / confirm / prompt. A WebView without a
      *  WebChromeClient answers none of them - silently. */
@@ -1085,7 +1062,7 @@ class MainActivity : AppCompatActivity() {
                                        params: FileChooserParams): Boolean {
             fileCallback?.onReceiveValue(null)      // a picker still open: its page gets nothing
             fileCallback = callback
-            val types = mimeTypes(params.acceptTypes)
+            val types = pickerTypes(params.acceptTypes)   // PickerTypes.kt
             return try {
                 if (params.mode == FileChooserParams.MODE_OPEN_MULTIPLE) pagePickMany.launch(types)
                 else pagePickOne.launch(types)
