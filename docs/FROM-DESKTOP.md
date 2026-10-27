@@ -51,6 +51,14 @@ as the change. Entries say what to *do*, not just what happened.
   (refused: the inbox's reason), report_id, waiting}. The inbox's 400 or
   413 sets the report aside in `bug-outbox/refused/`, never sent again; a
   429 (the day's cap) or 5xx is tried again.
+- Licensed BEGIAs only (the owner, 2026-10-28): each report goes with this
+  device's signed licence, `licence` = its own entry of licence.json
+  ({licence, key_id, alg, sig}), added as it is sent. With no licence that
+  holds, nothing is sent: `POST /api/bugs` answers `status: "unlicensed"`
+  and the report waits; `GET /api/bugs` → {licensed, waiting} lets the
+  dialog say so first. Installing a licence sends what waits at the next
+  tick. The inbox's 403 is set aside like a 400. A phone sends its own
+  licence; nothing for the shell to do.
   app/access/bugs.py adds build, kind ("phone" where
   licence.device_kind() is phone), device id/name and licence. It writes the
   report to `<data>/bug-outbox/<report_id>.json` and sends it to
