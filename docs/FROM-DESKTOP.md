@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — signal sets live in the configuration (server side; install with the next payload)
+
+- The sets are no longer files in `signalsets/` shared by every
+  configuration: they are `AppConfig.signal_sets` (`{name: {signals, groups}}`)
+  in config.json and in each saved profile, with `AppConfig.profile` (the
+  profile it was last saved or loaded as). Loading a profile brings its sets.
+- **The API is unchanged**: `GET /api/signalsets` (names), `POST
+  /api/signalsets/save|load|rename`, `DELETE /api/signalsets?name=`. Save,
+  delete and rename may now answer a `note` (the configuration's profile file
+  was not found or did not take the change - the set is saved all the same).
+  Names match regardless of case, as the files did on Windows.
+- New: `GET /api/profiles/current` -> `{ "name": "<profile>" }` ("" when the
+  configuration was never saved under a name).
+- Migration, on the phone's service too: a configuration without sets of its
+  own (every one from before) gets a copy of the old `signalsets/*.json` the
+  first time it starts or is loaded; a profile gets them written into its
+  file at that load. The files are left on disk.
+- Nothing to do in the phone's UI; check that Signals' set row lists, saves
+  and loads as before.
+
 ## 2026-10-28 — Options, one page in one order (shared `ui/`; install with the next payload)
 
 - `#opt-view` is rebuilt as six `section.ov-sec` groups:
