@@ -116,7 +116,12 @@ def run(payload: Path, port: int, keep: bool) -> int:
         c.ok("reports the payload's version")
 
         # the booting process clears `booting` on its own health check, which
-        # races ours: give it a moment rather than read the file at once
+        # races ours - and on Windows a read of state.json at the instant it
+        # is replaced fails the replace (WinError 5, the service down). It
+        # prints "healthy:" just before: wait for that line, then a moment
+        wait_for("the service's own health check",
+                 lambda: "healthy:" in (work / "service.log").read_text(encoding="utf-8", errors="replace"), 15)
+        time.sleep(1.0)
         wait_for("slot marked good", lambda: pl.Slots(slots).state["booting"] is None, 10)
         assert pl.Slots(slots).state["active"] == m["build"]
         c.ok("slot marked good after the health check")
@@ -125,6 +130,7 @@ def run(payload: Path, port: int, keep: bool) -> int:
         assert (status == 200 and b"js/010-core.js" in page
                 and b'href="css/' in page and b"BEGIA" in page), status
         c.ok("serves the UI from the payload")
+        _tiles(port, page, c)
 
         status, r = api(port, "/api/sim/start", {})
         assert status == 200 and r.get("ok"), r
@@ -222,6 +228,25 @@ def run(payload: Path, port: int, keep: bool) -> int:
                     if l.startswith("runtime ")), "")
     print(f"\nPASS  {c.n} checks  ({runtime})")
     return 0
+
+
+def _tiles(port: int, page: bytes, c: Check) -> None:
+    """The tiles (desktop a0d9c36): the page opens on a home of places, the
+    bottom tabs (#phone-tabs) hidden, every place at an address of its own -
+    #/live, #/io/inputs, #/ the home. This bench has no browser to open them
+    in (tests/js/test_tiles_home.js does, on the desktop side); it checks
+    that the page holds the home and what the shell's Back leans on: the
+    addresses walked back by popstate, goHome(), noteModule("home")."""
+    if b"js/267-tiles.js" not in page:
+        print("  --  no tiles in this payload (built before them): skipped", flush=True)
+        return
+    assert b'id="tiles-home"' in page and b"css/147-tiles.css" in page
+    status, js = api(port, "/js/267-tiles.js")
+    assert (status == 200 and b"function goHome(" in js and b'"popstate"' in js
+            and b'"io/inputs"' in js), status
+    status, nav = api(port, "/js/140-connections.js")
+    assert status == 200 and b'markModule("home")' in nav and b"BegiaShell.noteModule" in nav, status
+    c.ok("opens on the tiles' home: its addresses, goHome() and noteModule(\"home\") for the shell's Back")
 
 
 def _iocheck(port: int, c: Check) -> None:
