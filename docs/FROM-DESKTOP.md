@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — the desktop app's menu bar (shared `ui/`; install with the next payload)
+
+- js/090 `quitBegia(quit)`: an optional `quit` function runs in place of
+  `window.BegiaShell.quit()` after the same question. The BEGIA app's own
+  `#cvp-quit` button calls `quitBegia()` with no argument, so it behaves
+  as before.
+- js/100 `placeNav`: in the engineering layout only, the suite switch goes
+  to the start of `#modules`. Every other layout puts it before the brand,
+  as before.
+- js/105, css/115, index.html: the desktop app's menu bar, its keys, and the
+  time window moved into the chart toolbar. All of it is under
+  `data-layout="engineering"`, a PC's layout that a phone or tablet never
+  shows. `#eng-slot-time` now sits inside `#eng-ctb`.
+- New `POST /api/app/quit` (loopback only; 409 when the process was not
+  started by `serve.run`). The phone never calls it; the BEGIA app quits
+  through its shell.
+- Nothing to do on the phone.
+
 ## 2026-10-28 — the I/O check's "late" is measured on one time base (server side; install with the next payload)
 
 - app/drivers/opcua.py `_on_member`: the members' delay window
