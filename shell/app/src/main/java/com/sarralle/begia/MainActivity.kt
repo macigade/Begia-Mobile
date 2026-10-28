@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -81,6 +82,7 @@ class MainActivity : AppCompatActivity() {
     private var polling = false
     private var splashStart = 0L            // when the payload's boot page went up (epoch ms)
     private var splashPage = false          // the WebView shows that page, not the app
+    private var freshPage = false           // BEGIA's page is loading anew: its history starts there
     // second-screen mode: the laptop's BEGIA, else null; read on the WebView's
     // own thread too (shouldInterceptRequest)
     @Volatile private var remote: String? = null
@@ -161,12 +163,21 @@ class MainActivity : AppCompatActivity() {
         val debug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
         WebView.setWebContentsDebuggingEnabled(debug)   // chrome://inspect from the laptop
         web.webViewClient = object : WebViewClient() {
+            // a new page, never a move between the tiles' addresses: those
+            // are the same page's, and onPageStarted is not called for them
+            override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
+                freshPage = url.startsWith(base())
+            }
+
             override fun onPageFinished(view: WebView, url: String) {
                 loading = false
                 // the boot page finishing is not the app being up
                 val isApp = url.startsWith(base())
                 pageLoaded = isApp
                 if (isApp) {
+                    // Back walks this page's own moves (PageState.back): not
+                    // to the boot page under it, nor into a page loaded before
+                    if (freshPage) { view.clearHistory(); freshPage = false }
                     splashPage = false
                     if (!holding) hideBoot()
                     // second-screen mode: the laptop's page carries the
@@ -938,14 +949,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Back: a web page reached from BEGIA goes back to it; BEGIA itself asks
-     *  whether to quit or to keep running (askLeave). Never back to the boot
-     *  page under the app - that only had the poll load the app again, so
-     *  Back reloaded BEGIA instead of leaving it. */
+    /** Back (PageState.back): BEGIA's tiles go back a place at a time to the
+     *  home, and the home asks whether to quit or to keep running
+     *  (askLeave); a web page reached from BEGIA goes back to it. Never back
+     *  to the boot page under the app - that only had the poll load the app
+     *  again, so Back reloaded BEGIA instead of leaving it: the history is
+     *  cleared as BEGIA's page loads (onPageFinished). */
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        val url = web.url.orEmpty()
-        if (url.startsWith("http") && !url.startsWith(base()) && web.canGoBack()) web.goBack() else askLeave()
+        when (PageState.back(web.url.orEmpty(), base(), web.canGoBack(), PageState.module)) {
+            PageState.Back.HISTORY -> web.goBack()
+            PageState.Back.HOME -> web.evaluateJavascript(GO_HOME) { if (it != "true") askLeave() }
+            PageState.Back.LEAVE -> askLeave()
+        }
     }
 
     // ----------------------------------------------------- first launch ----
@@ -1124,5 +1140,11 @@ class MainActivity : AppCompatActivity() {
         // same Google Cloud project only lets this app ask (googleIdToken).
         private const val GOOGLE_WEB_CLIENT_ID =
             "118369397450-ohlnklbd4j5ls2pjr7l0c1e4l5q7qo7f.apps.googleusercontent.com"
+        // Back's way home on a place the page was loaded on (js/267-tiles.js
+        // goHome): "true" when it went; a page without the tiles, or on the
+        // home already, answers false and Back asks to leave
+        private const val GO_HOME = "(function(){var d=document.documentElement.dataset;" +
+            "if(d.nav!=='tiles'||d.mod==='home'||typeof goHome!=='function')return false;" +
+            "goHome();return true})()"
     }
 }
