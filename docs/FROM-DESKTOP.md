@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — the welcome door fits a phone on its side (shared page; with the next payload)
+
+- The start-up door (`#splash` > `#gate`) scrolls when it is taller than
+  the screen - a phone on its side (780x360), the keyboard up - instead of
+  losing both ends out of reach (`overflow-y: auto`, `justify-content:
+  safe center` after the plain `center`). Where it fits nothing moves.
+- `.gate-actions` wraps (`flex-wrap: wrap`): at a large text size Not now
+  and Connect go to two lines inside the card rather than past its edge.
+- Still two buttons, Not now and Connect: a Simulator button was offered
+  and the owner kept their rule ("Remove it (keep my rule)" - the sim is
+  one connection in Setup and nowhere else); test_sim_connection.js now
+  checks the door has none.
+- **To do on the phone:** nothing; try the door on its side at 360 px.
+
 ## 2026-10-28 — signal sets live in the configuration (server side; install with the next payload)
 
 - The sets are no longer files in `signalsets/` shared by every
