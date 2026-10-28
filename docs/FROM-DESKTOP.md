@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — Options, one page in one order (shared `ui/`; install with the next payload)
+
+- `#opt-view` is rebuilt as six `section.ov-sec` groups:
+  - `#ov-display`;
+  - `#ov-start`, which is `.ph-adv`: behind Advanced on a phone, as its two rows were;
+  - `#ov-lu`, Licence and updates;
+  - `#ov-access` and `#ov-machine`, which are `.ov-desktop`: hidden on a phone or tablet, as before;
+  - `#ov-help`.
+
+  A `nav.ov-index` of the groups shows only on a wide view.
+- Every control keeps its id and its handler. `.ov-card` is gone.
+- The BEGIA app's block `#cv-phone` is inside `#ov-update`, now a
+  `section.ov-sub`. Its head `#ov-update-head` still says "Laptop &
+  updates" in the app.
+- `#ov-licence` is a `section.ov-sub`, hidden until painted, as before.
+- There is still one `.adv-toggle`, at the end of `#ov-display`.
+- The notes sit behind "?" buttons: each `.ov-q` toggles a `p.ov-more[hidden]`.
+- `#upd-current` says `pageBuild` from the start, not "press Check".
+- **Nothing to do in the shell.** If the boot test finds an Options card by
+  `.ov-card` or by its old `<h3>`, find the group by its id instead
+  (`#ov-display`, `#ov-lu` …). Tests: tests/js/test_options_design.js.
+
 ## 2026-10-28 — signal sets can be renamed; the Rate select's code shared (server + shared `ui/`; install with the next payload)
 
 - New endpoint `POST /api/signalsets/rename` `{ "name": "<set>", "to": "<new name>" }`
