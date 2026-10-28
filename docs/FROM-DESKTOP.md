@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — BEGIA's clock follows a slew of the wall clock (server side; install with the next payload)
+
+- app/clock.py: a slew of the wall clock - Windows or a VM's time sync
+  running it a few % slow or fast - is followed smoothly. `now_ms()` keeps
+  the wall clock's pace, never runs backwards, and stays within ~0.1 s of
+  it at a 10% slew. Before, every 2 s a slew had built up was taken for a
+  step: outside a trial a re-anchor 2 s back (the hub piled 2 s of samples
+  1 ms apart), inside one a "the laptop's clock was set back 2 s" event,
+  about every 20 s at 10%. A step - 2 s or more between two looks at the
+  wall clock, 0.25 s apart - is followed (or noted in a trial) as before.
+  `CLOCK.anchors` moves only on a step now.
+- app/push.py `push_tick` reads `clock.now_ms()` every push, so the looks
+  are 0.25 s apart whatever else reads the clock.
+- app/sim/plant.py: the simulator's source times and its CurrentTime are
+  `clock.now_ms()` (+ `clock_skew_ms`), not the wall clock; every write
+  carries its SourceTimestamp.
+- Nothing to do on the phone; the change is in the server it runs. Tests:
+  tests/py/test_trial_clock.py, tests/py/test_push_cursor.py.
+
 ## 2026-10-28 — the desktop app's menu bar (shared `ui/`; install with the next payload)
 
 - js/090 `quitBegia(quit)`: an optional `quit` function runs in place of
