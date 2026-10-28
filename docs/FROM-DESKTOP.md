@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — a page of charts counts charts, not the Strings strip; chart groups (shared `ui/`; install with the next payload)
+
+- js/180: new `panesOnPage(open, n)` - the first `n` charts, plus the
+  Strings strip (TEXT_PANE) where it comes before the last of them.
+  `paneHeights` and `fitPanes` use it on a PC. **The phone's page is
+  unchanged** (`isPhone()`: `phonePerPage` and the old slice, exactly as
+  before). `fitPanes` on a PC now charges each page pane its own measured
+  overhead instead of the average.
+- js/180 `buildCharts`: when nothing is maximized, entries are filtered by
+  `chartsShownOnly()` if that function exists and answers a Set. Only
+  js/105 defines it, and it answers only in the engineering layout, so on
+  the phone it is always null.
+- js/105: the desktop's chart groups, kept in localStorage
+  `eng_chart_groups` and `eng_chart_view`. The phone never shows them.
+- Nothing to do on the phone; check that the Live page looks as before.
+
 ## 2026-10-28 — BEGIA's clock follows a slew of the wall clock (server side; install with the next payload)
 
 - app/clock.py: a slew of the wall clock - Windows or a VM's time sync
