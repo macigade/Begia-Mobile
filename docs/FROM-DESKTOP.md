@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — the I/O check's "late" is measured on one time base (server side; install with the next payload)
+
+- app/drivers/opcua.py `_on_member`: the members' delay window
+  (`_bulk_delay`, behind `read_pace()["stale_ms"]`) starts again whenever
+  `clock.CLOCK.anchors` or `clock.CLOCK.plc_offset` changes
+  (`_bulk_base`). Before, a re-anchor of BEGIA's clock (a 2 s step, every
+  ~20 s on a PC whose wall clock Windows slews) or a new PLC clock reading
+  mixed two time bases in the window: `stale_ms` ~2000, a "late" span, and
+  an input pressed in it that nothing follows was "too slow" instead of
+  "not mapped" - the boot test's first DI_08 press (480, 457).
+- Nothing to do on the phone; the boot test's DI_08 step should pass again
+  with the next payload. The boot test still searches for `Presion_Linea`,
+  which the simulator no longer has (its names are plant-neutral: the line
+  pressure is `"DB_Header"."Pressure_bar"`).
+
 ## 2026-10-27 — Analyse draws its window, not the session (shared `ui/`; install with the next payload)
 
 - js/220 `updateAnalysis`, live: each signal is sliced to the x window on
