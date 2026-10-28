@@ -20,6 +20,35 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — the tiles: the browser version's way round, the phone's too (shared `ui/`; install with the next payload)
+
+- js/100 `placeNav`: the layout `"tiles"` (`data-nav="tiles"` on the root)
+  is the default on every browser device, the phone and the tablet
+  included; `data-layout` stays `"phone"` on a phone. `#modules` stays in
+  the top bar, hidden; `#phone-tabs` is empty and hidden, and its height
+  goes to the page. A stored `layout_choice` of classic or rail gives way
+  to the tiles once (localStorage `tiles_offered`); one chosen after that
+  is kept. The shell's own window (`?app=window`) is never offered them.
+- js/267 (rewritten): the home is a module of its own, `setModule("home")`
+  → `data-mod="home"` - so `BegiaShell.noteModule` now also gets `"home"`.
+  Every module change in the tiles pushes a history entry: `#/setup`,
+  `#/signals`, `#/live`, `#/trials`, `#/analyse`, `#/io`, `#/io/inputs`,
+  `#/io/project`, `#/options`, and `#/` the home; `popstate` goes back to
+  the place named. Live's three pages and the I/O check's are a switch at
+  the top of their place (`#place-switch`).
+- **Do, in the shell:** the back gesture should call the WebView's
+  `goBack()` while `canGoBack()` - it walks back a place at a time to the
+  tiles - and do what it does today once there is nothing left to go back
+  to. `noteModule("home")`: the watch should take the home as "not in the
+  I/O check".
+- **Do, in the boot test:** the first screen is the tiles now, not Live, and
+  the bottom tabs (`#phone-tabs .mod`) are hidden. Open a place by its tile
+  (`#tiles-home .tile[data-place="live"]`, `"io"`, `"setup"` …), by its
+  address (`location.hash = "#/io"`), or with `setModule(...)` as before.
+- The bug's icon is in the phone's bar over the home (its bar on a page has
+  no room for it). Tests: tests/js/test_tiles_home.js; the start in
+  test_touch_rail.js.
+
 ## 2026-10-28 — a page of charts counts charts, not the Strings strip; chart groups (shared `ui/`; install with the next payload)
 
 - js/180: new `panesOnPage(open, n)` - the first `n` charts, plus the
