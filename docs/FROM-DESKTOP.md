@@ -20,6 +20,35 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-28 — signal sets can be renamed; the Rate select's code shared (server + shared `ui/`; install with the next payload)
+
+- New endpoint `POST /api/signalsets/rename` `{ "name": "<set>", "to": "<new name>" }`
+  -> `{ "ok": true, "name": "<the name kept>" }`. The new name is cleaned
+  as on save (letters, digits, space, dash, underscore). 404 for an unknown
+  set, 422 for an empty name, 409 when another set has that name (a change
+  of case alone is allowed). The phone may offer it; nothing else changed in
+  `/api/signalsets*`.
+- js/070: the Rate select's change is now `setAllRates(r)` (same question,
+  same PATCHes), and its list `SET_RATES`. Behaviour unchanged.
+- js/105: the desktop's Signal sets window, and `localStorage`
+  `eng_set_current` (the set last loaded or saved on that PC). Desktop only.
+- Nothing to do on the phone.
+
+## 2026-10-28 — the desktop's chart slots and its table's height (shared `ui/`; install with the next payload)
+
+- js/180: `isFolded` answers false, and `fitPanes` hands over to the new
+  `fitSlots`, only while `chartSlots()` answers a number. Only js/105
+  defines it, and it answers 0 outside the engineering layout (and on a
+  phone), so **on the phone nothing changes**: folds, `paneHeights`,
+  `phonePerPage` and `fitPanes` work exactly as before.
+- js/180 `buildCharts`: in slots, the Strings strip is sorted first. Again
+  engineering only.
+- js/105: the wheel, PgDn/PgUp/Home/End and `scrollend` listeners on
+  `#chart-scroll` act only while it carries the class `slots` - never on the
+  phone. The signal table's fold and height are kept in localStorage
+  `eng_table`; the table is desktop-only.
+- Nothing to do on the phone; check that Live scrolls and folds as before.
+
 ## 2026-10-28 — the tiles: the browser version's way round, the phone's too (shared `ui/`; install with the next payload)
 
 - js/100 `placeNav`: the layout `"tiles"` (`data-nav="tiles"` on the root)
