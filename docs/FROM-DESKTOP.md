@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-29 — Add signals' search forgives (the server's `/api/search` and shared `ui/`; install with the next payload)
+
+- `/api/search`, both drivers, through the new `app/search_match.py`:
+  - the words in any order, case and separators aside, in the name or the
+    address ("1234.5" finds %I1234.5);
+  - the best first;
+  - a typo forgiven, but only when nothing matched as typed. Such a hit
+    carries `"near": n`, its slips, and the answer carries `"near"`, how
+    many hits came that way.
+  - A query starting with % is an address alone, as before.
+- js/040-picker.js:
+  - `appendHighlighted` lights each word where it was found. The I/O
+    check's tree shares it.
+  - The address column (`.ioi-abs`) is lit too.
+  - A near row has `span.hit-near-mark` "≈" just before its name.
+  - `searchFootText` adds "· N by a similar name (a typo forgiven)".
+- The search box's hint is now "a name or an address, words in any order:
+  temp c, IW64, 12.3… (Enter)". The 2026-10-21 entry quotes the old one.
+- **To do on the phone:** nothing in the shell. A boot test that searches by
+  an exact name still finds it first, with no ≈ rows beside it. A search
+  that found nothing before may now come back with ≈ rows.
+
+---
+
 ## 2026-10-29 — a maximized chart fits the column, off the phone (shared `ui/`; install with the next payload)
 
 - js/180-panes.js: `fitPanes` sizes a maximized chart with `fitMaxPane()`
