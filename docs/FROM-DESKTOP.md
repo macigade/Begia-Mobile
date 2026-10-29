@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-29 — Live's charts can hold traces out (shared `ui/`; install with the next payload)
+
+- js/170-plugins.js: `holdTraces(u, idxs)` keeps the ◎ flash's look
+  (others at alpha 0.1, the held ones `standOut` = max(3.4, 2x) thick)
+  until it is called again with an empty Set. `flashTrace` now puts a chart
+  back on its held look after its 2 s, and both start from `chartLook(u)`,
+  the look as drawn, which is kept in `u._look`.
+- js/180-panes.js: `heldSigs` and `holdLiveSignals(nodeIds)`. Every chart
+  `buildCharts` makes is held again (`paintHeldSigs`), on Live only.
+- Only the desktop's Project tree (js/105, Engineering layout) calls it, so
+  nothing changes on the phone or the tablet.
+- **To do on the phone:** nothing. If the phone ever wants a held
+  highlight, call `holdLiveSignals([...])` and mark what is chosen.
+
+---
+
 ## 2026-10-29 — a test copy's title says TEST first (shared `ui/`; install with the next payload)
 
 - ui/index.html's first script and js/105-engineering.js: off ports 8080
