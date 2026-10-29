@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-29 — the pointer and the traces on a held chart (shared `ui/`; install with the next payload)
+
+- js/190-scrub.js `redraw`: after `setData(data, false)`, a chart that does
+  not follow sets x to its own window again. uPlot recomputes the index
+  range it draws and points with (series idxs, the cursor's idx) only when
+  x is set. A held chart kept the old range, so the box said NaN and the
+  traces drew part of their points or none (to-dos 58, 29).
+- js/220-analysis-chart.js `updateAnalysis`: the same, off the live edge.
+- js/170-plugins.js `ownSampleIdx(u, si, idx)`, used as `cursor.dataIdx` on
+  Live's and Analyse's charts: each trace's dot is on its last sample at or
+  before the pointer, inside the window. No such sample: no dot.
+- The phone's Live and Analyse run the same code, so they get the same
+  fixes.
+- **To do on the phone:** nothing. If you saw NaN in the box, or a held
+  chart's traces half drawn, they should be gone with this payload.
+
+---
+
 ## 2026-10-29 — Live's charts can hold traces out (shared `ui/`; install with the next payload)
 
 - js/170-plugins.js: `holdTraces(u, idxs)` keeps the ◎ flash's look
