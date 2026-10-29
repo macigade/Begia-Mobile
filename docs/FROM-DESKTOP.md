@@ -20,6 +20,20 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-29 — a maximized chart fits the column, off the phone (shared `ui/`; install with the next payload)
+
+- js/180-panes.js: `fitPanes` sizes a maximized chart with `fitMaxPane()`
+  when `!isPhone()`. That is the column's room less the pane's own header
+  and frame, measured, instead of `clientHeight - 60`. `dropSlots()` is
+  the old slots clean-up, now a function.
+- js/190-scrub.js `resizeCharts`: the `clientHeight - 60` guess is kept
+  for the phone only.
+- **To do on the phone:** nothing. A phone's maximized chart is sized as
+  before. A tablet is not a phone (isPhone), so a tablet's maximized chart
+  now fits its column exactly. Look at one if you test the tablet.
+
+---
+
 ## 2026-10-29 — the pointer and the traces on a held chart (shared `ui/`; install with the next payload)
 
 - js/190-scrub.js `redraw`: after `setData(data, false)`, a chart that does
