@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-29 — a test copy's title says TEST first (shared `ui/`; install with the next payload)
+
+- ui/index.html's first script and js/105-engineering.js: off ports 8080
+  and 8443 the page's title is now `TEST <port> · <title>`. It used to be
+  `<title> (<port>)`. js/105 has `engTestPort(port)` and `ENG_TEST` (the
+  port as a string, or "").
+- The phone serves on 127.0.0.1:8080 (Recorder.PORT), and a laptop is
+  reached on 8080 or 8443, so nothing changes there. Only the shell's
+  DEV_PORT 8081 build would say TEST 8081, in a title the WebView does not
+  show.
+- **To do on the phone:** nothing, unless something of yours reads
+  `document.title` and expects the old ` (port)` ending.
+
+---
+
 ## 2026-10-28 — the welcome door fits a phone on its side (shared page; with the next payload)
 
 - The start-up door (`#splash` > `#gate`) scrolls when it is taller than
