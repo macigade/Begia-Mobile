@@ -20,6 +20,27 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-30 — the PLC passwords sealed in BEGIA's files, on Windows (`app/plc_passwords.py`, `app/config.py`; install with the next payload)
+
+- On Windows, every file holding a configuration now holds each PLC password
+  sealed with DPAPI for the running login: config.json, .prev, configs\*.json
+  and a set-aside .bad. The stored form is `"password": "dpapi:<base64>"`, in
+  the same fields. In memory the configuration keeps the clear text, so no
+  route or driver changed, and the API still sends only `has_password`.
+- **On the phone nothing changes**: `ON_WINDOWS` is false under Chaquopy, so
+  passwords are written as they were, and the files stay private to the app.
+- **One case to know**: a "dpapi:" value met on the phone - in a
+  configuration or profile carried over from a PC - cannot be opened there.
+  It reads as no password saved (`has_password` false). The standing warning
+  (`config_warnings()`, in the status payload) then says "The saved PLC
+  password for <name> can't be read on this device - type it again". It goes
+  at the next save once the password is typed.
+- **To do on the phone:** nothing in the shell. A boot test that loads a
+  configuration made on a PC should expect that warning and an empty
+  password; one made on the phone is unaffected.
+
+---
+
 ## 2026-10-29 — Add signals' search forgives (the server's `/api/search` and shared `ui/`; install with the next payload)
 
 - `/api/search`, both drivers, through the new `app/search_match.py`:
