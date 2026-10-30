@@ -57,6 +57,10 @@ as the change. Entries say what to *do*, not just what happened.
 - **To do on the phone:** the shell must save that download as it saves a
   trial's CSV. If it does, nothing else changes. A boot test may press it
   from a chart's menu and expect a CSV.
+- 2026-10-31: the file names its source in a trial's lines (`# plc_endpoint`,
+  `# plc_connection`, `# driver`, `# udp_sender`, `# time_base: pc`), made
+  by the trial's own helper (routes/recording `_provenance`), not the
+  configured address. Nothing to do on the phone.
 
 ---
 
