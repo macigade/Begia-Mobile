@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-30 — Live's export: what a chart shows, as a CSV (`/api/live/export`, shared `ui/`; install with the next payload)
+
+- `POST /api/live/export {node_ids, t0_ms, t1_ms, label, grid_ms, sep, decimal}`
+  makes the CSV from the hub's memory (app/recording/live_export.py) and
+  answers `{url, name, rows, signals, note}`. `GET` on that url sends it
+  once, as an attachment.
+- The page: `liveExport(c)` in js/180. Each chart's menu has
+  "Export what it shows (CSV)", the phone's too. The page clicks a link
+  with `download`, as a trial's CSV link does.
+- **To do on the phone:** the shell must save that download as it saves a
+  trial's CSV. If it does, nothing else changes. A boot test may press it
+  from a chart's menu and expect a CSV.
+
+---
+
 ## 2026-10-30 — the PLC passwords sealed in BEGIA's files, on Windows (`app/plc_passwords.py`, `app/config.py`; install with the next payload)
 
 - On Windows, every file holding a configuration now holds each PLC password
