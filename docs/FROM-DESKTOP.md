@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-31 — a chart's Y axes, four ways (`PUT /api/pane` `axis_mode`, a signal's `axis` "none", shared `ui/`; install with the next payload)
+
+- `PUT /api/pane` takes `axis_mode`: "unit", "norm" or "list". "selected",
+  or none, is the default and is not stored; anything else is a 422. The
+  `{"type": "panes"}` broadcast carries it with the chart's other settings.
+- A signal's `axis` can be "none" now (List: its traces drawn, no axis),
+  beside "left", "right" and "" (auto). `PATCH /api/signals` stores it as
+  given, as it always did; a page that knows only left and right reads
+  "none" as auto.
+- The page: the switch (js/070 AXIS_MODES, js/180 setAxisMode) is at the
+  top of each chart's ⋯ menu - on the phone, its only place - and in the
+  long-press menu. List opens a panel (js/180 openAxesList) where a signal
+  is moved by a tap on it, then a tap on its new axis.
+- Shared axes are kept in the page's localStorage ("axis_links"), beside
+  the hidden traces ("hidden_traces").
+- Selected, the default, draws the picked signals' axes. The phone has
+  nothing to pick with (the tree is the desktop's, Ctrl+click a mouse's),
+  so its charts draw one axis a unit until another mode is chosen.
+- `live_export` holds at most 20 prepared files now (KEEP_N), the oldest
+  dropped first.
+- **To do on the phone:** nothing, unless a boot test pins a chart's ⋯
+  menu: it now opens with "Y axes" and a select.
+
+---
+
 ## 2026-10-30 — Live's export: what a chart shows, as a CSV (`/api/live/export`, shared `ui/`; install with the next payload)
 
 - `POST /api/live/export {node_ids, t0_ms, t1_ms, label, grid_ms, sep, decimal}`
