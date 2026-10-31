@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-31 — the ◎ flash and the held highlight redraw the look only (shared `ui/`; install with the next payload)
+
+- js/170-plugins.js: `flashTrace`, `unflashTrace` and `holdTraces` call the
+  new `lookRedraw(u)`, which is `u.redraw(false)`. uPlot 1.6.32's plain
+  `redraw()` sets x again from the scale as it stands. On a chart just built,
+  a held one's window is still waiting for uPlot's next tick, so x was set to
+  nothing, and the chart drew no traces, grid or times until it was built
+  again. js/220-analysis-chart.js's flash uses `lookRedraw` too.
+- On the phone: a ◎ pressed on a held chart right after the charts were
+  built again (a maximize swaps the chart shown first) could blank that
+  chart. That is gone with this payload.
+- **To do on the phone:** nothing. If you call `u.redraw()` after only
+  changing a series' look (alpha, width, stroke), use `lookRedraw(u)`.
+
+---
+
 ## 2026-10-31 — Live's Y axes after the 544 test copy (shared `ui/`; install with the next payload)
 
 - Per unit groups by unit alone: a share made in List (`axis_links`) no
