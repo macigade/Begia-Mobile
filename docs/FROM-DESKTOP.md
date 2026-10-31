@@ -20,6 +20,27 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-31 — units under the Y axes; Per unit's one "no unit" axis (shared `ui/`; install with the next payload)
+
+- Per unit - and Selected with nothing picked, which is how the phone's
+  charts draw (nothing to pick with there) - puts every analog signal with
+  no unit on ONE axis, said "no unit". A signal read in an analog view (mA,
+  %) goes on that unit's axis (js/070 `liveUnit`, `axisLeaders`). The
+  List's "Group by unit" groups the same way (js/180 `axesRelink`).
+- Each drawn Y axis writes its unit under its numbers, on the chart's
+  canvas, in the time labels' row (js/170 `axisUnitPlugin`,
+  `axisUnitLabels`; the words from js/070 `axisUnitText`). buildCharts adds
+  it to every analog chart: nothing to wire.
+- A chart's time labels are written only over its plot, a letter and a half
+  in from the edges (js/170 `timesInPlot`, the time axis's filter;
+  `clockTicks` passes its nulls through). The steps strip does the same.
+- No endpoint or payload changed. **To do on the phone:** nothing, unless a
+  boot test counts a chart's axes in Per unit or its time labels: a chart
+  of signals with no unit now draws one axis, and a time at an edge is not
+  written.
+
+---
+
 ## 2026-10-31 — a chart's Y axes, four ways (`PUT /api/pane` `axis_mode`, a signal's `axis` "none", shared `ui/`; install with the next payload)
 
 - `PUT /api/pane` takes `axis_mode`: "unit", "norm" or "list". "selected",
