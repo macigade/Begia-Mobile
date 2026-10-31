@@ -20,6 +20,27 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-10-31 — Live's Y axes after the 544 test copy (shared `ui/`; install with the next payload)
+
+- Per unit groups by unit alone: a share made in List (`axis_links`) no
+  longer pulls a signal with no unit onto a unit's axis, and the chart
+  header's drag-to-share is not offered in Per unit or Normalized. An
+  axis's first is its first SHOWN signal.
+- L/R in Per unit and Normalized is still a `PATCH /api/signals` `axis`,
+  now on the axis's first shown signal whose `axis` is not "none" (js/070
+  `axisSideSig`, `sideHolders`), so List's Hidden is kept.
+- A Per unit axis's range takes every shown signal's limits (js/070
+  `axisLimits`): exact where all agree, a reach otherwise.
+- The time axis keeps at least one label (js/170 `timesInPlot`, the inset
+  only beside a written unit), has 2 s, 20 s and 2 min steps
+  (`CLOCK_INCRS`), and `clockSpace()` is now a function of the span and the
+  plot's width.
+- No endpoint or payload changed. **To do on the phone:** nothing, unless a
+  boot test counts time labels or drags one trace's header onto another's
+  in Per unit.
+
+---
+
 ## 2026-10-31 — units under the Y axes; Per unit's one "no unit" axis (shared `ui/`; install with the next payload)
 
 - Per unit - and Selected with nothing picked, which is how the phone's
