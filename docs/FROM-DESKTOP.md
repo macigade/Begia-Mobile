@@ -24,8 +24,9 @@ as the change. Entries say what to *do*, not just what happened.
 
 - `GET /api/iocheck/export.csv` writes STATUS, TagName, Comment, Absolute
   address, DB, Type, Checked by, Time and date ("HH:MM, DD.MM.YY"),
-  Baseline, Related to, Note. A field can hold a comma, so read it with a
-  CSV reader, never by splitting lines.
+  Baseline, Related to, Note. STATUS is OK, NOK or --- (not checked). A
+  field can hold a comma, so read it with a CSV reader, never by splitting
+  lines.
 - `POST /api/iocheck/import` (a TIA tag table) keeps each tag's comment on
   its row of the list (`SignalCfg.comment`), on rows already there too, and
   answers `commented` (how many rows got one).
