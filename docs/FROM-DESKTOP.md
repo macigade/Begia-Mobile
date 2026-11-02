@@ -20,6 +20,44 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-02 — the Engineering window's I/O check tools (shared `ui/`; nothing shows on the phone)
+
+- New js/290-iocheck-frame.js (after js/289): the Engineering frame's I/O
+  check group (`#eng-ioc-tools`), its search (`engFindInputs`) and the
+  picked input's card (`#eng-input-card`, `data-card="input"`). It all lives
+  in `.eng-only` markup, which the phone never shows. The analyzer's groups
+  and cards carry `.eng-anz`, the I/O check's `.eng-ioc` (css/150 swaps them
+  on `:root[data-suite]`).
+- js/105 `engToolSpec(connected, io)`: no Add signals when `io`
+  (`engIocOn()`, js/290).
+- `iocView` gains `picked` (a click on a Check row or an Inputs row),
+  `inputs` (the Inputs list's rows, js/288) and `find` (the search's words).
+  js/286 `paintRow` keeps the row's `eng-picked` / `eng-miss` classes. On
+  the phone a click only sets `picked`; nothing reads it there.
+
+## 2026-11-02 — the I/O check: each input's TIA comment and the operator's own (server + shared `ui/`; install with the next payload)
+
+- `SignalCfg` (the Inputs list's rows) gains `own_comment`, beside `comment`
+  (TIA's, the entry below). GET /api/iocheck/inputs rows and frames carry
+  `tia_comment` for showing: the row's `comment`, else the open I/O
+  project's - its signal at the row's TIA address, else its one signal by
+  that name, else the CAx export's tag at the address (routes/ioproject.py
+  `tia_lookup`) - never saved into the list.
+- A check's rows gain `tia_comment` and `own_comment`, filled at Start.
+- POST /api/iocheck/inputs/comment `{node_ids, comment}` -> `{own_comment,
+  rows, ...the lists}`; every page gets the inputs frame and a rows frame.
+  "" takes it away.
+- /api/ioproject/hardware keeps the CAx export's commented tags in the
+  hardware record (`value.tags`, `[address, name, comment]` each); the
+  project's state says `hardware.comments` (a count), never the tags.
+- The check's CSV ends with "Own comment"; the project report's CSV
+  and Excel end with "TIA comment", "comment"; its PDF says them on a line
+  under each signal.
+- Page: js/280 `iocComments` / `iocCommentText`; js/284 `iocAskComment`
+  ("Comment..." in `iocItemMenu`) and the popup's comment lines; js/286
+  `.ioc-cmt` under a row's name; js/288 the list rows' `.cmt` and
+  "Comment..." in their menu; css/150 and css/155.
+
 ## 2026-11-02 — the I/O check's CSV in new columns; a tag's TIA comment kept (`/api/iocheck/export.csv`, `/api/iocheck/import`; install with the next payload)
 
 - `GET /api/iocheck/export.csv` writes STATUS, TagName, Comment, Absolute
