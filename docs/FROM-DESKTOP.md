@@ -20,6 +20,35 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-02 — the I/O check's CSV in new columns; a tag's TIA comment kept (`/api/iocheck/export.csv`, `/api/iocheck/import`; install with the next payload)
+
+- `GET /api/iocheck/export.csv` writes STATUS, TagName, Comment, Absolute
+  address, DB, Type, Checked by, Time and date ("HH:MM, DD.MM.YY"),
+  Baseline, Related to, Note. A field can hold a comma, so read it with a
+  CSV reader, never by splitting lines.
+- `POST /api/iocheck/import` (a TIA tag table) keeps each tag's comment on
+  its row of the list (`SignalCfg.comment`), on rows already there too, and
+  answers `commented` (how many rows got one).
+- **To do on the phone:** nothing, unless a boot test reads the CSV's old
+  columns.
+
+---
+
+## 2026-11-02 — the I/O check: answered inputs stay quiet, the answers keep one order (server + shared `ui/`; install with the next payload)
+
+- A check row gains `after_mark` (int): its edges since it was answered
+  (`ok`, `nok`, `unsure`, `skipped`), 0 again on a new answer or Again
+  (app/iocheck/check.py). The push frame's `edges` no longer lists an
+  answered row, so no page announces it; js/286 `announce` skips
+  `iocAnswered(it)` rows too (js/280), and js/280 `iocStatusText` adds
+  "changed N× after marked".
+- js/284 `iocPopActions`: the answers in `IOC_MARK_ORDER` (ok, unsure,
+  nok, skipped) always; the suggested one keeps `.primary` and its Enter
+  badge, ringed (css/155). The popup's list rows: OK then Not OK. On the
+  phone the primary is no longer `flex: 1 0 100%` - it stays in the row.
+
+---
+
 ## 2026-10-31 — the ◎ flash and the held highlight redraw the look only (shared `ui/`; install with the next payload)
 
 - js/170-plugins.js: `flashTrace`, `unflashTrace` and `holdTraces` call the
