@@ -20,6 +20,43 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-02 — the simulator's cabinet: new names and node ids, and a sample P&ID (server + shared `ui/`; install with the next payload)
+
+- The cabinet's node ids spell their names now, as a CPU's do
+  (app/sim/names.py); the browse names are the same names, and rows are
+  named by them:
+
+  | Was | Is |
+  |---|---|
+  | `ns=3;s="DB_Cabinet"."DI_01"` .. `"DI_08"` | `ns=3;s="HPU_1ZSO101"`, `"HPU_1ZSC101"`, `"HPU_1ZSO102"`, `"HPU_1ZSC102"`, `"HPU_1LSH104"`, `"HPU_1LSL104"`, `"HPU_1PSH105"`, `"HPU_1TSH106"` |
+  | `ns=3;s="DB_Cabinet"."DI_09"` .. `"DI_16"` | `ns=3;s="DI_09"` .. `"DI_16"` |
+  | `ns=3;s="DB_Cabinet"."AI_01"` .. `"AI_04"` | `ns=3;s="HPU_1PIT103"`, `"HPU_1TIT106"`, `"AI_03"`, `"AI_04"` |
+  | `ns=3;s=DO_01` .. `DO_04` | `ns=3;s="HPU_1YVH101.A"`, `"HPU_1YVH101.B"`, `"HPU_1YVH102.A"`, `"HPU_1YVH102.B"` |
+
+  `FB_Cabinet` (the DB side: `in_xx`, `raw_01`, `pv_02`, `cmd_01..04`) is
+  unchanged.
+- A config saved before is moved onto the new ids at start
+  (`config.migrate_sim_cabinet_names`, called in routes/common.py with the
+  other migrations; a plain function, fine on pydantic 1.10): `cfg.sim`'s
+  lists, and `cfg.signals` / `cfg.iocheck_inputs` while `cfg.sim.enabled`.
+  Named signal sets and a check saved on disk are not moved.
+- `GET /api/sim/cabinet` (and the press's answer) gains `names`:
+  `{DI_01: "HPU_1ZSO101", ..., DI_09: "DI_09", ..., DO_04: "HPU_1YVH102.B"}`;
+  `inputs` and `analogs` stay keyed by the old ids. `POST
+  /api/sim/cabinet/press {name}` takes either name (`HPU_1PSH105` or
+  `DI_07`).
+- New `ui/samples/demo-hpu-pnid.pdf` (65 KB; in the payload with the rest
+  of `ui/`). js/295: the button `#pn-sample` ("Open the sample drawing"),
+  shown while `GET /api/sim/cabinet` says `running`; it reads the sample
+  through the usual `pnRead` (`POST /api/pnid/read`). js/286 `paintCabinet`
+  labels each button by `names` (the old id when there is none).
+- **To do on the phone:** the boot test. Its I/O check steps search
+  `DI_07`, `DI_08` and `DI_11` and expect a node id ending
+  `"DB_Cabinet"."DI_07"`: search `HPU_1PSH105` (was DI_07) and
+  `HPU_1TSH106` (was DI_08) and expect `ns=3;s="HPU_1PSH105"`; `DI_11`
+  keeps its name, its node id is `ns=3;s="DI_11"`. Pressing by the old
+  names still works.
+
 ## 2026-11-02 — the Engineering window's I/O check tools (shared `ui/`; nothing shows on the phone)
 
 - New js/290-iocheck-frame.js (after js/289): the Engineering frame's I/O
