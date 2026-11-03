@@ -20,6 +20,15 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-03 — the DB view's bases; the space bar holds Live (shared `ui/`; install with the next payload)
+
+- js/266 View a DB: a whole number's base per row (Dec/Hex/Bin, localStorage `dbv_base`), by a click on the
+  value or its menu's Show as.
+- js/080: the space bar presses LIVE (hold / resume) instead of the trial button.
+- **To do on the phone:** nothing, unless a boot test presses space to start a trial.
+
+---
+
 ## 2026-11-02 — the simulator's cabinet: new names and node ids, and a sample P&ID (server + shared `ui/`; install with the next payload)
 
 - The cabinet's node ids spell their names now, as a CPU's do
