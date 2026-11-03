@@ -20,15 +20,16 @@ def payloadFile = file(setting("begia.payload", "BEGIA_PAYLOAD",
 def buildPy = setting("begia.buildPython", "BEGIA_BUILD_PYTHON", "python")
 
 android {
-    namespace "com.sarralle.begia"
+    namespace "com.mgvictus.begia"
     compileSdk 34
     buildToolsVersion "34.0.0"
 
     defaultConfig {
         // The installed app's identity, MG Victus's: set at the move onto the
         // release key (2026-10-08), when every device installs it new anyway.
-        // The code's own package (namespace, above) is a name in the source
-        // only and changes nothing on a device.
+        // The code's own package (namespace, above) followed in shell 3.8
+        // (2026-11-03): the activity's and the services' names are made from
+        // it, and they show on a device (logcat, a launcher's shortcut).
         applicationId "com.mgvictus.begia"
         minSdk 26
         targetSdk 34
@@ -36,8 +37,8 @@ android {
         // slot manager (runtime/begia_shell/payload.py, SHELL_VERSION) refuses
         // a newer one: bump both together when a wheel, a permission or the
         // Python version changes, and never for a payload change.
-        versionCode 10
-        versionName "shell 3.7"
+        versionCode 11
+        versionName "shell 3.8"
         ndk { abiFilters "arm64-v8a" }
     }
     buildTypes {

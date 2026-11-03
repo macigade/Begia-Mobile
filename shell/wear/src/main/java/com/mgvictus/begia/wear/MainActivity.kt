@@ -1,4 +1,4 @@
-package com.sarralle.begia.wear
+package com.mgvictus.begia.wear
 
 import android.os.Bundle
 import android.os.VibrationEffect

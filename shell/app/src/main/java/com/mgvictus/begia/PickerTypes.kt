@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 /** <input accept=".xlsx,.csv,..."> as the MIME types a document picker
  *  filters by: extensions mapped, MIME types kept - the bug report's

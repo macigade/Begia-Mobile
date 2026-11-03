@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import android.content.Context
 import android.webkit.WebResourceResponse

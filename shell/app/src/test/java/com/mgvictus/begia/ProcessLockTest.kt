@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -24,7 +24,7 @@ class ProcessLockTest {
             .map { File(it.protectionDomain.codeSource.location.toURI()).path }
             .distinct().joinToString(File.pathSeparator)
         return ProcessBuilder(File(System.getProperty("java.home"), "bin/java").path,
-            "-cp", cp, "com.sarralle.begia.ProcessLockChildKt", *args)
+            "-cp", cp, "com.mgvictus.begia.ProcessLockChildKt", *args)
             .redirectErrorStream(true).redirectOutput(tmp.newFile()).start()
     }
 

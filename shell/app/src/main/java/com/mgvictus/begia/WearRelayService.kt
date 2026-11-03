@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import android.util.Log
 import com.google.android.gms.wearable.MessageEvent

@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 /**
  * What the page on this phone is showing, as far as other parts of the app

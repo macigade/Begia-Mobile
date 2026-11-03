@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import android.annotation.SuppressLint
 import android.content.Context

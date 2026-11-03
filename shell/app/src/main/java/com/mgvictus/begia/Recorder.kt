@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import android.app.ActivityManager
 import android.content.Context

@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import org.json.JSONObject
 import org.junit.Assert.assertEquals

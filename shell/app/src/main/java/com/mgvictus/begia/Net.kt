@@ -1,4 +1,4 @@
-package com.sarralle.begia
+package com.mgvictus.begia
 
 import java.net.HttpURLConnection
 import java.net.URL

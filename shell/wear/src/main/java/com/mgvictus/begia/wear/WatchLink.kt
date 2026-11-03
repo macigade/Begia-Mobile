@@ -1,4 +1,4 @@
-package com.sarralle.begia.wear
+package com.mgvictus.begia.wear
 
 import android.content.Context
 import android.util.Log
