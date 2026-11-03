@@ -255,8 +255,12 @@ def _iocheck(port: int, c: Check) -> None:
     alone. Nothing tells the check which member belongs to which input: it
     watches every member of every DB, sets aside what moves by itself, and
     names a member only once it followed the edge out AND the edge back -
-    one edge is not a pattern. The simulator wires DB_Cabinet.DI_xx into
-    FB_Cabinet.in_xx one cycle later, DI_07 inverted, DI_08 to nothing."""
+    one edge is not a pattern. The simulator wires its cabinet's inputs into
+    FB_Cabinet.in_xx one cycle later, the seventh inverted, the eighth to
+    nothing. Since desktop c688c8b (2026-11-02) they carry a drawing's tag
+    names - HPU_1PSH105 was DI_07, HPU_1TSH106 was DI_08, DI_11 kept its
+    own - and their node ids spell them (ns=3;s="HPU_1PSH105"); a payload
+    from before has "DB_Cabinet"."DI_07", and is searched by the old name."""
     status, page = api(port, "/")
     if b"js/284-iocheck-popup.js" not in page:
         print("  --  no I/O check search in this payload (built before it): skipped", flush=True)
@@ -268,13 +272,21 @@ def _iocheck(port: int, c: Check) -> None:
         assert api(port, "/" + s.decode())[0] == 200, s
     c.ok(f"serves the I/O check's {len(scripts)} scripts and its popup sheet")
 
-    ids = {}
-    for name in ("DI_07", "DI_08", "DI_11"):
-        hits = _hits(api(port, f"/api/search?q={name}&limit=20")[1]) or []
-        ids[name] = next(h["node_id"] for h in hits
-                         if h.get("is_var") and h["node_id"].endswith(f'"DB_Cabinet"."{name}"'))
+    # each input by its name now, else by its name before; kept under the
+    # old one here, and pressed by the name it was found by (the press
+    # takes either since the renaming, only the old one before it)
+    ids, said = {}, {}
+    for was, now in (("DI_07", "HPU_1PSH105"), ("DI_08", "HPU_1TSH106"), ("DI_11", "DI_11")):
+        for name, tail in ((now, f'"{now}"'), (was, f'"DB_Cabinet"."{was}"')):
+            hits = _hits(api(port, f"/api/search?q={name}&limit=20")[1]) or []
+            node = next((h["node_id"] for h in hits if h.get("is_var") and h["node_id"].endswith(tail)), None)
+            if node:
+                ids[was], said[was] = node, name
+                break
+        assert was in ids, f"{now} (was {was}) not found"
+    # a row's path is the symbol its node id spells: HPU_1PSH105, DB_Cabinet.DI_07
     status, r = api(port, "/api/iocheck/inputs",
-                    {"items": [{"node_id": n, "path": f"DB_Cabinet.{k}"} for k, n in ids.items()],
+                    {"items": [{"node_id": n, "path": n.split("s=", 1)[1].replace('"', "")} for n in ids.values()],
                      "cabinet": "boot", "rate_ms": 10})
     assert status == 200 and r.get("added") == len(ids), r
     c.ok(f"{len(ids)} cabinet inputs in the I/O check's list")
@@ -289,7 +301,7 @@ def _iocheck(port: int, c: Check) -> None:
              lambda: time.time() * 1000 > search["learn_until"] + 500, 15, every=0.25)
 
     def press(name: str, value: int) -> None:
-        status, r = api(port, "/api/sim/cabinet/press", {"name": name, "value": value})
+        status, r = api(port, "/api/sim/cabinet/press", {"name": said[name], "value": value})
         assert status == 200 and r.get("ok"), r
 
     def mapping(name: str) -> dict:
@@ -300,7 +312,7 @@ def _iocheck(port: int, c: Check) -> None:
             m = mapping(name)
             return m if m.get("state") == state else None
         try:
-            return wait_for(f"{name} {state}", probe, 10, every=0.25)
+            return wait_for(f"{said[name]} {state}", probe, 10, every=0.25)
         except TimeoutError as e:           # say what the check said instead
             raise TimeoutError(f"{e}; last seen: {json.dumps(mapping(name))[:600]}") from None
 
@@ -308,20 +320,20 @@ def _iocheck(port: int, c: Check) -> None:
     found("DI_11", "searching")
     time.sleep(1.0)
     assert mapping("DI_11").get("state") == "searching", mapping("DI_11")
-    c.ok("DI_11 pressed and held: searching - one edge names nothing")
+    c.ok(f"{said['DI_11']} pressed and held: searching - one edge names nothing")
     press("DI_11", 0)
     to = found("DI_11", "mapped")["to"]
     assert to[0]["name"].endswith("in_11") and to[0]["relation"] == "mapped", to[:2]
-    c.ok(f"DI_11 released: found {to[0]['name']}, {to[0]['lag_ms']} ms behind")
+    c.ok(f"{said['DI_11']} released: found {to[0]['name']}, {to[0]['lag_ms']} ms behind")
 
     press("DI_07", 1)
     time.sleep(1.0)
     press("DI_07", 0)
     to = found("DI_07", "mapped")["to"]
     assert to[0]["name"].endswith("in_07") and to[0]["relation"] == "inverted", to[:2]
-    c.ok(f"DI_07 pressed and released: found {to[0]['name']}, inverted")
+    c.ok(f"{said['DI_07']} pressed and released: found {to[0]['name']}, inverted")
 
-    # DI_08 follows nothing: "not mapped". Should one of its edges fall while
+    # the eighth follows nothing: "not mapped". Should one of its edges fall while
     # the DB was not all being read in time, the check says "too slow" and
     # asks for the press again (correlation._too_slow) - and, as an operator
     # would, the bench presses Again (/api/iocheck/reset) and does it again,
@@ -331,22 +343,25 @@ def _iocheck(port: int, c: Check) -> None:
         press("DI_08", 1)
         time.sleep(1.0)
         press("DI_08", 0)
-        wait_for("DI_08 judged", lambda: mapping("DI_08").get("state") in judged, 10, every=0.25)
+        wait_for(f"{said['DI_08']} judged", lambda: mapping("DI_08").get("state") in judged, 10, every=0.25)
         time.sleep(1.5)                   # a member's late edge, or a late read, would still show
         verdict = mapping("DI_08")
         if verdict.get("state") != "too slow":
             break
-        print(f"  ..  DI_08: the DB was read too slowly to judge it (try {attempt}) - Again", flush=True)
+        print(f"  ..  {said['DI_08']}: the DB was read too slowly to judge it (try {attempt}) - Again", flush=True)
         api(port, "/api/iocheck/reset", {"node_id": ids["DI_08"]})
         time.sleep(0.5)
     assert verdict.get("state") == "not mapped", verdict
-    c.ok("DI_08 pressed and released: nothing in the DB follows it" + (f" (try {attempt})" if attempt > 1 else ""))
+    c.ok(f"{said['DI_08']} pressed and released: nothing in the DB follows it" + (f" (try {attempt})" if attempt > 1 else ""))
 
     status, r = api(port, "/api/iocheck/stop", {})
     assert status == 200, r
     status, csv = api(port, "/api/iocheck/export.csv")
     text = csv.decode("utf-8-sig") if isinstance(csv, bytes) else str(csv)
-    assert status == 200 and "found in the DB" in text and "in_11" in text and "in_07" in text, text[:400]
+    # the members found: under "found in the DB" until desktop 624bf08
+    # (2026-11-02), in the DB column of the signed-off sheet since
+    assert status == 200 and "in_11" in text and "in_07" in text, text[:400]
+    assert "found in the DB" in text or text.startswith("STATUS,TagName,"), text[:400]
     c.ok("check stopped; the CSV names the members found")
 
 
