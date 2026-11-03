@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-03 — readings keep their width (shared `ui/`; install with the next payload)
+
+- js/070 `paintReading(el, text, sig)` now writes every reading: a chart
+  header's `.val`, a card's `.sig-val` and the rate `.ph-rate`. It holds
+  the widest text shown so far as the CSS variable `--wide`, in ch.
+  `holdWidest` sizes a first value from the widest of the store's minutes,
+  and a BOOL starts at FALSE's width. Each layout's CSS, the phone's too,
+  takes `var(--wide, 0px)` into its min-width.
+- **To do on the phone:** nothing, unless a phone test reads a reading's
+  width or sets a min-width on `.val` itself.
+
+---
+
 ## 2026-11-03 — deleting a chart asks which; a signal in no chart is pane -2 (server + shared `ui/`; install with the next payload)
 
 - A signal's `pane` may now be **-2: in no chart** (js/070 `NO_CHART`). It
