@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.Uri
 import com.chaquo.python.PyException
 import com.chaquo.python.PyObject
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 import org.json.JSONObject
 import java.io.File
 
@@ -17,10 +15,7 @@ import java.io.File
 object Installer {
     class Refused(message: String) : Exception(message)
 
-    internal fun py(ctx: Context): PyObject {
-        if (!Python.isStarted()) Python.start(AndroidPlatform(ctx.applicationContext))
-        return Python.getInstance().getModule("begia_shell.android")
-    }
+    internal fun py(ctx: Context): PyObject = PythonStart.module(ctx)
 
     /** A PayloadError's text is written for the screen: keep just that. */
     private fun <T> guarded(block: () -> T): T = try {

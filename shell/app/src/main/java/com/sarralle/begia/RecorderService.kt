@@ -15,8 +15,6 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
 import org.json.JSONObject
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
@@ -51,7 +49,8 @@ class RecorderService : Service() {
 
     private fun boot() {
         try {
-            if (!Python.isStarted()) Python.start(AndroidPlatform(this))
+            // never beside the screen's Python starting (PythonStart)
+            val shell = PythonStart.module(this)
             val embedded = Embedded.ensure(this)
             val debug = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
             val restart = Runnable {
@@ -62,7 +61,7 @@ class RecorderService : Service() {
             // (boot.prepare tells only one whose manifest says "licence": 2),
             // and this shell's rule: shell 2 requires a licence, so its
             // embedded licensable build takes over from an ungated one.
-            val report = Python.getInstance().getModule("begia_shell.android")
+            val report = shell
                 .callAttr("start", filesDir.path, embedded?.path, Recorder.PORT, restart, debug,
                           Licence.deviceId(this), Licence.deviceName(), LICENCE_REQUIRED,
                           BuildConfig.VERSION_NAME)
