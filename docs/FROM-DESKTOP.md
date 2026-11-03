@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-04 — units under the Y axes in Analyse and the trial viewer (shared `ui/`; install with the next payload)
+
+- New in js/170: `unitRowAxis(axisStyle)` and `unitRowH()`. This is a time
+  axis with no times, ticks or grid, one line of text tall, for
+  `axisUnitPlugin` to write the units in. Analyse (js/220) and the trial
+  viewer (js/240) use it as axes[0] where they have an analog axis.
+- A trial's analog chart is now `trialChartH()` tall: 160 plus that row.
+- `axisUnitText(onAxis, mode, unitOf = liveUnit)` now takes a reader for
+  the units; Analyse and the viewer pass `shownUnit`.
+- `axisTagPlugin` keeps a tag inside its plot's height.
+- **To do on the phone:** nothing, unless a phone test measures a trial
+  chart's height: it is about 21 px taller now.
+
+---
+
 ## 2026-11-03 — readings keep their width (shared `ui/`; install with the next payload)
 
 - js/070 `paintReading(el, text, sig)` now writes every reading: a chart
