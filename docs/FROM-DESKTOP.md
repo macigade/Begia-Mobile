@@ -20,6 +20,106 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-03 — deleting a chart asks which; a signal in no chart is pane -2 (server + shared `ui/`; install with the next payload)
+
+- A signal's `pane` may now be **-2: in no chart** (js/070 `NO_CHART`). It
+  is still read and recorded. `buildCharts`, `chartPanes` and `panesInUse`
+  leave it out. The Live list shows it in a "Not in a chart" tile
+  (`.none-tile`) after the charts' tiles, and Analyse groups it under "Not
+  in a chart now". `PATCH /api/signals` and `/api/signals/bulk` take -2.
+  The server's repoint and change-block keep -2; only a string's -1 gets a
+  chart again.
+- js/070 `deletePane` asks through the new js/050
+  `askChoice(text, choices, opts)` (`ask({ choices })`: buttons one under
+  the other, the answer `{ choice }`, Cancel focused). "chart" sends
+  `PATCH /api/signals/bulk` with pane -2; "all" runs `removeSignals` and
+  then `PUT /api/pane`. The Strings chart asks the same question (js/185
+  `deleteStringsChart`).
+- **To do on the phone:** if the Android app reads `/api/signals` itself
+  (outside the shared `ui/`) and groups signals by `pane`, skip -2 as it
+  skips -1.
+
+---
+
+## 2026-11-03 — a signal's menu deletes it from the signal list (shared `ui/`; install with the next payload)
+
+- js/055 `signalMenu(sig, chart, opts)` has a new item before the chart's
+  own link: "Delete from the signal list…" (danger). When `sig` is one of
+  several picked it covers them all. `deleteFromSignalList(sigs)` asks
+  through `askConfirm` with the new `cancelFocus` (js/050: the dialog starts
+  on Cancel), then calls `removeSignals` (js/120: `DELETE /api/signals` or
+  `/api/signals/bulk`; its Undo is `/api/signals/restore`). Not offered for
+  UDP; greyed out while recording. The Signals table's own row menu passes
+  `{ inTable: true }` and keeps its Remove.
+- **To do on the phone:** nothing. A long press on a reading or a list row
+  shows the new item.
+
+---
+
+## 2026-11-03 — a drag of picked signals carries them all (shared `ui/`; install with the next payload)
+
+- js/070: `dragGroup(sig)` is every `heldSigs` signal when the one dragged
+  is picked, else that signal alone. `moveSignalsTo(group, pane, before)`
+  moves them with one `PATCH /api/signals/bulk`, one reorder and one rebuild;
+  `patchSignalsPane` does the write. `moveSignalTo` is now
+  `moveSignalsTo([sig])`. When the Live list's grip carries several, its
+  ghost says "N signals"; a chart's drop (js/180) and the Project tree's
+  (js/105) carry the same group.
+- **To do on the phone:** nothing. A phone has no Ctrl/Shift picks, so its
+  drags still carry one signal.
+
+---
+
+## 2026-11-03 — a tablet's chart header keeps its readings (shared `ui/`; install with the next payload)
+
+- A chart header's name is now a `.nm-run` span inside `.nm` (js/180
+  buildCharts, every layout; `.nm`'s text is unchanged). With
+  `data-device="tablet"` (css/130-tablet.css) an open chart's readout
+  strip is a size container (`ph-sigs`) and a readout is at most its width
+  (`max-width: 100cqi`), the name cut at its start; under 320 px the
+  address (`.ph-addr`) is hidden. Phones and PCs are unchanged.
+- **To do on the phone:** nothing, unless the Android tablet's tests read a
+  header name's child nodes or expect a readout wider than its strip.
+
+---
+
+## 2026-11-03 — each chart reading's read rate (shared `ui/`; install with the next payload)
+
+- A chart header's readout (js/180 buildCharts) ends its address line
+  (`.ph-row2`) with `.ph-rate`: "every N ms" from
+  `status.achieved_rate_ms[node_id]`, else "asked N ms" from the signal's
+  `rate_ms`; painted again with every status (js/030 setStatus calls
+  `paintReadRates`). On a phone (css/120-phone.css) the address line shows
+  again, holding only that rate: a readout is a line taller there.
+- **To do on the phone:** nothing, unless a test expects `.ph-row2` hidden
+  on a phone or counts a readout's lines.
+
+---
+
+## 2026-11-03 — a tablet's signal cards (shared `ui/`; install with the next payload)
+
+- With `data-device="tablet"` the Live list's card puts the reading on its
+  second line (js/070 renderSignalList: the value element in `.sig-row2`;
+  still `sigValEls` by reference); the name is one line cut at its start
+  (css/130-tablet.css, a `.nm-run` span inside `.name`), the address and
+  the protocol badge hidden. The drawer's default width is 380 px there
+  (js/200, `drawer_w`). Phones and laptops are unchanged.
+- **To do on the phone:** nothing, unless a test on the Android tablet
+  looks for the value in `.sig-row1`.
+
+---
+
+## 2026-11-03 — charts per window counts a folded chart (shared `ui/`; install with the next payload)
+
+- A PC's or tablet's page (the 1-4 by LIVE; js/180 `panesOnPage`,
+  `paneHeights`, `fitPanes`) is the first N charts, folded ones included:
+  a folded chart's header is charged, and it takes no share of the height.
+  The Strings strip is still outside the count. The phone's page
+  (`phonePerPage`) is unchanged.
+- **To do on the phone:** nothing.
+
+---
+
 ## 2026-11-03 — the DB view's bases; the space bar holds Live (shared `ui/`; install with the next payload)
 
 - js/266 View a DB: a whole number's base per row (Dec/Hex/Bin, localStorage `dbv_base`), by a click on the
