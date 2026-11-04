@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-04 — a signal set saved on the simulator before its new names loads with them (`app/`; install with the next payload)
+
+- New in app/config.py: `move_sim_rows(rows)`. It makes the same move as
+  `migrate_sim_cabinet_names`, but for any rows: an old cabinet id
+  (`"DB_Cabinet"."DI_01"`, `DO_01`) goes onto its new one, with name and
+  path. `POST /api/signalsets/load` uses it while the simulator is the
+  connection (`cfg.sim.enabled`). The stored set is unchanged, and a real
+  PLC's load moves nothing.
+- **To do on the phone:** nothing. A set saved on the phone's simulator
+  before 2026-11-02 now loads with the new names.
+
+---
+
 ## 2026-11-04 — units under the Y axes in Analyse and the trial viewer (shared `ui/`; install with the next payload)
 
 - New in js/170: `unitRowAxis(axisStyle)` and `unitRowH()`. This is a time
