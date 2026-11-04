@@ -189,6 +189,7 @@ def run(payload: Path, port: int, keep: bool) -> int:
         c.ok("trial listed by the API")
 
         _iocheck(port, c)
+        _signalsets(port, c)
 
         # The simulator speaks OPC UA, so nothing above touched the S7comm-plus
         # driver - the one that reaches tags OPC UA hides. Prove it imports on
@@ -363,6 +364,47 @@ def _iocheck(port: int, c: Check) -> None:
     assert status == 200 and "in_11" in text and "in_07" in text, text[:400]
     assert "found in the DB" in text or text.startswith("STATUS,TagName,"), text[:400]
     c.ok("check stopped; the CSV names the members found")
+
+
+def _signalsets(port: int, c: Check) -> None:
+    """A signal set as a file (desktop 166b082, PROJECT-DESIGN 4 and 6): saved,
+    downloaded as <name>.signalSet, and opened again - a name taken asks (409
+    with the name Keep both would give), Keep both brings it in beside. The
+    shell's part: a .signalSet from Files or the share sheet goes to the
+    page's openSetFile, which makes exactly these calls, and a download is
+    saved under the Content-Disposition's name (shell 3.9). On the phone's
+    pydantic 1 the import's model_validate/model_dump go through the shim."""
+    status, page = api(port, "/")
+    if b'id="btn-set-tofile"' not in page:
+        print("  --  no signal set files in this payload (built before them): skipped", flush=True)
+        return
+
+    def call(path: str, body: dict | None = None):
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{port}{path}", data=None if body is None else json.dumps(body).encode(),
+            headers={"Content-Type": "application/json"} if body is not None else {})
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status, r.headers, r.read()
+        except urllib.error.HTTPError as e:
+            return e.code, e.headers, e.read()
+
+    status, _, raw = call("/api/signalsets/save", {"name": "boot set"})
+    assert status == 200, (status, raw[:300])
+    status, headers, raw = call("/api/signalsets/file?name=boot%20set")
+    disposition = headers.get("Content-Disposition", "")
+    assert status == 200 and "filename*=UTF-8''boot%20set.signalSet" in disposition, (status, disposition)
+    doc = json.loads(raw)
+    assert doc.get("begia") == "signal-set" and doc.get("v") == 1, {k: doc.get(k) for k in ("begia", "v")}
+    assert any("Press_A_bar" in json.dumps(s) for s in doc["signals"]), doc["signals"][:2]
+    status, _, raw = call("/api/signalsets/import", {"file": doc})
+    asked = json.loads(raw)
+    assert status == 409 and asked.get("taken") == "boot set" and asked.get("keep"), (status, asked)
+    status, _, raw = call("/api/signalsets/import", {"file": doc, "taken": "keep"})
+    kept = json.loads(raw)
+    assert status == 200 and kept.get("name") == asked["keep"] and kept.get("count") == len(doc["signals"]), kept
+    c.ok(f"a signal set saved, downloaded as \"boot set.signalSet\", opened again: "
+         f"the name taken asks, Keep both brings it in as \"{kept['name']}\"")
 
 
 def _hits(r):
