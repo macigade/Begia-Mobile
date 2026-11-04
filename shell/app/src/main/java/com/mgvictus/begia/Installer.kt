@@ -100,7 +100,7 @@ object Installer {
     /** A laptop connection that accepts the laptop's own CA, as download()
      *  and fetchText() do - the box (IBA-CODE docs/LICENSING-DESIGN.md
      *  flow 4) carries only what verifies under the APK's keys anyway. */
-    private fun open(url: String, readMs: Int): java.net.HttpURLConnection {
+    internal fun open(url: String, readMs: Int): java.net.HttpURLConnection {
         val c = java.net.URL(url).openConnection() as java.net.HttpURLConnection
         if (c is javax.net.ssl.HttpsURLConnection) {
             val trustAll = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {

@@ -26,7 +26,16 @@ class PickerTypesTest {
     fun anExtensionIsAskedOfTheMimeTable() {
         val table: (String) -> String? = { if (it == "png") "image/png" else null }
         assertArrayEquals(arrayOf("image/png"), pickerTypes(arrayOf(".png"), table))
-        assertArrayEquals(arrayOf("*/*"), pickerTypes(arrayOf(".nothing"), table))
+        // one Android has no type for is a plain byte stream, and any file may be picked
+        assertArrayEquals(arrayOf("application/octet-stream", "*/*"), pickerTypes(arrayOf(".nothing"), table))
+    }
+
+    @Test
+    fun aSignalSetFileCanBePicked() {
+        // js/070's <input accept=".signalSet,application/json">: JSON alone hid
+        // every .signalSet, kept as a byte stream by the phone (before shell 3.9)
+        assertArrayEquals(arrayOf("application/json", "application/octet-stream", "*/*"),
+                          pickerTypes(arrayOf(".signalSet,application/json"), none))
     }
 
     @Test

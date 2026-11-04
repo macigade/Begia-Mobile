@@ -3,6 +3,7 @@ package com.mgvictus.begia
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -14,6 +15,8 @@ import android.os.CancellationSignal
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
@@ -35,6 +38,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -52,9 +56,11 @@ import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 
 /**
  * A full-screen WebView on the recorder served at 127.0.0.1:8080, and the
@@ -83,6 +89,7 @@ class MainActivity : AppCompatActivity() {
     private var splashStart = 0L            // when the payload's boot page went up (epoch ms)
     private var splashPage = false          // the WebView shows that page, not the app
     private var freshPage = false           // BEGIA's page is loading anew: its history starts there
+    private var pendingSet: Pair<String, String>? = null   // a .signalSet waiting for BEGIA's page: text, name
     // second-screen mode: the laptop's BEGIA, else null; read on the WebView's
     // own thread too (shouldInterceptRequest)
     @Volatile private var remote: String? = null
@@ -188,6 +195,8 @@ class MainActivity : AppCompatActivity() {
                         Source.setCookie(this@MainActivity,
                             try { CookieManager.getInstance().getCookie(r) } catch (e: Exception) { null })
                     }
+                    // a .signalSet opened while the page was not up yet
+                    if (pendingSet != null) deliverSignalSet()
                 }
             }
 
@@ -219,6 +228,9 @@ class MainActivity : AppCompatActivity() {
                 if (r != null && Source.host(error.url) == Source.host(r)) handler.proceed() else handler.cancel()
             }
         }
+        // the page's downloads (a CSV export, a .signalSet): a WebView drops
+        // what no one takes, so they never reached a phone before shell 3.9
+        web.setDownloadListener { url, _, disposition, _, _ -> saveDownload(url, disposition) }
         askOnce()
         Recorder.start(this)
         applyLook(getSharedPreferences("shell", MODE_PRIVATE).getString("theme", "dark") ?: "dark")
@@ -291,7 +303,15 @@ class MainActivity : AppCompatActivity() {
     private fun handleIntent(i: Intent?) {
         if (i?.action == Recorder.ACTION_QUIT) { quitBegia(); return }
         if (i?.action == Intent.ACTION_VIEW) i.data?.let { offerInstall(it) }
+        // the share sheet: a .signalSet sent from mail, a chat or Files - and
+        // a payload or a licence, told apart by the same sniff
+        if (i?.action == Intent.ACTION_SEND) sentUri(i)?.let { offerInstall(it) }
     }
+
+    @Suppress("DEPRECATION")
+    private fun sentUri(i: Intent): Uri? =
+        if (Build.VERSION.SDK_INT >= 33) i.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+        else i.getParcelableExtra(Intent.EXTRA_STREAM) as? Uri
 
     // ------------------------------------------------------------- boot ----
 
@@ -577,7 +597,7 @@ class MainActivity : AppCompatActivity() {
                 val head = staged.inputStream().use { s -> ByteArray(64).let { b -> b.copyOf(s.read(b).coerceAtLeast(0)) } }
                 if (head.firstOrNull { it.toInt().toChar() !in " \t\r\n﻿" }?.toInt()?.toChar() == '{' ||
                     (head.size >= 3 && head[0] == 0xEF.toByte() && head[1] == 0xBB.toByte() && head[2] == 0xBF.toByte())) {
-                    offerLicence(staged.readText(Charsets.UTF_8).removePrefix("﻿"))
+                    offerJson(uri, staged.readText(Charsets.UTF_8).removePrefix("﻿"))
                     return@execute
                 }
                 val m = Installer.install(this, staged)
@@ -587,6 +607,102 @@ class MainActivity : AppCompatActivity() {
                 ui.post { tell(getString(R.string.install_refused), e.message ?: "") }
             }
         }
+    }
+
+    /** A JSON file opened with BEGIA: a .signalSet joins the page's sets
+     *  (SignalSetFile), anything else is offered as a licence. Off the UI thread. */
+    private fun offerJson(uri: Uri, text: String) {
+        if (!SignalSetFile.isSignalSet(text)) return offerLicence(text)
+        val name = displayName(uri) ?: "signal set.signalSet"
+        ui.post { openSignalSet(text, name) }
+    }
+
+    /** The name a file came with, from whoever sent it; null when it says none. */
+    private fun displayName(uri: Uri): String? = try {
+        contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c ->
+            if (c.moveToFirst()) c.getString(0) else null
+        }
+    } catch (e: Exception) {
+        null
+    }
+
+    /** A .signalSet from Files, Downloads or the share sheet (desktop 166b082,
+     *  PROJECT-DESIGN 6) goes to the page's own openSetFile: its import, and
+     *  its Keep both / Replace when the name is taken, on the Signals place.
+     *  It waits for BEGIA's page when that is not up yet (onPageFinished). */
+    private fun openSignalSet(text: String, name: String) {
+        pendingSet = text to name
+        if (pageLoaded) deliverSignalSet()
+    }
+
+    private fun deliverSignalSet() {
+        val (text, name) = pendingSet ?: return
+        pendingSet = null
+        web.evaluateJavascript(SignalSetFile.openScript(text, name)) { answer ->
+            if (answer != "true") tell(getString(R.string.set_title), getString(R.string.set_page_old))
+        }
+    }
+
+    /** What the page downloads, saved to Downloads under the name the server
+     *  gives it (Downloads). BEGIA's own addresses only - this phone's, or the
+     *  laptop's in second-screen mode - fetched with the page's cookies, on a
+     *  thread of its own: a long CSV must not hold up the io thread's polls. */
+    private fun saveDownload(url: String, disposition: String?) {
+        // a file the page makes itself (the report's Save HTML) is not on a
+        // server to fetch: the page says what to do when nothing appears
+        if (url.startsWith("blob:")) return
+        if (!url.startsWith(base())) {
+            Toast.makeText(this, R.string.save_not_begia, Toast.LENGTH_LONG).show()
+            return
+        }
+        thread(name = "begia-download") {
+            val saved = try {
+                saveToDownloads(url, disposition)
+            } catch (e: Exception) {
+                Log.w(Recorder.TAG, "download not saved: $e")
+                null
+            }
+            ui.post {
+                Toast.makeText(this, if (saved != null) getString(R.string.saved_to_downloads, saved)
+                                     else getString(R.string.save_failed), Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    /** Fetch [url] into Downloads: the name it was saved under. Before
+     *  Android 10 Downloads needs a storage permission the app does not ask
+     *  for, and the share sheet takes the file where it should go instead. */
+    private fun saveToDownloads(url: String, disposition: String?): String {
+        val c = Installer.open(url, 60_000)
+        CookieManager.getInstance().getCookie(url)?.let { c.setRequestProperty("Cookie", it) }
+        if (c.responseCode != 200) throw IOException("the download answered ${c.responseCode}")
+        val name = Downloads.fileName(c.getHeaderField("Content-Disposition") ?: disposition, url)
+        val type = Downloads.mimeFor(name)
+        if (Build.VERSION.SDK_INT >= 29) return c.inputStream.use { intoDownloads(it, name, type) }
+        val f = File(File(cacheDir, "share").apply { mkdirs() }, name)
+        c.inputStream.use { input -> f.outputStream().use { input.copyTo(it) } }
+        shareFile(f, type, name)
+        return name
+    }
+
+    @RequiresApi(29)
+    private fun intoDownloads(input: java.io.InputStream, name: String, type: String): String {
+        val item = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, type)
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
+        }) ?: throw IOException("Downloads took no new file")
+        try {
+            (contentResolver.openOutputStream(item) ?: throw IOException("Downloads gave no stream")).use { input.copyTo(it) }
+            contentResolver.update(item, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null)
+        } catch (e: Exception) {
+            contentResolver.delete(item, null, null)
+            throw e
+        }
+        // a name already there gets " (1)" and the like: say the one it got
+        return contentResolver.query(item, arrayOf(MediaStore.MediaColumns.DISPLAY_NAME), null, null, null)?.use { q ->
+            if (q.moveToFirst()) q.getString(0) else null
+        } ?: name
     }
 
     /** The laptop path: download (with the laptop's pairing code, when it
@@ -834,11 +950,15 @@ class MainActivity : AppCompatActivity() {
         val dir = File(cacheDir, "share").apply { mkdirs() }
         val f = File(dir, name)
         f.writeText(text)
+        shareFile(f, "application/json", title)
+    }
+
+    private fun shareFile(f: File, type: String, title: String) {
         val uri = FileProvider.getUriForFile(this, "$packageName.files", f)
         val send = Intent(Intent.ACTION_SEND)
-            .setType("application/json")
+            .setType(type)
             .putExtra(Intent.EXTRA_STREAM, uri)
-            .putExtra(Intent.EXTRA_SUBJECT, name)
+            .putExtra(Intent.EXTRA_SUBJECT, f.name)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         ui.post { startActivity(Intent.createChooser(send, title)) }
     }

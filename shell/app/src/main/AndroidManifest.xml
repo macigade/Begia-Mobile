@@ -57,8 +57,20 @@
                 <data android:mimeType="application/octet-stream" />
                 <data android:mimeType="application/zip" />
                 <!-- a licence file (IBA-CODE docs/LICENSING-DESIGN.md flow 5):
-                     the installer sniffs the first byte, "{" a licence, "PK" a
-                     payload, whatever type the sender said -->
+                     the installer sniffs the first byte, "{" a licence or a
+                     .signalSet (SignalSetFile, shell 3.9), "PK" a payload,
+                     whatever type the sender said -->
+                <data android:mimeType="application/json" />
+            </intent-filter>
+            <!-- the share sheet: a .signalSet sent from mail, a chat or Files
+                 (desktop PROJECT-DESIGN 6) - and a payload or a licence, the
+                 same files told apart by the same sniff -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/x-begia" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/zip" />
                 <data android:mimeType="application/json" />
             </intent-filter>
         </activity>

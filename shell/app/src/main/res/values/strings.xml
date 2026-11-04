@@ -53,4 +53,11 @@
     <string name="leave_remote">Minimize: BEGIA stays open in the background.\n\nQuit: BEGIA closes on this phone. The laptop carries on as it is.</string>
     <string name="leave_minimize">Minimize</string>
     <string name="leave_quit">Quit</string>
+    <!-- a .signalSet opened from Files or the share sheet (shell 3.9) -->
+    <string name="set_title">Signal set</string>
+    <string name="set_page_old">This BEGIA is older than signal set files. Update BEGIA, then open the file again.</string>
+    <!-- what the page downloads: a CSV export, a .signalSet (shell 3.9) -->
+    <string name="saved_to_downloads">Saved in Downloads: %1$s</string>
+    <string name="save_failed">The file could not be saved</string>
+    <string name="save_not_begia">Only BEGIA\'s own files are saved here</string>
 </resources>
