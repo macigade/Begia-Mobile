@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-04 — a signal set as a file (.signalSet) (server + shared `ui/`; install with the next payload)
+
+- New: `GET /api/signalsets/file?name=` downloads a set as `<name>.signalSet`.
+  The file is JSON, made by app/signal_set_file.py: `{"begia":
+  "signal-set", "v": 1, name, made, build, signals, groups, charts, plc}`.
+- New: `POST /api/signalsets/import` with `{file, taken: "" | "replace" |
+  "keep"}`. A name already taken answers 409 `{taken, keep}`.
+- `POST /api/signalsets/load` now takes `anyway`. A set made on another PLC
+  answers 409 `{other_plc: true}` without it.
+- A saved set now also keeps `charts` and `plc`.
+- js/070: Save to file… and Open from file… beside the sets; a `.signalSet`
+  dropped on the window opens; Load goes through `loadSetAsked`.
+- **To do on the phone** (PROJECT-DESIGN.md §6, BEGIA-Android): open a
+  `.signalSet` from the share sheet or the file chooser, handing its text
+  to `openSetFile` or POSTing it to `/api/signalsets/import`. A load from the
+  phone that answers 409 `other_plc` should ask, then send again with
+  `anyway`.
+
+---
+
 ## 2026-11-04 — a signal set saved on the simulator before its new names loads with them (`app/`; install with the next payload)
 
 - New in app/config.py: `move_sim_rows(rows)`. It makes the same move as
