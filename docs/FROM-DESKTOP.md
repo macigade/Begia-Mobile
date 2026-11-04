@@ -23,7 +23,7 @@ as the change. Entries say what to *do*, not just what happened.
 ## 2026-11-04 — a signal set as a file (.signalSet) (server + shared `ui/`; install with the next payload)
 
 - New: `GET /api/signalsets/file?name=` downloads a set as `<name>.signalSet`.
-  The file is JSON, made by app/signal_set_file.py: `{"begia":
+  The file is JSON, made by app/signalset_file.py: `{"begia":
   "signal-set", "v": 1, name, made, build, signals, groups, charts, plc}`.
 - New: `POST /api/signalsets/import` with `{file, taken: "" | "replace" |
   "keep"}`. A name already taken answers 409 `{taken, keep}`.
