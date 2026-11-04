@@ -20,6 +20,31 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-04 — the BEGIAs on this network and the signal sets they share (server + shared `ui/`; install with the next payload)
+
+- The "BEGIA?" answer (routes/hosting.py) gains `shares` (true/false):
+  this configuration's signal sets are shared on the network
+  (`AppConfig.share_sets`, off by default). Nothing else in it changed.
+- New routes (app/routes/netshare.py; docs/NETWORK-SHARING.md has the
+  table): `GET /api/network/begias[?fresh=1]`, `GET /api/share`, `POST
+  /api/share/switch {on}` (this machine only), `POST /api/share/fetch {id}`
+  (the sharer's set names, asked by this BEGIA) and `{id, set}` (that set's
+  .signalSet file, `other_plc` beside it), `GET /api/share/log`, and `POST
+  /api/share/sets {id, name, device}` / `POST /api/share/set {..., set}` -
+  open to the network, served only while the switch is on and only to a
+  licensed BEGIA whose "BEGIA?" answer has that id, name and device, from
+  the address the request comes from. A set taken is written down
+  (share-log.json beside config.json).
+- A phone asks and is asked as a PC is: its id, its licence's name, device
+  "phone". For a phone to be served, it must answer "BEGIA?" (discovery
+  on) and be licensed.
+- New ui/js/112-network.js and ui/css/116-network.css: Options' part in
+  Access and sharing, which the phone hides with the rest of that group.
+- `BEGIA_DISCOVERY_ASK` (ports, comma-separated): the search asks on each.
+  Unset, the one port, as before.
+- **To do on the phone:** nothing now. Later (design section 6): load the
+  sets a laptop shares, through `POST /api/share/fetch`.
+
 ## 2026-11-04 — a signal set as a file (.signalSet) (server + shared `ui/`; install with the next payload)
 
 - New: `GET /api/signalsets/file?name=` downloads a set as `<name>.signalSet`.
