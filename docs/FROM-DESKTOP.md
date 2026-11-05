@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-06 — standard words on buttons, menus and dialogs (shared `ui/` + one route; install with the next payload)
+
+- Many visible labels changed (docs/STANDARD-TEXTS.md has every one): for
+  example Rename, Remove, Replace, Add all, Reset zoom, Resume live,
+  Collapse / Expand, Select / Clear, "…" on commands that ask first.
+- js/050 `ask()` takes a field with `browse` (a path box + Browse…).
+- `POST /api/project/pick` (Browse…: Windows' own box, on the PC only; a
+  phone gets 403).
+- **To do on the phone:** a boot test that finds a button by its old text
+  needs the new one; nothing else.
+
+---
+
 ## 2026-11-05 — S7 or OPC UA beside the connection, not on every row (shared `ui/` only; install with the next payload)
 
 - js/030 `connMark(status)`: "S7 · host:102", "OPC UA · host:4840",
