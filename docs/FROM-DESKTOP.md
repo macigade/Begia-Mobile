@@ -20,6 +20,37 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — a search finds a tag by its TIA comment (server; install with the next payload)
+
+- `GET /api/search` adds, after the hits found by name or address and
+  before the near ones, the tags whose TIA comment holds the query's words
+  (app/search_match.py's rules). Such a hit has `"by": "comment"` and
+  `comment`; the answer gains `by_comment` (how many), and `total` and
+  `near` count them. A comment that holds the query as typed sends the
+  near names away, as a name does. A query starting with % is an address
+  only, as before.
+- Where the comments come from (app/iocheck/comments.py,
+  routes/tiacomments.py): `tia-comments.json` beside config.json, per PLC
+  (its tracking fingerprint), filled by `POST /api/iocheck/import` (every
+  commented row of the table, before the tags are added - kept even when
+  the PLC is not connected; not on `dry`), the I/O project's tag list and
+  CAx imports on apply; plus the open I/O project's and the Inputs list
+  rows' own comments.
+- Both drivers gain `rows_for(names, show)`: the search's own row for a tag
+  by its TIA name.
+- `/api/browse` and `/api/search` rows without a comment of their own take
+  the one known by name (as they took the open project's).
+- `taglist.parse` returns `comments` beside `tags`.
+- **What a phone sees:** the same search. It finds tags by their comments
+  once a tag table was imported on that phone (Inputs > Import a tag
+  table) or its open I/O project holds them - the book is the phone's own
+  data folder's, under the PLC it was imported for. With none imported
+  there, a phone finds by name and address only, as before.
+- `tia-comments.json` is a site's own, as config.json is: tools/make_payload.py
+  and make_handout.ps1 refuse it (and `share-log.json`), and .gitignore
+  keeps both out of the repo.
+- **To do on the phone:** nothing.
+
 ## 2026-11-05 — Add signals redesigned (shared `ui/` + one server field; install with the next payload)
 
 - The `#picker` markup is new: `.pk-main` holds `.pk-left` and `.pk-right`.
