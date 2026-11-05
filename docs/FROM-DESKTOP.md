@@ -20,6 +20,52 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — the File menu's projects, and every page starts again in a new project (shared `ui/`; install with the next payload)
+
+- `ui/js/108-project.js` gains the File menu's commands: `projectNew`,
+  `projectOpen`, `projectRecentItems`, `projectSave`, and the cover
+  `projectCover`. They are the Engineering window's, on the PC itself; the
+  phone shows none of them.
+- **The phone sees one thing:** `js/020 handleMsg` now reloads the page when
+  an init frame's `project.file` is another than the one it shows
+  (`projectSwitched`). After the PC opens another project, a phone's page
+  reconnects and starts again in it, as after an update.
+- js/108 is the one owner of the project for every layout: `projectNow`,
+  `projectTake`, `projectSwitched`, `projectCover`, `projectJob` /
+  `projectJobTake`, `projectPost`, `projectSize`. js/139's Project card uses
+  them. js/020 hands the init frame's `project`, the `project` frame and
+  `project_job` to js/108 only.
+- **To do on the phone:** nothing, if a reload of the page on reconnect is
+  fine in the shell, as it is after an update (`build` changed).
+
+---
+
+## 2026-11-05 — the Project card (shared `ui/`: js/139-project.js, css/119-project.css; install with the next payload)
+
+- New shared files: `ui/js/139-project.js` and `ui/css/119-project.css`,
+  and the card's markup at the top of Setup (`#proj-card` in
+  `#conn-view`). The card shows only on the PC's own pages: never in the
+  phone layout, never on a page of another device, and never when `GET
+  /api/project`'s new `opens_projects` is false - which it is on the phone's
+  own BEGIA (a phone or a tablet).
+- js/020: the init frame's `project` is taken first - a page that reconnects
+  onto ANOTHER project (a switch's restart) loads again, whole; the
+  `project` frame (a rename) and the `project_job` frame are taken too.
+- What to do: nothing. The phone's pages never show the card.
+
+## 2026-11-05 — a project saved as, packed, unpacked: the PC's jobs (server; install with the next payload)
+
+- New routes, the PC's own (403 from another device and on the phone):
+  `POST /api/project/save-as {name, parent?, trials, from?}`, `POST
+  /api/project/pack {dest?, trials}`, `POST /api/project/job/cancel`; and
+  `POST /api/project/open` takes a packed `.zip` too.
+- Read anywhere: `GET /api/project/trials` ({count, bytes}), `GET
+  /api/project/job` ({kind, name, done, total, state, error} or {}).
+- The status frame gains `project_job` (the same, or null), and a
+  `{"type": "project_job", "job": {...}}` frame goes out twice a second at
+  most while one runs. A phone following the PC may show it; it starts none.
+- What to do: nothing.
+
 ## 2026-11-05 — projects opened and made: the PC's routes, and `ask_first` (server and page; install with the next payload)
 
 - `GET /api/project` and the init frame's `project` gain `default_parent`
