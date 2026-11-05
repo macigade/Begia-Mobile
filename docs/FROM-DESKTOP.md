@@ -38,6 +38,11 @@ as the change. Entries say what to *do*, not just what happened.
   rows' own comments.
 - Both drivers gain `rows_for(names, show)`: the search's own row for a tag
   by its TIA name.
+- The comment pass never fails a search: failing (the PLC gone between the
+  search and `rows_for`, the book unreadable), `/api/search` answers what
+  the names and addresses found - the driver's answer untouched, no
+  `by_comment` - and begia.log says it once while it lasts. A spoilt
+  `tia-comments.json` is begun again by the next import, never stopping it.
 - `/api/browse` and `/api/search` rows without a comment of their own take
   the one known by name (as they took the open project's).
 - `taglist.parse` returns `comments` beside `tags`.
