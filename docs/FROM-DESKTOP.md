@@ -20,6 +20,40 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — the Signals page redesigned (shared `ui/` only; install with the next payload)
+
+- ui/index.html `#signals-view` is new:
+  - One `.sig-toolbar`: `#btn-sig-add`, `#btn-tag-table`, `#btn-sig-sets`,
+    `#sig-filter`, `#sig-kind`, `#sig-view` (data-view chart | list |
+    tree), `#sig-summary`, `#btn-sig-more`.
+  - `.sig-sets` is a panel now, under Signal sets ▾.
+  - Quick add is the line `.sig-quick` (`#sig-new-name`).
+  - `.sig-work` holds `#sig-table-wrap` and `#sig-props`.
+  - Gone: `#btn-new-group`, `#sig-activate-all` and `#sig-deactivate-all`
+    (now ⋯ items), the page's `nav.conn-proto`, and `tr.addrow`.
+- New files: ui/js/137-sigpage.js (the commands, the sets menu and panel,
+  ⋯, Columns…, the picked signal's panel, the live values) and
+  ui/css/118-signals.css. The payload carries every file under ui/, so
+  nothing to list; a shell with its own list of scripts must add them.
+- The table (js/120, js/130) is grouped by chart by default:
+  - Rows `tr.sig-chart[data-chart]`, `tr.sig-add[data-add]` and
+    `tr.sig-chart-empty`.
+  - Columns are kept as localStorage `sig_columns` {order, hidden}.
+    `sig_cols` is no longer read.
+  - New keys: `sig_by_chart`, `sig_sort`, `sig_charts_folded`.
+- `openPicker({kind: "add", chart})` presets the chart: `#add-paneto`
+  gains "→ into <chart>" for that opening only, and bulk and single adds
+  send that `pane`.
+- No server or endpoint change.
+- **To check on the phone:**
+  - The toolbar wraps to the width. The chart rows fold.
+  - The phone hides the right panel and the Scale, Unit, Rate, Type and
+    Colour cells. Edits there go through the row's menu as before
+    (a long press).
+  - Signal sets ▾ opens as a menu, and its panel takes the screen's width.
+
+---
+
 ## 2026-11-04 — the BEGIAs on this network and the signal sets they share (server + shared `ui/`; install with the next payload)
 
 - The "BEGIA?" answer (routes/hosting.py) gains `shares` (true/false):
