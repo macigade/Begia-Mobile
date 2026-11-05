@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — the open project: `GET /api/project`, and `project` in the init frame (server; install with the next payload)
+
+- A project is a folder with a `<name>.begiaproject` file in it
+  (docs/PROJECT-DESIGN.md, docs/PROJECT-CONFIG-PATHS.md). The phone's data
+  folder is its first project: at the first start of this build its file is
+  written there, named after the phone (`BEGIA_DEVICE_NAME`, as a licence
+  request names it), never asked (the owner, 2026-11-05).
+- `GET /api/project` answers `{name, file, folder, first, format,
+  needs_name, parts}`. The init frame carries the same as `project`, and a
+  `{"type": "project", "project": {...}}` frame follows a rename.
+- `POST /api/project/name {name}` belongs to the PC: from another device it
+  answers 403. On the phone's own BEGIA it works, but nothing asks for it.
+- Nothing else changes yet: config.json is read and written as before. New,
+  Open, Save as and Pack come in later steps, and the phone gets none of
+  them (design section 6).
+- What to do: nothing now. The shell may show the project's name later.
+
 ## 2026-11-05 — a search finds a tag by its TIA comment (server; install with the next payload)
 
 - `GET /api/search` adds, after the hits found by name or address and
