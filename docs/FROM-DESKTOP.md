@@ -20,6 +20,40 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — CSV exports as jobs, with a popup (shared `ui/` + new routes; install with the next payload)
+
+- Every trial CSV and Live's CSV is now made as a job, with a popup while it
+  runs (`ui/js/263-export.js`, `exportCsv` / `exportTrialsCsv`; styles
+  `#xp` in css/100). The popup shows only when the export takes longer than
+  600 ms.
+  - The page starts the job with `POST /api/export/trial {file, grid_ms,
+    sep, decimal}` or `POST /api/export/live` (Live's body, as
+    `/api/live/export` takes it). Both answer 202 with the job:
+    `{id, state, done, total, name, size, error, secs, url, cancelling}`.
+  - It asks `GET /api/export/jobs/{id}` after 120 ms, then every 400 ms.
+    `state` is running, ready, failed or cancelled; `done` of `total` are
+    rows of the grid.
+  - `POST /api/export/cancel {id}` stops the job between two rows.
+  - When the job is ready, the page clicks a link to `url`
+    (`/api/export/jobs/{id}/file`): a plain GET, served as an attachment
+    with a `Content-Disposition` name.
+- **The file can be fetched again** for 10 minutes, so the shell's
+  DownloadListener (3.9: it fetches BEGIA's own address a second time,
+  after the WebView's request) gets the whole file. No blob is used
+  anywhere.
+- Fixed: Live's old `GET /api/live/export/{xid}` gave its file only once:
+  if the WebView's own request reached BEGIA first, the shell's fetch got a
+  404. It now serves the file as often as asked for 5 minutes.
+- **To do on the phone:** nothing for the shell, if 3.9's DownloadListener
+  saves `/api/export/jobs/{id}/file` as it saves a trial's CSV.
+  - A boot test can press a trial's CSV in the Trials list. It should see the
+    popup or the toast "exported "<name>" as CSV", and a file in Downloads.
+  - A read-only copy (the lock refused) takes the three POSTs, as it takes
+    `/api/live/export` (`READ_ONLY_OPEN`).
+  - The plain `GET /api/trials/{f}/export.csv` stays.
+
+---
+
 ## 2026-11-05 — the open project: `GET /api/project`, and `project` in the init frame (server; install with the next payload)
 
 - A project is a folder with a `<name>.begiaproject` file in it
