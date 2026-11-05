@@ -20,6 +20,33 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — Add signals redesigned (shared `ui/` + one server field; install with the next payload)
+
+- The `#picker` markup is new: `.pk-main` holds `.pk-left` and `.pk-right`.
+  - `.pk-left` holds the search, `#pk-count`, `#search-view`, and
+    `.pk-body` with `#search-results` / `#tree`.
+  - `.pk-right` holds `#pk-sheet`, `#pk-chips`, the radios `name="pk-to"`
+    (chart | one | each | none), `#pk-to-chart`, `#pk-to-name`, `#pk-to-note`
+    and `#btn-add-selected`.
+  - `.pk-foot` holds `#index-status`, `#btn-plc-refresh` ("↻ Read again")
+    and `#pk-cancel`. `#pk-proto` is the S7 / OPC UA link.
+  - Gone: `#add-paneto`, `#btn-browse-plc`, the picker's `nav.conn-proto`.
+- js/040: `pkTo()`, `pkPaneFor()`, `pkChartChoice()`, `pkChartNow()`,
+  `paintPkChips()`, `pkRowExtras()`, `paintPkProto()` (called from js/140
+  paintConnProto), and `pkBodyKey()` (the rows' keys).
+  - localStorage `add_paneto` is now one | each | none | chart, with
+    `add_paneto_chart`.
+  - A bulk add may send `pane: -2` (no chart).
+- Server: `/api/search` hits and `/api/browse` rows carry `comment` when the
+  open I/O project knows the tag's TIA comment
+  (routes/signals.py `with_tia_comments`). Nothing else in their shape
+  changed.
+- **To check on the phone:** the picker is stacked with the sheet at the
+  bottom, the sheet's line opens it, and Add is thumb-sized. Rows hide the
+  node id and the protocol chip.
+
+---
+
 ## 2026-11-05 — the Signals page redesigned (shared `ui/` only; install with the next payload)
 
 - ui/index.html `#signals-view` is new:
