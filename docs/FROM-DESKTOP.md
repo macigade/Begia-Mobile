@@ -20,6 +20,19 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — S7 or OPC UA beside the connection, not on every row (shared `ui/` only; install with the next payload)
+
+- js/030 `connMark(status)`: "S7 · host:102", "OPC UA · host:4840",
+  "Simulator · host:port". The header's `#conn-text` says it while
+  connected, in place of the raw endpoint.
+- Live's signal list (js/070) and the chart headers (js/180) carry no S7 /
+  UA chip any more. On the Signals page a row keeps it only when the list
+  mixes S7 and OPC UA (js/120 `protoMixed` / `protoMixedNow`).
+- **To do on the phone:** nothing; a boot test that looked for `.proto` in
+  Live's list finds none now.
+
+---
+
 ## 2026-11-05 — the File menu's projects, and every page starts again in a new project (shared `ui/`; install with the next payload)
 
 - `ui/js/108-project.js` gains the File menu's commands: `projectNew`,
