@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — the open project's name on screen, Show in folder (shared `ui/` + one route; install with the next payload)
+
+- `ui/js/108-project.js` (new): `projectNow` and `projectTake(p)`, fed by
+  the init frame's `project` and by `{"type": "project"}` frames (js/020
+  `handleMsg`). The phone shows none of it:
+  - the Project tree's row and the status bar's place are the Engineering
+    window's;
+  - Options > This machine is the desktop's (`ov-desktop`);
+  - the name box is the Engineering window's, on the PC itself. A phone's
+    project is named after the phone and never asks.
+- `POST /api/project/show`: Explorer at the project's file, on the PC
+  itself. 403 from another device; 400 where there is no desktop - a
+  phone's own BEGIA answers 400.
+- `app/filedialog.py` (new): Windows' Open, Save and folder boxes for the
+  File menu's routes (BEGIA-Local's next steps). On a phone it raises
+  `Unavailable`, and those routes answer 400 "give a path".
+- **To do on the phone:** nothing.
+
+---
+
 ## 2026-11-05 — signal sets are files in the project (server; install with the next payload)
 
 - The phone's sets are files now: `<data folder>/Signal sets/<name>.signalSet`,
