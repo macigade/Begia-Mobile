@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — projects opened and made: the PC's routes, and `ask_first` (server and page; install with the next payload)
+
+- `GET /api/project` and the init frame's `project` gain `default_parent`
+  (where a new project's folder goes: Documents\BEGIA projects, or where
+  the last one was made).
+- New routes, the PC's own - 403 from another device and on the phone
+  itself: `POST /api/project/open {file?, name?, parent?}`, `POST
+  /api/project/new {name, parent?}`, `GET /api/projects/recent`, `POST
+  /api/projects/recent/forget {file?, all?}`. A refusal carries `why`
+  (recording, trigger, iocheck, held + `who`, readonly + `offer`, share,
+  exists, gone, not-project) beside `detail`.
+- The status frame gains `ask_first`: true only in a BEGIA restarted into a
+  project, never on the phone. js/090 (shared) shows the welcome door while
+  it is true, whatever `startup_gate` says.
+- `projects.json` in the data folder lists the projects opened: on the
+  phone, only its first project.
+- What to do: nothing.
+
 ## 2026-11-05 — the open project's name on screen, Show in folder (shared `ui/` + one route; install with the next payload)
 
 - `ui/js/108-project.js` (new): `projectNow` and `projectTake(p)`, fed by
