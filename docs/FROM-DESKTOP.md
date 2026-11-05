@@ -20,6 +20,42 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-05 — signal sets are files in the project (server; install with the next payload)
+
+- The phone's sets are files now: `<data folder>/Signal sets/<name>.signalSet`,
+  in the .signalSet format. The first start of this build writes them from
+  the configuration's sets; from then on the folder is the list. The routes
+  (`/api/signalsets*`) are as they were.
+- A `.signalSet` the shell copies into that folder is listed at the next
+  `GET /api/signalsets` - another way in for the share sheet beside `POST
+  /api/signalsets/import` (which asks when the name is taken; a copy into
+  the folder replaces a file of the same name).
+- A configuration loaded in place (`POST /api/profiles/load`) moves the sets
+  it replaces into `Signal sets/Set aside/<date time>/`, never deletes them.
+- What to do: nothing required.
+
+## 2026-11-05 — the configuration in two parts, and linked Y axes in the project (server and page; install with the next payload)
+
+- Every save writes three files in the data folder: config.json, whole and
+  first, as before; `pc.json`, this device's own settings (`tls`, `auth`,
+  `licence`, `backup`, `discovery`, `startup_gate`, `window_s`, `push_ms`);
+  and the project's `<name>.begiaproject`, the rest. The phone's first
+  project still reads config.json, with pc.json's settings laid over it
+  unless config.json is the newer (an older build put back wrote it).
+- Linked Y axes are the project's: `axis_links` in the configuration (a
+  trace's node id -> the one it shares a Y scale with). `PUT
+  /api/axis-links {links}` saves them all, and every page gets
+  `{"type": "axis_links", "links": {...}}`; the init frame carries
+  `axis_links`. The page (js/070, js/020) takes them from there. What a
+  browser kept in its localStorage `axis_links` goes into the project
+  once, while the project has none. Shown or hidden traces stay in the
+  browser.
+- Loading a saved configuration (`POST /api/profiles/load`) keeps this
+  device's own settings.
+- `POST /api/project/save` writes it all now (the PC's Save project,
+  Ctrl+S): 403 from another device.
+- What to do: nothing; the page's side is in the shared ui/ files.
+
 ## 2026-11-05 — CSV exports as jobs, with a popup (shared `ui/` + new routes; install with the next payload)
 
 - Every trial CSV and Live's CSV is now made as a job, with a popup while it
