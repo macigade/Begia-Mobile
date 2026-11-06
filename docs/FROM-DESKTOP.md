@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-06 — a trial records only the selected signals (server + shared `ui/`; install with the next payload)
+
+- The phone records the same way: `POST /api/trial/start` and the trigger's
+  start hand the recorder only the signals with `active` true
+  (`config.recorded_signals`); a signal not selected has no column in the
+  trial file. Files recorded before are unchanged.
+- js/220 + css/080 (shared): Analyse's min / max / Auto sit on the signal's
+  own line.
+- What to do: nothing.
+
 ## 2026-11-06 — standard words on buttons, menus and dialogs (shared `ui/` + one route; install with the next payload)
 
 - Many visible labels changed (docs/STANDARD-TEXTS.md has every one): for
