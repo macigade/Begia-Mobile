@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-06 — shown or hidden is an eye, a tick is Read (shared `ui/`; install with the next payload)
+
+- The phone sees it: Live's signal list (js/070) draws its show/hide boxes
+  as eyes - `input.eye-tick` (css/030), still checkboxes, the hidden state
+  unchanged (`hiddenSigs`, this device's localStorage). On a phone the eye
+  is 22x34 px, on a tablet 26x34 px - the tick's size.
+- The signal table's tick column is headed "Read"; the Read ticks' tooltips
+  changed. Live's tree view is no longer capped at 300 px.
+- What to do: nothing.
+
 ## 2026-11-06 — a trial records only the selected signals (server + shared `ui/`; install with the next payload)
 
 - The phone records the same way: `POST /api/trial/start` and the trigger's
