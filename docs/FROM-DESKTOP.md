@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-06 — two new themes, Graphite and Fieldbus lilac (shared `ui/`; install with the next payload)
+
+- The phone's Options > Theme list grows by two: ids `graphite` and
+  `fieldbus` (js/100 `THEMES`, js/110 `THEME_DEFS`, css/110). `ui/boot.html`
+  knows both ids too, so a shell that hands one to the boot page shows it in
+  that theme rather than the house palette.
+- What to do: nothing, unless the shell keeps its own list of theme ids or
+  colours (the splash, the status bar colour): then add the two - their
+  page colours (`THEME_META`) are `#20201e` and `#201f23`.
+
 ## 2026-11-06 — shown or hidden is an eye, a tick is Read (shared `ui/`; install with the next payload)
 
 - The phone sees it: Live's signal list (js/070) draws its show/hide boxes
