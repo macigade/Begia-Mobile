@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — the I/O check's words without capitals and dots (shared `ui/`; install with the next payload)
+
+- The I/O check's labels are in sentence case: css/150, 155 and 159 no
+  longer set `text-transform: uppercase` or letter-spacing. That covers
+  the phone's suite switch (still AN / I/O on a phone), its "To check"
+  list title and the popup's chip and labels. The check table's heads are
+  written in sentence case in index.html.
+- Words joined by " · " now use a comma; counts in headings go in
+  brackets ("1. What to check (12)", "To check (nothing yet)"). js/280-289
+  and 295; `ioiOverlapLabel` (the tracking question) reads "DI_01:
+  LAPTOP-A's I/O check".
+- No endpoint, payload or CSV changes.
+- **To do on the phone:** a boot or UI test that reads these words needs
+  the new ones; nothing else.
+
+---
+
 ## 2026-11-08 — Options as a parameter list (shared `ui/`; install with the next payload)
 
 - The phone's Options is the new page: stacked rows (the name, the control,
@@ -29,6 +46,8 @@ as the change. Entries say what to *do*, not just what happened.
 - The theme "system" is now named "Engineering, as Windows".
 - What to do: nothing, unless the shell's own screens point at an `ov-q-*`
   id or read a choice's label.
+
+---
 
 ## 2026-11-08 — leaving the simulator asks before any PLC (server + shared `ui/`; install with the next payload)
 
