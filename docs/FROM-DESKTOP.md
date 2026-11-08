@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — the words on chips and states (shared `ui/`; install with the next payload)
+
+- The phone shows the new words: Armed / Disarmed / Off chips, Arm and
+  Live buttons, "Recording 00:04", "Stopping", a chart's "Live" / "No
+  data", commas in the Acquiring chip and the Signals summary, and the
+  heads "The laptop" / "This phone" (js/160 writes `This ${device}`).
+- What to do: nothing, unless the shell reads one of these texts.
+
+---
+
 ## 2026-11-08 — the I/O check's words without capitals and dots (shared `ui/`; install with the next payload)
 
 - The I/O check's labels are in sentence case: css/150, 155 and 159 no
