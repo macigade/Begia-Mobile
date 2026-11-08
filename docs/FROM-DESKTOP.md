@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — Options as a parameter list (shared `ui/`; install with the next payload)
+
+- The phone's Options is the new page: stacked rows (the name, the control,
+  then Kept on as a small tag and What it does), Find a setting at the top,
+  no "?" buttons. Every control keeps its id; the `ov-q-*` note ids are
+  gone, and the layout, time, date and text size choices are names only.
+- The theme "system" is now named "Engineering, as Windows".
+- What to do: nothing, unless the shell's own screens point at an `ov-q-*`
+  id or read a choice's label.
+
 ## 2026-11-08 — leaving the simulator asks before any PLC (server + shared `ui/`; install with the next payload)
 
 - `POST /api/sim/stop` no longer starts the driver on the PLC parked behind
