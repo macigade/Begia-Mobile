@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — the connection's mark without a dot (shared `ui/`; install with the next payload)
+
+- The connection strip's words (js/030 `connMark`) read "S7
+  10.249.188.7:102", "OPC UA 10.0.0.5:4840", "Simulator localhost:4875";
+  they had " · " between the protocol and the address.
+- Everything else in this change is the desktop's Engineering layout,
+  which the phone does not show.
+- **To do on the phone:** a boot test that reads the strip's text needs
+  the new words; nothing else.
+
+---
+
 ## 2026-11-06 — two new themes, Graphite and Fieldbus lilac (shared `ui/`; install with the next payload)
 
 - The phone's Options > Theme list grows by two: ids `graphite` and
