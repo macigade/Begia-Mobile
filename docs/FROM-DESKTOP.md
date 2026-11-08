@@ -20,11 +20,36 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — the I/O check selects and clears, never ticks (server + shared `ui/`; install with the next payload)
+
+- The I/O check's words: tick / ticked / untick are now select / selected
+  / clear in js/280-289, js/295 and the Inputs tooltips in index.html.
+- Some answers' `detail` texts changed with them:
+  - `POST /api/iocheck/start`'s 422: "nothing is selected on the right of
+    the Inputs tab … - select the DBs to search there first", "the selected
+    DBs … clear some on the right", "select the DBs to search on the right
+    of the Inputs tab, and search those";
+  - `POST /api/iocheck/areas/remove`'s 404: "none of those is selected on
+    the right";
+  - a skip reason: "… - select its parts"; OPC UA's "an array - select its
+    elements";
+  - `POST /api/pnid/drawing/{id}/use`'s 422: "no tag is selected".
+- js/289 (the I/O project) joins its lines with commas and colons ("note,
+  who"; "12:01, Anna (LAPTOP-2): OK"; "Unsure: to be checked again").
+- **To do on the phone:** a test that reads one of these texts needs the
+  new words; nothing else.
+
+---
+
 ## 2026-11-08 — the last standard words in Signals, Setup and the P&ID (shared `ui/`; install with the next payload)
 
 - Load…, Select all shown, Not in a chart, (not found), Expand / Collapse
   its tags, Search the PLC…, and the New chart box with Create.
+- No CSS capitals: the Signals table heads, Analyse's list heads, "Picked
+  (3)", "Not writing" and the like read as written.
 - What to do: nothing.
+
+---
 
 ## 2026-11-08 — the words on chips and states (shared `ui/`; install with the next payload)
 
