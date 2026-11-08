@@ -20,6 +20,12 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — the last standard words in Signals, Setup and the P&ID (shared `ui/`; install with the next payload)
+
+- Load…, Select all shown, Not in a chart, (not found), Expand / Collapse
+  its tags, Search the PLC…, and the New chart box with Create.
+- What to do: nothing.
+
 ## 2026-11-08 — the words on chips and states (shared `ui/`; install with the next payload)
 
 - The phone shows the new words: Armed / Disarmed / Off chips, Arm and
