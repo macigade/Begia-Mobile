@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — leaving the simulator asks before any PLC (server + shared `ui/`; install with the next payload)
+
+- `POST /api/sim/stop` no longer starts the driver on the PLC parked behind
+  the simulator: the state stays `disconnected`, the answer is
+  `{"ok", "endpoint", "asks"}`. The status gains `sim_left` (bool) and
+  `plc_name`; while `sim_left` is true every page shows the start-up door
+  (after the start, in an overlay, `#plc-overlay`), whatever `startup_gate`
+  says. `POST /api/welcome/skip` and any connect clear it.
+- `POST /api/profiles/load` over a running simulator stops it and dials
+  nothing; a profile saved on the simulator starts the simulator. A start
+  whose simulator does not come back dials nothing either.
+- What to do: nothing - the phone runs the same server and the same door.
+
+---
+
 ## 2026-11-08 — the connection's mark without a dot (shared `ui/`; install with the next payload)
 
 - The connection strip's words (js/030 `connMark`) read "S7
