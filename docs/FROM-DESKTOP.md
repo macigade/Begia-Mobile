@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-09 — commas instead of " · " (shared `ui/`; install with the next payload)
+
+- js/267: the home tiles' lines ("Connected, Simulator", "38 signals, 38
+  read", "2 trials, newest: Run 2", "Licence: Plant A, 120 days"); js/260:
+  a trial's line in the list ("252.6 s, 0 events, 672 kB") and its hints.
+- Every other line of BEGIA-Local's too: the recording line (js/230), a
+  trial's header and stats (js/240), hover times "+1.234 s, 12:00:01"
+  (js/210, 185, 240), the connection's line (js/150), the licence card
+  "Valid, ends in 14 days" (js/095) and the door's licence line (js/090),
+  toasts and hints. The phone card (js/160): "BEGIA 0.9, 640, shell 1.2
+  (APK …)"; a laptop found on the network "LAPTOP-A (PC) at
+  10.0.0.20:8443".
+- What to do: nothing, unless a phone test reads one of these lines: it
+  says ", " (or "; ", or " at ") where it said " · ".
+
 ## 2026-11-08 — a trial's signals take a colour (shared `ui/`; install with the next payload)
 
 - js/240: a trial chart's swatch is a colour picker (PATCH /api/signals
