@@ -28,13 +28,14 @@ as the change. Entries say what to *do*, not just what happened.
   - js/160: the phone card gives the same address.
   - js/135: Change block's help reads "1MKL908 to 1MKL909".
   - js/288 and index.html: the I/O check reads "such as 1PIT940".
+  - js/295: the P&ID page's help reads "1PIT 101, ZSO 913".
 - Nothing to do beyond the next payload.
 - If the phone repo's tests or docs hold a real plant's addresses, site
   names or tag numbers, the desktop's rules apply there too:
   - addresses: 10.6.70.N becomes 192.168.20.N, and 10.249.188.N becomes
     192.168.30.N;
   - site names: Site A, Site B, Office;
-  - a tag's 3-digit number takes 9 as its first digit (1ABC123 becomes
+  - a tag's 3-digit number takes 9 as its first digit (1ABC923 becomes
     1ABC923);
   - the simulator's own names (HPU_1ZSO101 and the rest) stay.
 
@@ -155,7 +156,7 @@ as the change. Entries say what to *do*, not just what happened.
 ## 2026-11-08 — the connection's mark without a dot (shared `ui/`; install with the next payload)
 
 - The connection strip's words (js/030 `connMark`) read "S7
-  10.249.188.7:102", "OPC UA 10.0.0.5:4840", "Simulator localhost:4875";
+  192.168.30.7:102", "OPC UA 10.0.0.5:4840", "Simulator localhost:4875";
   they had " · " between the protocol and the address.
 - Everything else in this change is the desktop's Engineering layout,
   which the phone does not show.
@@ -1908,8 +1909,8 @@ as the change. Entries say what to *do*, not just what happened.
   tests/py/test_link_up_signals.py.
 - `liveLevels(sig)` (js/070) for Live's tree: sigLevels, and over S7 the
   name's levels after the block when the name starts with `sig.block` and
-  ends in the node id's member (`1YPH107.Input.areaLocal` for node id
-  `1YPH107.areaLocal`). `sigTreePlan` takes it as a 6th argument
+  ends in the node id's member (`1YPH907.Input.areaLocal` for node id
+  `1YPH907.areaLocal`). `sigTreePlan` takes it as a 6th argument
   `levelsOf` (default sigLevels; the Signals table unchanged).
 
 ## 2026-10-20 — Live's tree of blocks and members; the dialog's long label (shared `ui/`; install with the next payload)
@@ -2022,7 +2023,7 @@ as the change. Entries say what to *do*, not just what happened.
   nothing had opened.
 - `pnShown` (js/295) also lets a tag through when one of its PLC hits'
   name, path or address holds what was typed.
-- `iocShort` (js/280) keeps `1PIT172.B-Fbk` whole: a last element of one
+- `iocShort` (js/280) keeps `1PIT972.B-Fbk` whole: a last element of one
   letter or digit (with an optional -suffix) belongs to the tag before it.
 
 ## 2026-10-18 — the group header's tick fixed; + New group asks a name (shared `ui/`; install with the next payload)
@@ -2084,10 +2085,10 @@ as the change. Entries say what to *do*, not just what happened.
 ## 2026-10-18 — the P&ID reader: .A / .B tags, a page at a time (shared `app/` + `ui/`; install with the next payload)
 
 - **`app/pnid/tags.py`**: a loop may end in a letter after a dot, dash or
-  underscore (`1YVH 133.A`, `1PIT173.B`, `YVH 135-C`); each is a tag of its
-  own, its norm without the dot (`1YVH133A`), so a drawing read again lists
-  more tags than before. `match.py` is unchanged: `HPU_1YVH133.A`'s words
-  already made the key `1YVH133A`. A kept drawing from before
+  underscore (`1YVH 933.A`, `1PIT973.B`, `YVH 935-C`); each is a tag of its
+  own, its norm without the dot (`1YVH933A`), so a drawing read again lists
+  more tags than before. `match.py` is unchanged: `HPU_1YVH933.A`'s words
+  already made the key `1YVH933A`. A kept drawing from before
   (`drawing.json` without `tags_version` 2) is found again from its
   `words.json` the first time it is loaded and written back: `GET
   /api/pnid/drawing/{id}` may answer more tags than the last time, the
@@ -2761,7 +2762,7 @@ New tags, plain English: `DB_Thermal`, `DB_Tank`, `DB_Pump`, `DB_Axis_1/2`,
 **What the phone sees:** joining the simulator with no list of its own now
 brings a starting set of 17 signals (the toast says "a starting set of 17
 signals"); a saved simulator list naming the old blocks (`DB_SlagDoor`,
-`1YSD101_PID`, `1YSD102_PID` - the tablet's 46, for one) has those removed
+`1YSD901_PID`, `1YSD902_PID` - the tablet's 46, for one) has those removed
 on the join ("N signals of the old simulator removed"). New config field
 `sim.seeded` (bool). Nothing for the shell to do.
 
@@ -2809,7 +2810,7 @@ older WebView only loses that height limit. Nothing for the shell to do.
 
 ## 2026-10-11, evening — the I/O check project: a new tab and peer sharing (shared `ui/` + `app/`; install with the next payload)
 
-The owner wants one I/O check project per FAT that the whole team marks
+The owner wants one I/O check project per test that the whole team marks
 (design: `docs/IOCHECK-PROJECT-DESIGN.md`). New: `app/iocheck/project.py`,
 `app/iocheck/sharing.py`, `app/routes/ioproject.py` (`/api/ioproject*`),
 `ui/js/289-ioproject.js`, `ui/css/159-ioproject.css`, a third I/O check tab
@@ -3060,7 +3061,7 @@ reset (13 Oct). Shell-2 phones keep the browser route.
 
 The owner: *"i want it to be a generic product for any plant"*. In
 `index.html`: `#gate-host` placeholder `192.168.0.1` (was the plant's PLC),
-`#lic-box-addr` `e.g. 192.168.0.10`, `#cv-name` `Line 1 PLC` (was "EAF
+`#lic-box-addr` `e.g. 192.168.0.10`, `#cv-name` `Line 1 PLC` (was "plant
 furnace 1"), the simulator note "A simulated PLC" (was "A slag door PLC"),
 the signal-set tooltip "from one machine" (was "furnace").
 
@@ -3441,7 +3442,7 @@ shell 2 (main's payloads), or a backport if the owner asks for one.
 ## 2026-10-08, midday, later — a text row keeps its name (shared `ui/`; nothing to do but install)
 
 Found while checking the entry below on the phone layout: in the sidebar's
-Text tile, a long step text ("WAIT TO START AUTOMATIC SLAG DOOR PUSHING
+Text tile, a long step text ("WAIT TO START AUTOMATIC HPU PRESSURE TEST
 CYCLE") took the whole row - `.sig-val` is `flex-shrink: 0`, a number's
 reserved width - and the name went to 0 px; let wrap, the row grew and
 shrank with every step under the finger. `.sig.sig-text .sig-val` is now
@@ -3889,7 +3890,7 @@ All of it reaches the phone with the next payload:
 ## 2026-10-05, night — one name per tag in the CSV and on the watch (shared `app/`; nothing to do)
 
 - **`GET /api/watch`**: the `iocheck` block's `last.name` for an S7 area tag
-  reads `FAT_NH`, not `IArea.FAT_NH`. `last.node_id` (what OK / Not OK post)
+  reads `TEST_NH`, not `IArea.TEST_NH`. `last.node_id` (what OK / Not OK post)
   and `last.address` (`%I12.3`) are unchanged, and no key changed.
 - **The CSV's** *name* and *together with* columns, and the member names in
   *found in the DB*, drop the `IArea.` / `QArea.` / `MArea.` prefix. The
@@ -3923,7 +3924,7 @@ All of it reaches the phone with the next payload:
   360 px with no sideways scroll.
 - **localStorage:** new keys `ioi-show-l`, `ioi-show-r` and `ioi-side`.
   `ioc-search` is no longer used.
-- **Labels:** an S7 area tag shows as `FAT_NH` plus `%I12.3`. No key or node
+- **Labels:** an S7 area tag shows as `TEST_NH` plus `%I12.3`. No key or node
   id changed.
 - **`080-shortcuts.js`:** outside the analyzer suite only `c`, `o` and `i`
   act on a hardware keyboard.
@@ -4421,8 +4422,8 @@ The protocol, one datagram each way:
 - Every BEGIA that hears it answers the sender, unicast, with one JSON
   datagram:
 
-      {"begia": 1, "name": "FAT-LAPTOP", "build": "v0.9-82-g...",
-       "https": ["https://10.6.70.120:8443", "https://192.168.70.135:8443"],
+      {"begia": 1, "name": "TEST-LAPTOP", "build": "v0.9-82-g...",
+       "https": ["https://192.168.20.120:8443", "https://192.168.70.135:8443"],
        "port": 8443, "licensed": true, "auth": "set" | "unset"}
 
   `https` is the same list the Options page shows (every non-loopback
@@ -5026,8 +5027,8 @@ the tool connects. Three things you need to know:
   have arrived at empty charts. The new route finds the named connection the
   address belongs to (or makes one), takes the login as typed, and activates
   it the way Setup does. A bare host takes the scheme of the endpoint in use
-  (`main.resolve_endpoint`): `"10.6.70.153"` → `s7plus://10.6.70.153` or
-  `opc.tcp://10.6.70.153:4840`; anything with a scheme is taken as written.
+  (`main.resolve_endpoint`): `"192.168.20.153"` → `s7plus://192.168.20.153` or
+  `opc.tcp://192.168.20.153:4840`; anything with a scheme is taken as written.
   `/api/connect` accepts a bare host the same way, and refuses an empty one.
 - `status.endpoint`, `status.username` and `status.has_password` now fall back
   to the active named connection (or the only one) when `cfg.endpoint` is
@@ -5330,8 +5331,8 @@ Two traps that cost this session time and will cost yours the same:
 
 - **Never stop `BEGIA.exe` while it is recording.** Check `GET /api/state` for
   `recording: true` first.
-- The repo is **private**. The plant credential (`EAF_Admin` /
-  `<the EAF_Admin password>`, `opc.tcp://10.6.70.153:4840`) is quoted in plaintext in
+- The repo is **private**. The plant credential (`LINE_Admin` /
+  `<the LINE_Admin password>`, `opc.tcp://192.168.20.153:4840`) is quoted in plaintext in
   `docs/BACKLOG.md` (the FIX item 1 write-up) and has been on origin since
   `ca23472`. The packaging leak itself is fixed; **rotating the credential does
   not remove it from git history**, and rotation is the user's call and the
