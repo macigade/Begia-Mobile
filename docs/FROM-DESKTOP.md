@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-08 — a trial's signals take a colour (shared `ui/`; install with the next payload)
+
+- js/240: a trial chart's swatch is a colour picker (PATCH /api/signals
+  color for a signal in the list; else kept per trial in localStorage
+  "trial_colors:<file>"). trialColor() says a chosen colour first.
+  That redraw, and the head's format chip, go through
+  redrawTrialInPlace(): the time span and the scroll are kept.
+- Bug report #2 (tablet): on 640 a chart's "No data" sits clear of its
+  header at tablet and phone size, and a WORD or INT's views are in the
+  signal's long-press menu ("Shown as"). Nothing changed for it.
+- What to do: nothing.
+
 ## 2026-11-08 — the I/O check selects and clears, never ticks (server + shared `ui/`; install with the next payload)
 
 - The I/O check's words: tick / ticked / untick are now select / selected
