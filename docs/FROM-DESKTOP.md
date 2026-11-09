@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-09 — examples without one plant's names (shared `ui/`; install with the next payload)
+
+- Words only:
+  - js/090: the licence door's "type the laptop's address first, e.g. …"
+    now gives 192.168.20.114.
+  - js/160: the phone card gives the same address.
+  - js/135: Change block's help reads "1MKL908 to 1MKL909".
+  - js/288 and index.html: the I/O check reads "such as 1PIT940".
+- Nothing to do beyond the next payload.
+- If the phone repo's tests or docs hold a real plant's addresses, site
+  names or tag numbers, the desktop's rules apply there too:
+  - addresses: 10.6.70.N becomes 192.168.20.N, and 10.249.188.N becomes
+    192.168.30.N;
+  - site names: Site A, Site B, Office;
+  - a tag's 3-digit number takes 9 as its first digit (1ABC123 becomes
+    1ABC923);
+  - the simulator's own names (HPU_1ZSO101 and the rest) stay.
+
+---
+
 ## 2026-11-09 — commas instead of " · " (shared `ui/`; install with the next payload)
 
 - js/267: the home tiles' lines ("Connected, Simulator", "38 signals, 38
