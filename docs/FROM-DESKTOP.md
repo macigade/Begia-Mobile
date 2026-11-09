@@ -20,6 +20,21 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-09 — a second licence check before a trial; the payload without docstrings (shared `app/`; install with the next payload)
+
+- app/recording/origin.py: before a trial starts (the Start button and the
+  trigger both), the licence file is checked again with its own copy of the
+  keys: signed by MG Victus, a BEGIA licence, naming one of the device's
+  codes. On the phone it runs too (Chaquopy is "needed"). It never refuses
+  what app/access/licence.py accepts (tests/py/test_origin.py replays the
+  vectors). If a phone ever shows "No trial starts: this copy of BEGIA or its
+  licence has been changed", send me the licence.json it holds.
+- tools/make_payload.py compiles with optimize=2: the payload's .pyc carry
+  no docstrings and no asserts. Nothing in app/ reads either. If the shell
+  ever read a module's __doc__, it would now get None.
+
+---
+
 ## 2026-11-09 — examples without one plant's names (shared `ui/`; install with the next payload)
 
 - Words only:
