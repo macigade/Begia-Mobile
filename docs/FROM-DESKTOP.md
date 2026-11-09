@@ -20,6 +20,39 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-09 — Open trial file…: a loose trial read where it lies, on the PC only (shared `app/` and `ui/`; install with the next payload)
+
+- New endpoints: `GET /api/trials/opened` answers `{here, files}`;
+  `POST /api/trials/open-file` (`{path}`, or the PC's Open box) and
+  `POST /api/trials/close-file` (`{file}`) answer 403 unless the page is on
+  the PC's loopback, and 403 on Android (`licence.on_android()`), so on the
+  phone `here` is false and the Trials list's "Open trial file…" button
+  stays hidden.
+- A file opened on the PC has a name of its own, "~" and 12 hex digits and
+  ".db". Every `/api/trials/{fname}/...` read route takes it; PATCH and
+  DELETE answer 403 for it. The list of the project's trials
+  (`GET /api/trials`) does not change.
+- app/recording/paths.py: `trial_file(fname)` and `ro_uri(path)`; the
+  readers (viewer, export_csv, export_dat) go through them. For the
+  project's own trials nothing changes.
+- What to do: nothing. A phone viewing the PC's BEGIA would see a file the
+  PC opened on its own line, and can read it like any trial.
+
+---
+
+## 2026-11-09 — Setup's Rack/Slot row, and three choices without a dash (shared `ui/`; install with the next payload)
+
+- ui/css/100-ui-pass.css: Rack and Slot are one row of four columns
+  (`.cv-two`, its labels `display: contents`), so Rack's box starts where the
+  other boxes start; a tap on "Rack" or "Slot" still focuses its box.
+- The texts: the protocol's option reads "S7comm-plus" (its old
+  " — SIMATIC S7-1200/1500" is the option's title now), an empty choice
+  reads "None" (Setup's signal set, the trial view's overlay), and a saved
+  password's placeholder reads "Saved; type to replace".
+- What to do: nothing, unless a phone test reads one of the old texts.
+
+---
+
 ## 2026-11-09 — a second licence check before a trial; the payload without docstrings (shared `app/`; install with the next payload)
 
 - app/recording/origin.py: before a trial starts (the Start button and the
