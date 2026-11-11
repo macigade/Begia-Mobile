@@ -20,6 +20,22 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — the licence vectors once more: refusal cases (`tests/vectors/`)
+
+- tests/vectors/licence-vectors.json is the Licence Manager's 385ab4f now
+  (sha256 d2677f47511463f63809ebab79d265021dd582301ff8616ed0f2adbeaecce7cd,
+  throwaway key 9403c7e93ba86a2b). It replaces 973e900's of this morning:
+  every signature changed again, every case means what it meant, and a
+  top-level `refusals` list is new (13 cases, replayed here through the
+  licence box's own check).
+
+- What to do in the phone repo: take THIS file, not 973e900's, with
+  `python tools/sync_vectors.py --to <the phone repo>`. The phone's replayer
+  reads no refusals, so the new list needs nothing there. What the entry
+  below says about the shell's port (grace_days, 1e999, RecursionError)
+  still holds.
+
+---
 ## 2026-11-11 — the I/O check and I/O project, the engine review (shared `app/` and `ui/`; install with the next payload)
 
 - `/api/ioproject/share` is three steps now (hello, swap, give, each with a
