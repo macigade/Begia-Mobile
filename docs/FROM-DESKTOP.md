@@ -20,6 +20,86 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — review fixes, round 3: peers, the Host check, sockets, PLC logins, stamps, the licence (shared `app/`; install with the next payload)
+
+- `/ws` closes with 4401 after a sign-out, a change of the app password or
+  user name, or a session's expiry (within 5 s), after the same "auth" frame
+  as at connect; the page shows the door. Loopback sockets hold no session
+  and are left alone.
+- A request from the device itself (loopback) must name the device in its
+  Host header: `127.0.0.1`, `localhost` (or `*.localhost`), any IP literal,
+  or the device's own name. Anything else gets 403 "refused: the address in
+  the browser does not name this PC", and `/ws` closes with 1008 before it
+  is accepted. The WebView's `http://127.0.0.1:8080` passes; a request with
+  no Host header passes.
+- app/net/peers.py `plain_url` / `urls`: another BEGIA is asked only at the
+  address its answer came from (http or https, host and port only), never at
+  loopback or one of this device's own addresses. app/net/tracking.py reads
+  an answer up to 1 MiB within its time and ends its look after 10 s;
+  app/iocheck/sharing.py skips a search answer over 4096 bytes.
+- app/routes/connections.py: `POST /api/path/check` and `POST /api/connect`
+  use a saved login only for the address it was saved for (`_saved_login`);
+  an S7 connection keeps its PLC password through a save and a Reconnect.
+- app/drivers/opcua.py `_not_ahead`: a source stamp more than 5 s ahead of
+  the device's clock is stamped now, and the offset is measured again at the
+  watchdog's next tick. app/drivers/s7plus/driver.py: each value of a sweep
+  carries its own request's answer time.
+- app/access/licence.py: on the phone and in the exe `status()` takes the
+  device, the day and "a licence is asked" from nobody. It works the device's
+  codes out itself, once a run (`_own_codes`), so `refresh()` keeps the
+  device found at start. `verify()`, `load()` and `parse()`: a number that
+  reads as infinity (1e999) or a text nested too deep is a sentence or "no
+  licence", never an exception (`POST /api/licence` answers 400 for it).
+- app/recording/origin.py: on the phone and in the exe it asks the licence
+  module for the device's codes instead of taking its caller's list; a pack
+  is read in the order of the device's codes, as `pick_from_pack` does.
+
+- What to do: nothing, unless the shell or a phone test (a) opens BEGIA
+  under a name that is not `127.0.0.1`, `localhost` or an IP, (b) calls
+  `licence.status()` with a device of its own choosing - on the phone that
+  is ignored now, so hand the identity over as the shell does
+  (`BEGIA_DEVICE_ID`) - or (c) expects a socket to stay open after a
+  sign-out.
+
+---
+
+## 2026-11-11 — review fixes, round 2 (shared `app/` and `ui/`; install with the next payload)
+
+- app/recording/paths.py `ro_uri`: every read-only trial URI is escaped now
+  (`file:///...?mode=ro`, through `opened.file_uri`), app/push.py,
+  app/routes/ws.py and app/recording/backup.py included. A "#" or a "%" in
+  the data folder's path no longer breaks reading trials.
+- app/drivers/udp.py: a NaN or infinite REAL is dropped, never put into the
+  hub, as the S7 and OPC UA drivers already drop one; a live frame no longer
+  carries a NaN from the UDP channel.
+- `SignalCfg.color` keeps only a colour: `#rgb`, `#rgba`, `#rrggbb`,
+  `#rrggbbaa`, or a colour's name (letters only, at most 20). Anything else
+  becomes "" (the palette's colour) wherever a colour comes in: PATCH
+  /api/signals, a CSV, a signal set, a shared set, a project. The page
+  escapes a colour wherever it writes one into markup.
+- ui/js/220-analysis-chart.js: the A/B marker table escapes a signal's name,
+  unit and colour.
+- app/recording/trigger.py: the stop condition's baseline is taken at the
+  fire itself, so a stop that rises before the next tick stops the trial.
+
+- What to do: nothing, unless a phone test reads one of these.
+
+---
+
+## 2026-11-10 — a bug report's id is a UUID; two trials in one second keep both (shared `app/`; install with the next payload)
+
+- `POST /api/bugs`: `report_id` is a UUID (8-4-4-4-12 hex digits) or left
+  out (the server makes one). Any other id is refused with 422, "the
+  report's id is not one BEGIA makes". The outbox writes, reads and removes
+  only its own files.
+- app/recording/store.py: a start whose file name is taken (same name, same
+  second) takes `<name>_2.db`, `_3`; a failed start removes only the file it
+  made itself.
+- What to do: if the phone queues bug reports with an id of its own, make
+  it a UUID.
+
+---
+
 ## 2026-11-09 — Open trial file…: a loose trial read where it lies, on the PC only (shared `app/` and `ui/`; install with the next payload)
 
 - New endpoints: `GET /api/trials/opened` answers `{here, files}`;
