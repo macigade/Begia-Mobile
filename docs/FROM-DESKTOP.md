@@ -20,6 +20,16 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — the DB view's 16-bit rows in 4-20 mA and percent (shared `ui/`; install with the next payload)
+
+- ui/js/266-dbview.js: a 16-bit row (js/070 MA_TYPES) has the views dec, hex,
+  bin, ma, pct, pctc (localStorage "dbv_base", per row); its value reads as
+  Live's anText plus the unit ("10.451 mA"). The row menu's "Show as" is
+  "Shown as" now, with "Rows beside it shown as" next to it.
+- What to do: nothing, unless a phone test reads the DB view's menu.
+
+---
+
 ## 2026-11-11 — the licence vectors once more: refusal cases (`tests/vectors/`)
 
 - tests/vectors/licence-vectors.json is the Licence Manager's 385ab4f now
