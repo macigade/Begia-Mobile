@@ -20,6 +20,24 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — a failing start-up step no longer ends BEGIA; the UDP port is checked (shared `app/`; install with the next payload)
+
+- app/main.py: each lifespan step (the I/O check's resume, the PLC's dial,
+  the network announce) is guarded. A failure is logged and kept in
+  `start_problems`, which the status payload now carries; BEGIA comes up
+  without that step.
+- app/drivers/udp.py: `start()` says why the channel is not listening
+  (`S.udp.error`, and "error" in its stats: "not listening: port N is in
+  use") and raises to its caller; the start-up logs it and goes on.
+- `PUT /api/udp`: the port must be a number from 1 to 65535, checked before
+  anything is kept; a failed bind puts the setting and its listener back as
+  they were.
+
+- What to do: nothing in the shell. The page does not show `start_problems`
+  or the UDP error yet.
+
+---
+
 ## 2026-11-11 — review fixes, round 5: drivers, Reconnect, the update route, the I/O check (shared `app/` and `ui/`; install with the next payload)
 
 - ui/js/030-status.js `connFieldsFrom(st)`: the hidden `#endpoint` and
@@ -75,6 +93,44 @@ as the change. Entries say what to *do*, not just what happened.
   194-195): port those from app/access/licence.py.
 
 ---
+
+## 2026-11-11 — review fixes, round 4: the recorder, the files, the licence box, the page (shared `app/` and `ui/`; install with the next payload)
+
+- app/recording/store.py: a change stamped at or before a trial's start that
+  reaches the ring after it corrects the trial's start row in place (an
+  UPDATE of the seed row, or an INSERT where the start had no value), for
+  texts and for seeded samples; rows stay in time order.
+- app/state.py `send_all`: each page has an outbox drained by a task of its
+  own; a page that has not taken a frame in 5 s (`SEND_BOUND_S`), or has 200
+  frames waiting, is dropped and reconnects (its init frame brings it up to
+  date). send_all waits for no page's socket any more.
+- app/hub.py `walk_back`: since(), history(), texts_since() and text_history()
+  walk a copy when another thread appends during the walk; no more
+  "deque mutated during iteration" from the flush thread.
+- Trial files have a table `link (t_ms, up)` and the meta `link_record` = "1":
+  the recorder writes the PLC link's downs and ups there
+  (`Recorder.mark(text, link=...)`, from push.py), and the CSV and .dat
+  exports take their gaps from it alone. A file without `link_record` is
+  read by the recorder's own words only: "link lost (why)", "link lost",
+  "link restored".
+- app/recording/trigger.py `_eval`: a last reading with good = 0 counts as
+  "not looking" (None), as during a link outage: the condition keeps its last
+  state.
+- A new frame `{"type": "notice", "text": ...}`, toasted by every page: a
+  trial that stopped unsealed ("<name>: the end of the trial could not be
+  folded into the file ..."). The phone may show it the same way, or ignore it.
+- `POST /api/live/export` (the old route; the page uses `/api/export/live`)
+  clips its window to what Live holds (`window_s` before t1) and builds the
+  file in a thread from a copy of Live's memory, as the job route does.
+- `SignalCfg`: gain and offset that are not finite numbers become 1.0 and
+  0.0, and ymin/ymax become None, wherever a signal comes in; PATCH
+  /api/signals refuses a non-finite gain or offset with 422 ("the gain has
+  to be a number").
+
+- What to do: nothing, unless a phone test reads one of these.
+
+---
+
 ## 2026-11-11 — review fixes, round 3: peers, the Host check, sockets, PLC logins, stamps, the licence (shared `app/`; install with the next payload)
 
 - `/ws` closes with 4401 after a sign-out, a change of the app password or
