@@ -20,6 +20,38 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — review fixes, round 5: drivers, Reconnect, the update route, the I/O check (shared `app/` and `ui/`; install with the next payload)
+
+- ui/js/030-status.js `connFieldsFrom(st)`: the hidden `#endpoint` and
+  `#opc-user` that Reconnect posts follow the status's PLC and user, so
+  Reconnect goes to the PLC the page shows (on the phone's page too).
+- app/drivers/opcua.py `on_bad`: a data change with a Bad status and no value
+  is recorded not good, at the node's last value.
+- app/drivers/s7plus: an idle poll loop reads one known tag every 5 s
+  (`KEEPALIVE_S`) and reconnects on a link error; `read_values` keeps only
+  lasting refusals, and only for the session; an empty BOOL answer decodes to
+  None; a flatten that returns after a reconnect writes nothing; a section
+  view scans the tags once.
+- `POST /api/update/install`: on a PC it needs loopback, and another device
+  gets 403 "an update is installed on the PC BEGIA runs on". On the phone it
+  is unchanged (the request is the phone's own).
+- app/routes/update.py: a stamp `vX.Y` counts as N = 0 and `-dirty` is left
+  out of the comparison; the MSI and payload name patterns take a tag-exact
+  name. No version is cut.
+- app/state.py `polled()` and `bulk()`, app/routes/iocheck.py: an I/O check
+  row is "read anyway" only by a TICKED signal; a row that is an unticked or
+  removed signal is read by the check itself, after a restart too.
+- app/iocheck/store.py `not_a_check`: a damaged or foreign check file is no
+  check to resume (a log line); the I/O project's lists skip damaged files.
+- app/pnid/store.py: a drawing's id is its folder's name;
+  ui/js/295-pnid.js encodes the id in every path.
+- Options: the signal-set sharing switch says that it trusts every device on
+  the network.
+
+- What to do: nothing in the shell.
+
+---
+
 ## 2026-11-11 — the licence vectors made again; a request whose version is no number (`tests/vectors/`, `app/access/licence.py`)
 
 - tests/vectors/licence-vectors.json is the Licence Manager's 973e900 now
