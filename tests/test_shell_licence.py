@@ -39,10 +39,31 @@ def test_the_vectors_are_the_pinned_ones():
 
 
 def test_the_vector_key_is_not_trusted():
-    # signed by a throwaway key whose private half was never written
-    assert DATA["key_id"] == "c8d8fc5c4297cdd2"     # made 2026-10-14; the first was 4bb7ca0e479043a8
+    # signed by a throwaway key whose private half was never written: the
+    # Licence Manager's 385ab4f (2026-11-11); before it c8d8fc5c4297cdd2
+    # (2026-10-14) and 4bb7ca0e479043a8
+    assert DATA["key_id"] == "9403c7e93ba86a2b"
     assert DATA["key_id"] not in trust.LICENCE_KEYS
     assert DATA["public"] not in trust.LICENCE_KEYS.values()
+
+
+def test_a_text_nested_too_deep_is_refused_never_raised(tmp_path):
+    # json gives RecursionError for it, which is not a ValueError (385ab4f's replay)
+    deep = "[" * 100000 + "]" * 100000
+    with pytest.raises(ValueError, match="not the JSON a licence file holds"):
+        L.parse(deep)
+    # the file the service wrote, as the native screens read it
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / L.LICENCE_FILE).write_text('{"licence": ' + deep + "}", encoding="utf-8")
+    out = L.status(str(tmp_path), "and:0123456789abcdef")
+    assert out["ok"] is False and out["present"] is True and "could not be read" in out["why"]
+    # a record too deep for the canonical form the signature is checked over
+    rec = node = {"product": "BEGIA"}
+    for _ in range(5000):
+        node["x"] = {}
+        node = node["x"]
+    out = L.verify({"licence": rec, "key_id": DATA["key_id"], "sig": "00"}, "X", keys=KEYS)
+    assert out["ok"] is False and out["why"].startswith("the licence has been altered")
 
 
 def test_the_licence_key_is_the_managers():

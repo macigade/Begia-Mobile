@@ -117,7 +117,7 @@ def verify(doc, machine: str, today: Optional[date] = None, keys: Optional[dict]
         out["v"] = int(rec.get("v", 1) or 1)
         out["expires"] = _day(rec.get("expires"))
         out["issued"] = _day(rec.get("issued"))
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, OverflowError):      # OverflowError: JSON's 1e999 is infinity
         out["why"] = "the licence carries a date that is not a date"
         return out
     try:
@@ -134,7 +134,7 @@ def verify(doc, machine: str, today: Optional[date] = None, keys: Optional[dict]
         from cryptography.hazmat.primitives.asymmetric import ed25519
         ed25519.Ed25519PublicKey.from_public_bytes(bytes.fromhex(pub)).verify(
             bytes.fromhex(str(doc.get("sig", ""))), canonical(rec))
-    except (InvalidSignature, ValueError, TypeError):
+    except (InvalidSignature, ValueError, TypeError, RecursionError):   # a record nested too deep to write out
         out["why"] = "the licence has been altered since it was issued (the signature does not match)"
         return out
     if rec.get("product") != PRODUCT:
@@ -176,7 +176,7 @@ def parse(text: str):
     text = (text or "").strip().strip("`")
     try:
         doc = json.loads(text)
-    except ValueError:
+    except (ValueError, RecursionError):     # RecursionError: a text nested too deep, not a ValueError
         raise ValueError("this is not a licence: the text is not the JSON a licence file holds")
     if not isinstance(doc, dict):
         raise ValueError("this is not a licence file")
@@ -214,7 +214,7 @@ def status(files_dir: str, device_id: str, today: Optional[date] = None,
     else:
         try:
             out = verify(json.loads(path.read_text(encoding="utf-8")), code, today, clock_max=clock_max)
-        except (OSError, ValueError) as e:
+        except (OSError, ValueError, RecursionError) as e:
             out = verify(None, code, today, clock_max=clock_max)
             out["why"] = f"the licence file could not be read ({e})"
     out["code"] = code
