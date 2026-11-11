@@ -126,6 +126,38 @@ as the change. Entries say what to *do*, not just what happened.
   0.0, and ymin/ymax become None, wherever a signal comes in; PATCH
   /api/signals refuses a non-finite gain or offset with 422 ("the gain has
   to be a number").
+- app/config.py: a missing config.json with its config.json.prev still there
+  starts on .prev, with the same warning as the rescue (`LOAD_ERROR`).
+- PATCH /api/signals/bulk refuses a non-finite gain or offset with 422, as the
+  single PATCH does; a stored NaN gain saves as null and loads back as 1.0.
+- app/config.py: a project's trials, csv and exports parts that name a file
+  or hold a character Windows refuses fall back to the defaults; the
+  recorder makes the trials folder with its parents and never raises at
+  import.
+- app/config.py: pc.json is written at the first start that finds none; with
+  none, this PC's own fields come from the first project's config.json;
+  a project file's PC fields (`tls`, `auth`, `licence`, `backup`,
+  `discovery`, `startup_gate`, `window_s`, `push_ms`) are never taken.
+- POST /api/signals/restore never stores a udp: row; a stored one is dropped
+  at load (config._opened).
+- app/hub.py `ensure`: a charted signal's ring too small for its rate (a
+  rate made faster, the I/O check's small ring) is grown, its samples kept.
+- The exports of a file opened with Open trial file... are named
+  "<stem> (from <folder>)_grid<N>ms.csv" (`paths.export_stem`).
+- POST /api/trial/start and /api/trigger/arm answer 409 while a project job
+  runs ("a project is being saved or opened - start the trial when that is
+  done"); a project switch checks recording/trigger/I/O check again right
+  before its restart.
+- PUT /api/licence/box/licences/{code} with a refusal answers 409 while the box
+  holds a licence that holds for the code, unless the refusal carries a signed
+  "made" date after the licence's "issued"; a refusal's "made" is part of its
+  signed record now (the Licence Manager can date its refusals).
+- GET /api/licence/request: off this PC and not signed in, the request comes
+  with `"usage": null` (the Licence Manager reads such a request).
+- Every request body is capped as it arrives (app/main.py BodyCap): 64 MB,
+  1 MB on /api/licence*; over it, 413 with a sentence, chunked or not.
+- The page shows the UDP stats' `error` on Setup's UDP card, and toasts each of
+  the status payload's `start_problems` once ("Not started: ...").
 
 - What to do: nothing, unless a phone test reads one of these.
 
