@@ -20,6 +20,29 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — the licence vectors made again; a request whose version is no number (`tests/vectors/`, `app/access/licence.py`)
+
+- tests/vectors/licence-vectors.json is the Licence Manager's 973e900 now
+  (sha256 ca2ec65bca01341e04f4e5125286b976187d95a654dde9f72ba8e014eea549ba).
+  A new throwaway key signs it (c077b153b0cb4467 for c8d8fc5c4297cdd2), so
+  every signed case has a new signature; the request case's host name is
+  TEST-LAPTOP-3; two cases are new: `v-1e999-refused` (a licence whose `v` is
+  1e999: not ok, "carries a date that is not a date") and the request
+  `request-version-1e999` ("not a BEGIA licence request"). The other cases
+  mean what they meant.
+- `licence.read_request()`: a version that is no number raises
+  ValueError("this is not a BEGIA licence request"), not OverflowError.
+
+- What to do in the phone repo (the Licence Manager replayed the new file on
+  a scratch copy of it): the phone pins the vectors of two versions back
+  (ea6d8031). Take the new file with `python tools/sync_vectors.py --to <the
+  phone repo>`. The shell's port (runtime/begia_shell/licence.py) then fails
+  the five grace cases (it has no `grace_days`, in the format since
+  2026-10-14), raises OverflowError on `v-1e999-refused`, and its parse and
+  its file read do not catch RecursionError (around lines 156-157 and
+  194-195): port those from app/access/licence.py.
+
+---
 ## 2026-11-11 — review fixes, round 3: peers, the Host check, sockets, PLC logins, stamps, the licence (shared `app/`; install with the next payload)
 
 - `/ws` closes with 4401 after a sign-out, a change of the app password or
