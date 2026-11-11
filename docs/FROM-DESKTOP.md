@@ -20,6 +20,35 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-11 — the I/O check and I/O project, the engine review (shared `app/` and `ui/`; install with the next payload)
+
+- `/api/ioproject/share` is three steps now (hello, swap, give, each with a
+  single-use nonce; both sides prove the password before a record moves).
+  The old one-step form answers 426 "update BEGIA on both devices": a phone
+  that shares I/O projects must run this payload, and so must the PC.
+- Project records carry their own wall time `at`, and ids are
+  `<device>~<key>:<n>`; share rows may carry `said`. A record more than a
+  day ahead of the receiver's clock is not taken, and the share line names
+  the device.
+- The `/api/ioproject` state has `plc_asked` and `open.plc`; new
+  `POST /api/ioproject/plc_is {check?}`; `fromchecks` may answer
+  `other_plc`; a check's `source` has `plc` (fingerprints). A project takes
+  a check's answers only from its own PLC.
+- `POST /api/ioproject/plc`: the host is a host or IP with an optional port
+  (never this device or loopback), else 400. `POST /api/ioproject/note`:
+  `on` is "", `cabinet:<n>` or `module:<n>`, else 400.
+- The `/api/iocheck` summary may carry `unsaved` (text, for the count line).
+  `POST /api/iocheck/reset` answers 409 on a stopped check.
+- `/api/iocheck/export.csv` starts with a BOM (`text/csv; charset=utf-8`);
+  cells opening with `=`, `+`, `-` or `@` (not STATUS) get a leading `'`.
+- Tag-table imports are bounded (256 columns, 200 000 rows, a 64 MB inflated
+  part, a 32 MB upload) and parsed off the loop; a bad file is a sentence.
+
+- What to do: nothing in the shell, unless a phone test shares an I/O
+  project in the old one-step form or resets a stopped check.
+
+---
+
 ## 2026-11-11 — a failing start-up step no longer ends BEGIA; the UDP port is checked (shared `app/`; install with the next payload)
 
 - app/main.py: each lifespan step (the I/O check's resume, the PLC's dial,
