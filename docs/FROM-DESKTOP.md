@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-12 — a trial's read, faster (shared `app/`; install with the next payload)
+
+- app/recording/viewer.py: the trial's read (GET /api/trials/<file>/data)
+  takes its time-weighted averages from the rows it fetches for the trace
+  (_time_weighted), not from a second LEAD() pass. The answer is the same,
+  the averages to about 1e-14; the phone's own reads get faster with the
+  payload.
+- What to do: nothing.
+
+---
+
 ## 2026-11-12 — a trial being opened says how far it is (shared `ui/` and `app/`; install with the next payload)
 
 - ui/js/245-trialopen.js (new, loaded after js/240): openTrial and the
