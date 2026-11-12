@@ -20,6 +20,29 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-12 — Share on the network: BEGIA's pages only on the PC's word (shared `app/` and `ui/`; install with the next payload)
+
+- app/access/pageshare.py, app/gates.py (BACKGROUND, share_refusal in the
+  HTTP middleware), app/routes/sharepages.py: the BEGIA server refuses its
+  pages, API and /ws to every other device unless the PC shares them. On the
+  phone it stays off (Options' Share on the network is on the PC's desktop
+  layout only); the phone's own app view is loopback and untouched.
+- A phone opening a PC's BEGIA as a companion needs Start sharing on that
+  PC. The door then offers the code beside the app password:
+  `POST /api/login/code {"code": "123456"}` sets the session cookie (kept in
+  memory only on the PC; it ends at Stop sharing or when BEGIA closes).
+- New: /ws close 4403 with a `{"type": "share", "shared": false, "detail":
+  ...}` frame means "not shared now" (no redial). /api/auth has `code`
+  (bool). /api/state has `share` (`{"on"}` for a device). A refused page is
+  403 text/html; a refused API call is 403 `{"detail", "shared": false}`.
+- Kept open for the phone while not shared: /api/licence/box/...,
+  /api/payload/info, /api/payload.
+- What to do: nothing in the phone's own app. A companion test that reaches
+  a PC's BEGIA from another address presses Start sharing on that PC first
+  (POST /api/sharing/start on the PC's loopback), or expects the 403s above.
+
+---
+
 ## 2026-11-12 — a trial's read, faster (shared `app/`; install with the next payload)
 
 - app/recording/viewer.py: the trial's read (GET /api/trials/<file>/data)
