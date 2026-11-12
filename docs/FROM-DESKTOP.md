@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-12 — a trial being opened says how far it is (shared `ui/` and `app/`; install with the next payload)
+
+- ui/js/245-trialopen.js (new, loaded after js/240): openTrial and the
+  viewer's overlay read `GET /api/trials/<file>/data?progress=<name>` (the
+  name: letters and digits, up to 40) and show a box (#topen, the export's
+  look) after 1 s. Meanwhile `GET /api/trial-progress/<name>` answers
+  `{stage, done, total}` - the signals read - and 404 once the read is over;
+  `POST /api/trial-progress/cancel {token}` stops the read between two
+  signals (its request answers 409). The cancel is open to a read-only copy.
+- ui/js/020-api.js: api() takes a fourth argument `{signal, onBytes}`;
+  ui/js/050-dialog.js: dlgOpen() is true while the box is up;
+  buildTrialCharts(drive) draws through trialChartSteps(), a chart a step
+  when an opening drives it - every other caller as before.
+- What to do: nothing, unless a phone test stubs api() by its argument
+  count, or matches /data's address exactly (it carries ?progress= now). The
+  box needs fetch streams and MessageChannel - the WebView has both.
+
+---
+
 ## 2026-11-11 — the DB view's 16-bit rows in 4-20 mA and percent (shared `ui/`; install with the next payload)
 
 - ui/js/266-dbview.js: a 16-bit row (js/070 MA_TYPES) has the views dec, hex,
