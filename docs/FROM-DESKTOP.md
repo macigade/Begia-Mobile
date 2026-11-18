@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-18 — a trial file keeps its charts; Review draws them as recorded (shared `app/` and `ui/`; install with the next payload)
+
+- Trial files: two columns at the END of `signals`, `pane INTEGER` (the
+  chart's number: -1 the Strings chart, -2 none) and `grp TEXT` (the
+  folder, "" none); and a new table `charts (pane INTEGER PRIMARY KEY, name
+  TEXT, ord INTEGER)` with the charts its signals were in, named as Live
+  showed them ("Chart #n" when unnamed) and ordered by their place among
+  Live's charts.
+- Readers that name their columns - every older build, and the phone's
+  payload until it is updated - open new files unchanged. Files from before
+  have neither.
+- GET /api/trials/{file}/data: each signal gets "pane" and "group" (null in
+  a file from before), and the payload gets "charts" ([] before).
+- Review and the list on the phone (shared ui/) draw as above once it has
+  the payload with this build.
+- What to do: nothing; install with the next payload.
+
+---
+
 ## 2026-11-18 — booleans named in a mixed chart, and the chart tall enough for them (shared `ui/`; install with the next payload)
 
 - ui/js/100-theme.js: digitalLabels names each boolean band in the column
