@@ -20,6 +20,18 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-18 — Review's list groups a trial by Live's charts by the tag's name too (shared `ui/`; install with the next payload)
+
+- ui/js/220-analysis-chart.js palPaneGroups: a trial's signal is matched to
+  Live's chart by node id, else by the symbol both drivers show
+  (shortName). A trial recorded over OPC UA (ns=3;s="DB"."Member") now
+  groups into Live's charts with Live on S7 (DB.Member), on the phone's view
+  of the laptop's pages too; only a signal Live really lacks stays under
+  "Not in a chart now".
+- What to do: nothing.
+
+---
+
 ## 2026-11-12 — Share on the network: BEGIA's pages only on the PC's word (shared `app/` and `ui/`; install with the next payload)
 
 - app/access/pageshare.py, app/gates.py (BACKGROUND, share_refusal in the
