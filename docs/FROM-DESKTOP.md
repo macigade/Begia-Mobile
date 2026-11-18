@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-18 — booleans named in a mixed chart, and the chart tall enough for them (shared `ui/`; install with the next payload)
+
+- ui/js/100-theme.js: digitalLabels names each boolean band in the column
+  beside a mixed chart (boolNames, nameDiffAt, fitName), where it wrote TRUE
+  and FALSE at both levels. The column is as wide as the names
+  (digitalColW: 46 to 160 px at 100 % text, at most 64 on a phone); past
+  five booleans their share of the plot grows (digitalBandH, nine tenths at
+  twenty); digitalPlotFloor(n) is the least plot that gives each band a lane
+  (22 px at 100 % text).
+- ui/js/180-panes.js (boolFloorH: fitPanes, fitSlots' floors, the grip),
+  ui/js/210-analysis.js (anChartNeed in analysisHeight) and
+  ui/js/220-analysis-chart.js (analysis.boolBands, the names): a chart is not
+  made shorter than its bands need where its layout can grow. On the phone
+  the column is at most 64 px, so two names that differ only in their path
+  can be cut alike there - as the phone's readouts already shorten them.
+- What to do: nothing. A phone-only layout of your own that sizes a mixed
+  chart should take boolFloorH(c) as its least height.
+
+---
+
 ## 2026-11-18 — Review's list groups a trial by Live's charts by the tag's name too (shared `ui/`; install with the next payload)
 
 - ui/js/220-analysis-chart.js palPaneGroups: a trial's signal is matched to
