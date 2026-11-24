@@ -20,6 +20,30 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-25 — an array or structure added whole: a folder per element, Not in a chart when many (shared `app/` and `ui/`; install with the next payload)
+
+- POST /api/signals/bulk: a ticked structure's members (`expand`) get
+  `group` = their element's folder (app/routes/signals.py element_folder:
+  Valves[3]; an array of plain values one folder; a struct its own), made in
+  `groups`. New body field `new_chart` (bool, default false): `pane` is a new
+  chart for them all - members past CHART_DRAWN (32) go to pane -2 (no
+  chart) instead. `pane: null` with members of a structure: a chart per
+  element. The answer adds `groups` (the folders filled, in order) and
+  `no_chart` (how many went to no chart). An add without `new_chart` is as
+  before, but for the folders.
+- ui/js: an element's folder (a name ending in "[...]") starts collapsed
+  (sigGroupFolded; the ones opened kept in localStorage sig_groups_opened);
+  the By chart view shows the folders inside a chart (sigRunFolders); sigTail
+  keeps an element with its member (Valves[3].Cmd) in the phone's readout
+  and the axes list.
+- app/sim/plant.py: "DB_Valves"."Valves"[1..50] of a 10-member UDT, 500
+  nodes more in the simulator.
+- What to do: nothing - unless the phone's own add sends `pane` for a new
+  chart: send `new_chart: true` with it, so that an array does not land 500
+  in one chart.
+
+---
+
 ## 2026-11-18 — a trial file keeps its charts; Review draws them as recorded (shared `app/` and `ui/`; install with the next payload)
 
 - Trial files: two columns at the END of `signals`, `pane INTEGER` (the
