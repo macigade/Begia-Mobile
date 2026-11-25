@@ -20,6 +20,41 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-25 — the simulator's valves stand still under hold (shared `app/`; install with the next payload)
+
+- app/sim/plant.py: `sim.hold` (the boot check's held simulator) stopped
+  the two sequences only; the fifty valves of DB_Valves.Valves[1..50]
+  (since payload 756) ran on, so a held simulator still changed a valve
+  member every fraction of a second. Now the valve array has a clock of
+  its own (`valve_t`) that stops under hold, and its positions stand still
+  with it.
+- What to do: nothing in the phone's code. Until the next payload, the
+  phone's boot check on payload 756 can map an input to a valve member by
+  chance (DB_Valves.Valves[n].Opened or .Cmd_Open first, the cabinet's
+  in_NN second) about one run in six: run it again; the next payload fixes
+  it.
+
+---
+
+## 2026-11-25 — an array added whole is read every 100 ms (shared `app/` and `ui/`; install with the next payload)
+
+- POST /api/signals/bulk: `rate_ms` is optional now (`BulkAddBody.rate_ms`,
+  default null). Null: 10 ms (signals.ADD_RATE_MS), and 100 ms
+  (signals.ARRAY_RATE_MS) for a member of an array taken whole - the array
+  ticked (`expand`), or a block or structure holding it, at any depth
+  (signals.in_whole_array). A rate sent is used for all of them, as before.
+  The answer adds `at_array_rate` (how many came at the array's rate) and
+  `array_rate_ms` (100). The 422 question's `detail` adds "An array added
+  whole is read every 100 ms." when it applies.
+- ui/js: the message after the picker's add adds the same sentence
+  (js/040 pkAddedRate) and stays up 8 s; `toast(msg, ms)` takes how long
+  (js/020), 4 s when not given.
+- What to do: if the phone's own add sends `rate_ms: 10`, leave it out (or
+  send null), so a whole array comes at 100 ms; after the add, say the
+  sentence when `at_array_rate` > 0.
+
+---
+
 ## 2026-11-25 — an array or structure added whole: a folder per element, Not in a chart when many (shared `app/` and `ui/`; install with the next payload)
 
 - POST /api/signals/bulk: a ticked structure's members (`expand`) get
