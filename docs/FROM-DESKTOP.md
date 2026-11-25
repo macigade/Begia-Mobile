@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-25 — the assistant (beta): nothing on the phone (shared `app/` and `ui/`; install with the next payload)
+
+- New app/assistant/ and app/routes/assistant.py (`/api/beta*`,
+  `/api/assistant*`): on the PC only (loopback - 403 from the network), on
+  Windows only (404 elsewhere), and behind the owner's beta password. The
+  payload carries the modules but never imports the provider's SDK
+  (`anthropic` is in requirements.txt for win32 only, and imported inside
+  the functions that call it): it boots as before.
+- ui/js/114-assistant.js: its GET /api/beta is refused on the phone, so
+  Options' Beta features group and the Signal sets row stay hidden (their
+  `hidden` attributes; the group is `.ov-desktop` too).
+- routes/signals.py: POST /api/signals/bulk's expansion and row making are
+  functions of their own now (expand_ticked, signal_row), shared with the
+  assistant's Make; the add answers exactly as before.
+- drivers: `tag_listing()`, read-only - what the index or the tag table
+  already holds, nothing read from the PLC.
+- What to do: nothing.
+
+---
+
 ## 2026-11-25 — the simulator's valves stand still under hold (shared `app/`; install with the next payload)
 
 - app/sim/plant.py: `sim.hold` (the boot check's held simulator) stopped
