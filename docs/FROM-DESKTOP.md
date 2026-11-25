@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-25 — the hover box lists every signal on Ctrl+Shift, not Ctrl (shared `ui/`; install with the next payload)
+
+- ui/js/170-plugins.js, the hover box (tooltipPlugin `outside`, used by
+  Live, the Strings strip, Analyse and a trial's charts): with a keyboard -
+  a tablet with one - every signal of the chart shows while Ctrl AND Shift
+  are held (`ttAllKeys`); Ctrl alone changes nothing. AltGr (Ctrl+Alt) does
+  not count; letting go of either key, or the window losing focus, goes back
+  to the one signal. The line under the box says "Ctrl+Shift: all N" on a
+  mouse; a touch screen keeps "tap: all N", and the tap is unchanged.
+- The open list scrolls under the wheel with Ctrl or Shift held (sideways
+  deltas taken as up and down), as before never zooming.
+- ui/js/105-engineering.js: a plain wheel over the desktop's Live charts
+  (the Engineering layout's slots, or a chart maximized) no longer steps
+  from chart to chart. That layout is never used on the phone or the tablet.
+- What to do: nothing. A finger works as before; a tablet's keyboard user
+  holds Ctrl+Shift for the list.
+
+---
+
 ## 2026-11-25 — Move to chart moves every selected signal (shared `ui/`; install with the next payload)
 
 - ui/js/055-ctxmenu.js signalMenu: its Move to chart is built by
