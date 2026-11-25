@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-25 — Move to chart moves every selected signal (shared `ui/`; install with the next payload)
+
+- ui/js/055-ctxmenu.js signalMenu: its Move to chart is built by
+  `moveToChartItem(sig, picks)` now. When the signal is one of several
+  selected (heldSigs - Ctrl/Shift in the Live list, so a tablet with a
+  keyboard), it moves them all: to a chart, or New… to one new chart for
+  them all, named as it is made. A string or a UDP signal among them stays
+  where it is, and the toast says so; a chart past what it draws keeps the
+  rule it had (chartMaxTraces: 16 on a phone), said in the toast.
+- ui/js/070-signals.js: `moveSelectionToChart(group, pane)` does it with one
+  PATCH /api/signals/bulk (patchSignalsPane, as a drag of several already
+  did) and one redraw; `pane` null is the new chart. One signal alone still
+  sends its own PATCH /api/signals, as before. No endpoint changed.
+- What to do: nothing. A long press on one signal reads and moves as before.
+
+---
+
 ## 2026-11-25 — the assistant (beta): nothing on the phone (shared `app/` and `ui/`; install with the next payload)
 
 - New app/assistant/ and app/routes/assistant.py (`/api/beta*`,
