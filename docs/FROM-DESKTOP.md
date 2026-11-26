@@ -20,31 +20,6 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
-## 2026-11-26 — strings are in their charts (shared `app/` and `ui/`; install with the next payload)
-
-- A string's `pane` is a chart number (>= 0) or -2 (no chart), as any
-  signal's. -1, the one Strings chart, is given to nothing any more:
-  `config.migrate_strings_charts` moves the strings of a list from before
-  into one new chart named Strings at the old chart's place, at the start,
-  a profile or signal set loaded, and the simulator's starting list.
-  `routes/common.py _placed` is gone; the adds keep the chart they are given.
-- A trial records each string's chart, and its `charts` table lists charts
-  of strings only. An older trial's strings stay at -1 (or have no pane):
-  js/185 `trialLooseStrings` draws them as before, one strip over the charts.
-- ui/js/180 buildCharts groups every signal by chart; a chart with readings
-  gets its strings in a strip on top of its plot (js/185 `mountChartStrip`,
-  `.pane-strip`, recorded as `c.strip` on the chart and given its data by
-  js/190); a chart of strings only is `buildStepsPane(paneEl, paneNo, ...)`
-  with a chart's header (number, name, menu `paneMenu`, drops `paneDrops`).
-  `stringsShown`, `stringsMenu`, `deleteStringsChart`, js/175 `stripFollow`
-  and the left panel's `textTile` are gone; js/070 `stringsOnlyChart(p)` is new.
-- The phone's rule hiding a strings chart's LIVE while free is gone: a chart
-  of strings only has a window of its own now.
-- What to do: nothing. If the shell reads `pane === -1` as "a string", read
-  `is_text` instead.
-
----
-
 ## 2026-11-26 — the Interlock block preset is gone (shared `presets.json`; install with the next payload)
 
 - presets.json has four presets: PID loop, Analog measurement, Valve /
