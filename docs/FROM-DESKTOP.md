@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-26 — the Interlock block preset is gone (shared `presets.json`; install with the next payload)
+
+- presets.json has four presets: PID loop, Analog measurement, Valve /
+  actuator, Drive. "Interlock block" (match `Intlk|Intlk08_CP|Intlock`) is
+  out: its button showed on any picker row named Intlock or Intlk, a
+  controller block's Intlock member among them. `GET /api/presets` answers
+  four; `POST /api/signals/preset` with "Interlock block" answers 404
+  (unknown preset), as any unknown name does.
+- Intlock stays a member of Valve / actuator and Drive.
+- Nothing stores a preset's name: the picker loads the list at boot, and a
+  signal added by a preset is saved like any other.
+- What to do: nothing. The phone's picker loses the button with the next
+  payload. A presets.json in the phone's data folder, if one was ever put
+  there, wins over the payload's and keeps the preset.
+
+---
+
 ## 2026-11-26 — Analyse's signal list and A/B table are tables (shared `ui/`; install with the next payload)
 
 - ui/js/220-analysis-chart.js buildPalette: the list has a heading row
