@@ -20,6 +20,23 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-26 — Analyse's signal list and A/B table are tables (shared `ui/`; install with the next payload)
+
+- ui/js/220-analysis-chart.js buildPalette: the list has a heading row
+  (`.an-pal-cols`: Signal, Axis, Y range) and its rows in `.an-pal-rows`; each
+  signal row is a grid of the same columns (`data-col` name, side, tools,
+  range, on). Off the chart, the name spans to the mark. One line a signal.
+- The A/B table: `.an-table` is now a box (a div) round a real `<table>` with
+  `data-col` cells; js/210's height budget reads its rows either way.
+- Column widths dragged at a heading's edge are kept in localStorage
+  `an_col_w` and applied by a stylesheet scoped to `data-device="desktop"`:
+  on the phone and the tablet nothing is dragged, and the columns share the
+  width as before.
+- What to do: nothing. If the shell reaches into the palette's rows, they are
+  under `.an-pal-rows` now, and the A/B table's rows are inside `.an-table > table`.
+
+---
+
 ## 2026-11-26 — Options shows one group at a time (shared `ui/`; install with the next payload)
 
 - ui/index.html, ui/js/110-options.js, ui/css/110-themes.css: Options'
