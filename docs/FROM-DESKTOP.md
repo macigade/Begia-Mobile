@@ -20,6 +20,26 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-26 — Options shows one group at a time (shared `ui/`; install with the next payload)
+
+- ui/index.html, ui/js/110-options.js, ui/css/110-themes.css: Options'
+  groups are tabs (role tablist / tab / tabpanel, set by js/110), and only
+  the group chosen is on the page (`.ov-off` on the other `.ov-sec`s). On a
+  narrow page - the phone, the tablet - the tabs are a row over the page,
+  each at least 44 px tall on a touch screen; Find a setting sits over them.
+- On the phone the row holds Display, Licence and updates and Help, and
+  Start-up with Advanced settings on. The group is remembered per screen in
+  localStorage `opt_group`. A group the screen hides is never the one shown;
+  the first one that shows is.
+- Find a setting looks in every group while it has text; a tab tapped clears it.
+- New: `optionsAt(target)` - an element or its id - opens Options with that
+  place's group chosen and the place at the top. `markOptionsGroup` and
+  `optGroupHeld` are gone.
+- What to do: nothing. A link of the shell's into a place in Options calls
+  `optionsAt(id)`.
+
+---
+
 ## 2026-11-25 — the hover box lists every signal on Ctrl+Shift, not Ctrl (shared `ui/`; install with the next payload)
 
 - ui/js/170-plugins.js, the hover box (tooltipPlugin `outside`, used by
