@@ -20,6 +20,44 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — a parameter's held value inside one late batch is still an event (shared `app/`; install with the next payload)
+
+- app/recording/params.py: `ParamWatch.owed` keeps a value that held
+  `HOLD_MS` by the readings' own times and moved on inside one batch;
+  `ParamWatch.due(now)` returns a list `[(t_ms, text)]`, oldest first (the
+  owed, then the waiting one if it has held), and `take()` applies that
+  offer once (a second call does nothing). `ParamWatches.due` flattens
+  them. Nothing to do on the phone.
+
+## 2026-11-27 — the simulator's PID tuning can be written (shared `app/`; install with the next payload)
+
+- app/sim/plant.py `_pid_block`: `"<block>"."Gain"`, `"TI"`, `"TD"` and the
+  DataHMI's `Gain`, `TI`, `TD` are writable (`set_writable`), as an HMI
+  tunes a CPU's; the model never writes them back. Nothing to do on the
+  phone unless it runs the simulator: then a client can tune it there too.
+
+## 2026-11-27 — a signal marked Parameter in a trial and its report (shared `app/` and `ui/`; install with the next payload)
+
+- js/185: `trialParamHist(d, sig)` - a trial's parameter from `data.series`
+  (as today's signal of its node shows it, with the recorded unit);
+  `trialHistOf(d)` - one history function for a trial's lanes (a string's
+  texts, a parameter's samples, a shared row's); `trialParamChanges(d, sig)`
+  - the value at the start and every change. `buildTrialSteps` and
+  `mountCombinedSteps` draw lanes (`stripLanes`); `trialStepMarks` gives a
+  parameter's changes as ticks; `trialStepRowsAt` says a parameter's value.
+- js/240: a recorded chart's plot takes `!inStrip(s)`, its strip
+  `inStrip(s)` - by the trial's own `parameter` (False in a trial from
+  before: traces, as recorded); a parameter's head has no statistics.
+- js/250: Statistics leave a parameter out; "Parameters" (en/es) after them,
+  `reportParamRows` - 50 a parameter at most, then a "more" row; a string
+  marked leaves the Text signals' table.
+- app/recording/params.py: `shown_as(sig, area)` and `view_text` say a number
+  as the page does (ui/js/070 fmtNow): an input's INT in mA, a chosen hex or
+  binary. The recorder asks the driver where a signal lives
+  (`Recorder.area_of`, set in app/state.py), as the page is told.
+- For the phone: a trial opened there draws the same strip and ticks; its
+  report has the same section.
+
 ## 2026-11-27 — a signal marked Parameter in Live (shared `ui/`; install with the next payload)
 
 - js/070: `inStrip(sig)` - a string or a parameter, drawn in the strip and
