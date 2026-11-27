@@ -20,6 +20,12 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — "Not in a chart" asks before it is recorded or not (shared `ui/`; install with the next payload)
+
+- js/070 `setChartRec(NO_CHART, on)` asks first (`askConfirm`: the count and
+  what it means; Cancel resolves false, nothing sent). A chart is not asked.
+  The phone gets it with the shared `ui/`.
+
 ## 2026-11-27 — record a whole chart, or none of it (shared `ui/`; install with the next payload)
 
 - js/070, the one truth for every look and the Engineering tree:
