@@ -20,6 +20,38 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — the trigger's form follows the rule (shared `app/` and `ui/`; install with the next payload)
+
+- The trigger frame gains `cfg_rev`: a digest of the rule as stored
+  (`State.trigger_rev()`), in every frame. `broadcast_trigger` adds `cfg`
+  (the rule, as the first frame's `trigger_cfg`) to the first frame after
+  the rev changed; the frames after it carry the rev only.
+- js/060 `takeTriggerCfg(frame)` (from `setTrigger`): the first frame's rev
+  is the form's; a newer one with its `cfg` fills the form - unless the focus
+  is in it (`trigFormBusy`): then it waits for the focus to leave the form.
+
+## 2026-11-27 — what a trial records, said one way (shared `app/` and `ui/`; install with the next payload)
+
+- A signal's `active` is said "Recorded" (the Signals table's column, the
+  Signals page's row and menu, Analyse's tooltip). Nothing in what it does
+  changed.
+- `Recorder.active` gains `n_signals`: how many signals the trial records,
+  fixed at its start - in the recording frame and in POST /api/trial/start's
+  answer.
+- PATCH /api/signals during a trial: the 409 for `active` alone says "what a
+  trial records is fixed at its start - stop it to change Recorded" (with
+  another field, "stop the trial before changing gain, Recorded").
+- `recording/trigger.py validate_trigger(..., unrecorded=)`: Arm, an edit of
+  a live trigger and an armed tick refuse - or disarm - a condition or a
+  stop on a signal not recorded (never read, it can never be met).
+- The page: js/070 `recordedCount(list)` ("15 of 17 signals": the Acquiring
+  chip, the trial bar) and `paintRecordedLocks()` (every `.rec-box` locked
+  while a trial records; js/230 setRecording calls it); js/060's lists mark
+  a signal not recorded "(not recorded)", disabled; js/070
+  `unrecordedTile` at the end of the left list (folded; localStorage
+  `unrec_open`), the list's header counting every signal.
+- The phone: the same; nothing to do beyond the next payload.
+
 ## 2026-11-27 — a start trigger of several conditions (shared `app/` and `ui/`; install with the next payload)
 
 - `config.TriggerCfg`: the first condition stays in `signal` / `op` /
