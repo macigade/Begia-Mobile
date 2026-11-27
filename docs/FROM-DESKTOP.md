@@ -20,6 +20,37 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — a signal marked Parameter in Live (shared `ui/`; install with the next payload)
+
+- js/070: `inStrip(sig)` - a string or a parameter, drawn in the strip and
+  not the plot; `paramRow(sig)` - a number or a BOOL marked (a string marked
+  stays the lane it was); `paramText(sig, v)` (as the readout: `numText`
+  plus the unit; TRUE / FALSE); `paramHistOf(sig)` - Live's history of a
+  parameter from the store, `[t_s, text, good]` at each change of the value
+  shown; `paramChanged` / `paramChangedText` ("since 10:42:05", "before
+  10:32"); `paramReading`; `chartParams(paneNo)`; `openParamsList(paneNo)`;
+  `setParams(sigs, on)` (one bulk PATCH; a UDP signal its own);
+  `repaintParams()`.
+- js/185: `stripLanes(sigs, paneNo)` - the strings, then the parameters; past
+  four, the first three and one shared row `{ is_group, members, name: "+N" }`;
+  `stripTags`, `groupHistOf`, `laneShade`, `liveParamMarks`; `liveHistOf`
+  serves strings, parameters and shared rows; `stepGuidePlugin` draws a mark
+  with `tick` as a short tick at the plot's top; `stepRowsAt` gives a shared
+  row's parameters a row each. Both strips (`mountChartStrip`,
+  `buildStepsPane`) are built from the lanes; the chart record's `sigs` (a
+  chart of the strip alone) and `strip.sigs` are the lanes.
+- js/180 `buildCharts` splits the plot and the strip by `inStrip`; a
+  parameter's readout in the header is `.ph-sig.ph-param` with its unit;
+  `liveExport` sends the chart's parameters too.
+- js/055 `paramMenuItem(sig, picks)` in the signal's menu; "Parameters…" in
+  the chart's menu. js/120: the column `param` after `value`; `BULK_FIELDS`
+  gains `parameter`. js/050 `ask()` takes `table: { head, rows }` and
+  `noCancel`.
+- The phone gets all of it with the shared `ui/`: check a chart's strip rows
+  and the menus' long press there. A list of the phone's own can say a
+  parameter's value with `paramReading(sig)` and its time with
+  `paramChangedText(paramChanged(sig))`.
+
 ## 2026-11-27 — a signal marked Parameter, the server's part (shared `app/`; install with the next payload)
 
 - `SignalCfg.parameter` (bool, default False; `UdpSignalCfg.parameter` too,
