@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — record a whole chart, or none of it (shared `ui/`; install with the next payload)
+
+- js/070, the one truth for every look and the Engineering tree:
+  `chartRecState(paneNo)` -> "all" | "some" | "none", null for an empty
+  chart (NO_CHART is "Not in a chart"; a UDP signal counts as recorded);
+  `chartRecWords(paneNo)` -> "" | "Not recorded" | "3 of 8 recorded";
+  `setChartRec(paneNo, on)` - refused while a trial records, else js/120
+  `patchSigs` of the ones that change (one bulk PATCH of `active`), then a
+  toast "…: recorded / not recorded from now"; `chartRecItem(paneNo)` - the
+  menu entry; `chartRecSign(paneNo, cls)` - the quiet sign.
+- In: js/055 `paneMenu`, js/180 `openPaneMenu` (a button), js/070 `tileMenu`;
+  the sign in Live's header (`.pane-rec`, hidden in the Engineering look),
+  in a strip-only chart's header, on the left list's tile (`.pt-rec`).
+- js/070 `tilePanes()` keeps a tile for every chart - one none of whose
+  signals is recorded says so, its empty body "its signals not recorded"
+  (`.pt-unrec`). js/175 `chartTitle` names a shared row's own parameters.
+- The phone gets it with the shared `ui/`: the long press on a chart and the
+  drawer's tiles.
+
 ## 2026-11-27 — a parameter's held value inside one late batch is still an event (shared `app/`; install with the next payload)
 
 - app/recording/params.py: `ParamWatch.owed` keeps a value that held
