@@ -20,6 +20,83 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — a start trigger of several conditions (shared `app/` and `ui/`; install with the next payload)
+
+- `config.TriggerCfg`: the first condition stays in `signal` / `op` /
+  `value`, plus `text` and `part` (a string's). New: `join` ("all" | "any")
+  and `more` (a list of `ConditionCfg`: signal, op, value, text, part) for
+  the conditions after the first, at most `config.MAX_CONDITIONS` (8) in
+  all. An old config is a list of one; `config.trigger_conditions(trig)`
+  gives every condition.
+- A string's "contains" is `op: "=="` with `part: true` - never an op of its
+  own. Build 783's page (and every page before) threw in its first frame on
+  an op its select has no choice for: no charts, no signal list, no trials
+  (the going-back check, 2026-11-27). Every saved op is one of the six.
+- Taken for later builds: a condition's `for_s` (true for at least that
+  long) and `group`. This build refuses to arm a condition that carries
+  either (`recording/trigger.py validate_trigger`), so going back never runs
+  another rule without a word.
+- PUT `/api/trigger` (`config.edited_trigger`): a body without `text` /
+  `join` / `more` keeps the stored ones; a condition keeps the keys a newer
+  build gave it while its signal is the same one.
+- The engine: each condition True / False / None (no value: none read, a bad
+  reading, NaN, its transport down), joined by `combine(join, states)`.
+  "any" goes on with the conditions it sees through an outage, "all" waits;
+  a transport going or coming back makes the next reading a baseline.
+  Strings: == / != with `part` on `hub.texts`, case and end spaces aside
+  (`text_key`, `text_holds`).
+- The trigger frame gains `join`, `conditions` (how many), `now` (one
+  True / False / None per condition) and `now_of` (the node id each was read
+  from - mark a row only while it is on that signal). Told through
+  `TriggerEngine(notify_now=...)` when they change, 0.25 s apart at most,
+  armed or not.
+- The start mark is in words now (CHANGELOG); nothing parses it.
+- Every place that unbinds or repoints the trigger's signals goes through
+  `config.unbind_trigger_signals` / `repoint_trigger_signals` (every
+  condition and the stop).
+- The page (`ui/js/060-setup.js`, `ui/index.html`, `ui/css/040`): each
+  condition is a `.trig-cond` row of `#trig-conds` (`.trig-cond-head` =
+  `.trig-cond-mark` + `.trig-cond-sig`, then `.trig-cond-op`,
+  `.trig-cond-value` = `.trig-cond-num` / `-bool` / `-text` + `-unit`, and
+  `.trig-cond-del`); the first row keeps the old ids (`trig-signal`,
+  `trig-op`, `trig-value`, `trig-boolvalue`, `trig-unit`; new `trig-text`).
+  `#trig-join` (all / any) and `#trig-add`; `.several` on `#trig-sentence`
+  with two or more. `collectTriggerCfg` sends `text`, `join` and `more`;
+  `fillTriggerCfg` takes them (the select's "contains" is collected as op
+  "==" with `part`); `fillSignalSelect(sel, keep, strings)` lists
+  strings for a condition, never for the stop. `paintCondMarks(frame)`
+  paints the marks from `now` / `now_of` (+ `link_down`, new `udp_down`).
+- The comparisons' words changed (is above ... is not, contains); a BOOL's
+  condition is "is" + TRUE / FALSE only.
+- Words in every look, the phone's too: the Trial card's heading "Next
+  trial", placeholders "Trial name" and "Event note", the pre-trigger's
+  label "History"; `label.trig-l` per field (hidden
+  outside the Engineering look) and the sentence's words in `span.trig-w`.
+- On a finger, the × and "+ Add condition" are 44 px targets (css/040).
+- `stop_mode` gains "start_ends": the trial the trigger started ends when the
+  start rule is known false (a state, read every tick; None is no end), with
+  `duration_s` as its cap as for "signal" ("stop trigger: the start
+  condition(s) ended"). `validate_trigger` refuses a stop mode outside
+  `trigger.STOP_MODES` at Arm. The page: option `start_ends` in
+  `#trig-stopmode` (worded by the count of conditions), the cap moved into
+  its own `#trig-cap-bit` (shown for "signal" and "start_ends",
+  js/060 `STOP_CAPPED`).
+- The phone: nothing to do beyond the next payload. The trigger tests pass on
+  the phone's stack (pydantic 1.10.26, Python 3.11.9).
+
+## 2026-11-27 — "time from" shows the clock the next trial uses (shared `ui/`; install with the next payload)
+
+- ui/js/060 `trialClockShown(c, protocol)` (new): the Trial card's select
+  shows the clock the next trial is on, by the recorder's rule (the PLC's
+  where it is chosen and an offset is measured). Over S7 it shows the
+  laptop's, its `plc` option disabled with a title saying why; where the
+  connection gives the PLC's clock, the choice as before.
+- `trialClockNote` over S7 with the PLC's chosen now says only "S7 does not
+  give the PLC's clock" (it said "- trials use the laptop's", which the
+  select now shows).
+- Nothing is sent: `trial_clock` in the config stays as chosen. Nothing to do
+  on the phone beyond the next payload.
+
 ## 2026-11-26 — strings are in their charts (shared `app/` and `ui/`; install with the next payload)
 
 - A string's `pane` is a chart number (>= 0) or -2 (no chart), as any
