@@ -20,6 +20,17 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — the trigger's form follows the rule after a reconnect too (shared `ui/`; install with the next payload)
+
+- js/060 `trigCfgFresh()` forgets the rev the form held (`trigCfgRev`) and a
+  rule waiting under the fingers (`trigCfgWaiting`); js/020's first frame
+  calls it right after `fillTriggerCfg(msg.trigger_cfg)`. The rev is a
+  digest of the rule: kept across a reconnect, a change back to the rule of
+  before the drop matched it, and the form went on showing the rule it was
+  filled with at the reconnect.
+- A first-frame handler of the phone's own calls `trigCfgFresh()` the same
+  way, right after it fills the form.
+
 ## 2026-11-27 — one hover box at a time; a string's line ends not shown (shared `ui/`; install with the next payload)
 
 - js/170 `clearCharts()` destroys a Live chart's strings strip (`c.strip.u`)
