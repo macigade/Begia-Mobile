@@ -20,6 +20,25 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — one hover box at a time; a string's line ends not shown (shared `ui/`; install with the next payload)
+
+- js/170 `clearCharts()` destroys a Live chart's strings strip (`c.strip.u`)
+  with its plot. It did not: every rebuild left the old strip in the cursor
+  sync, its outside box on `document.body`, drawn from the other charts'
+  cursor at the page's top-left once its plot was off the page.
+- js/170 `outsideTooltipPlugin`: one box on screen at a time (`ttHideShown`,
+  `ttShownOver`); Esc hides it until the next `mousemove` (`ttEscaped`); a
+  scroll of the page or of a view the plot is in hides it (the box's own
+  list does not); a pointerdown off the box and its plot hides it; a plot
+  off the page or not `:hover` is not hovered, whatever its last
+  `mouseenter` said. On the phone and the tablet the tap rules are as before.
+- js/185 `showText(s)`: a string for the screen - line ends at its end
+  dropped (a real CR/LF, or a written `\n` / `\r` / `\r\n`), real ones inside
+  a space; a written `\n` inside stays. `stepLabel` and js/070 `textReading`
+  use it, so the strip, its hover box, the readouts and a trial's charts say
+  it so. Recorded values are untouched. The phone's own views of a string
+  should show it the same way.
+
 ## 2026-11-27 — the trigger's form follows the rule (shared `app/` and `ui/`; install with the next payload)
 
 - The trigger frame gains `cfg_rev`: a digest of the rule as stored
