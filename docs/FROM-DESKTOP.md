@@ -20,6 +20,28 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-27 — a signal marked Parameter, the server's part (shared `app/`; install with the next payload)
+
+- `SignalCfg.parameter` (bool, default False; `UdpSignalCfg.parameter` too,
+  passed through `AppConfig.all_signals()`): a set value, not a
+  measurement. PATCH /api/signals and PATCH /api/signals/bulk take
+  `parameter`; allowed while a trial records - the trial keeps the marks
+  it started with.
+- The trial file's signals table has `param INTEGER DEFAULT 0` after `grp`;
+  the viewer's signals carry `parameter` (False for a file from before). A
+  reader that names its columns never sees it.
+- `app/recording/params.py`: a parameter's change that held still for
+  `HOLD_MS` (2000) is an event at the moment of the change ("Gain: 0.8 to
+  0.95"; a REAL to its 7 digits, a string in quotes, a BOOL TRUE / FALSE,
+  the unit after a number); `EVENTS_MAX` (20) a parameter a trial, then
+  "Gain: more than 20 changes - the rest are in its strip", then none. The
+  recorder's flush writes them with its rows and tells the pages as any
+  `event` frame.
+- The CSV's head: `# parameters: Gain, TI - …` when the trial has any.
+- For the phone: nothing to do yet. The strip, the menus and the list come
+  with the shared `ui/` in the next steps; a list of the phone's own can
+  show the mark from `parameter` in the signals frame.
+
 ## 2026-11-27 — the trigger's form follows the rule after a reconnect too (shared `ui/`; install with the next payload)
 
 - js/060 `trigCfgFresh()` forgets the rev the form held (`trigCfgRev`) and a
