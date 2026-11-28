@@ -20,11 +20,55 @@ as the change. Entries say what to *do*, not just what happened.
 
 ---
 
+## 2026-11-28 — "Caps Lock is on" under a password box (shared `ui/`; install with the next payload)
+
+- js/050 `capsWatch(document)`: keydown, keyup and mousedown read
+  `getModifierState("CapsLock")`; while it is on and an
+  `input[type=password]` has the focus, `#caps-line` ("Caps Lock is on",
+  css/140 `.caps-line`, fixed just under the box) shows; focusout and Caps
+  Lock off hide it. Every password box, those made later too. A phone's soft
+  keyboard reports no Caps Lock, so there it shows only with a hardware
+  keyboard; nothing to do.
+
+## 2026-11-28 — Shown as for all the selected signals (shared `ui/`; install with the next payload)
+
+- js/070 `fmtMenuChoices(ref, after, group)`: with `group` (the selected
+  signals, more than one) a choice goes to each where `fmtFits` and it is not
+  already shown so, in one `patchSigs` write, and toasts "Shown as HEX: 2 of
+  the 3 selected" (or "Shown as HEX: none of the 3 selected changes"). js/055's
+  signal menu passes the selection. The phone's long-press menu gets it with
+  the shared `ui/`; nothing to do unless it builds its own Shown as.
+
+## 2026-11-28 — the next trial's file name (shared `app/` and `ui/`; install with the next payload)
+
+- GET /api/trial/next-name?name=&template= -> {manual, trigger, n}: the file a
+  Start press makes now (an empty name is trial_HHMMSS) and the trigger's next
+  fire's (the template given, else the saved one), as `_new_trial_file` names
+  them (store.next_trial_file; trigger.name_from_template), nothing made.
+- js/230 `trialNextName`, `paintTrialNext`: the Trial card's
+  `#trial-next` "Next: <file>", asked as the name or the template is typed
+  and every 10 s while `#trial-name` is on screen; `#trial-name`'s title says
+  the same. In a bar (`#tb-slot`: the rail's and the phone's trial bar;
+  `#eng-slot-trial`) the line is hidden (css/140) and the title alone says
+  it. The phone gets it with the shared `ui/`.
+
 ## 2026-11-27 — "Not in a chart" asks before it is recorded or not (shared `ui/`; install with the next payload)
 
 - js/070 `setChartRec(NO_CHART, on)` asks first (`askConfirm`: the count and
   what it means; Cancel resolves false, nothing sent). A chart is not asked.
   The phone gets it with the shared `ui/`.
+
+## 2026-11-27 — the Engineering look's Parameter and chart-recording parts (shared `ui/`; install with the next payload; nothing to do on the phone)
+
+- In the Engineering look only (`data-layout="engineering"`, the desktop
+  app): a chart's strip drawn compact, its parameters one shared row "+N"
+  where its slot is too short (js/180 `engStripFit`, `stripPx`, `stripRows`,
+  `engStripLook`); a parameter's readout out of the chart's header
+  (css/115); the Project tree's chart rows with the Rec switch (js/105).
+- Shared: js/185 `stripLanes(sigs, paneNo, hidden, rows)` and
+  `mountChartStrip(paneEl, before, paneNo, sigs, au, rows)` take an optional
+  `rows`; left out, they are as before. Every other look, the phone and a
+  trial's strip draw as they did.
 
 ## 2026-11-27 — record a whole chart, or none of it (shared `ui/`; install with the next payload)
 
